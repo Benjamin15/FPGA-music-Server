@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "restbed": "cpp",
+    "cstdlib": "cpp",
+    "iostream": "cpp"
+  }
+}
