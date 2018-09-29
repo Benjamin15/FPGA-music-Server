@@ -1,0 +1,99 @@
+{
+  "routes" : [
+    {
+      "type" : "GET", 
+      "url" : "/usager/identification",
+      "handler" : "get_usager_identification_handler"
+    },
+    {
+      "type" : "GET", 
+      "url" : "/usager/file/{id: [0-9]+}",
+      "handler" : "get_usager_file_handler"
+    },
+    {
+      "type" : "POST", 
+      "url" : "/usager/chanson/{id: [0-9]+}",
+      "handler" : "post_usager_chanson_handler"
+    },
+    {
+      "type" : "DELETE", 
+      "url" : "/usager/chanson/{id: [0-9]+}/{no: [0-9]+}",
+      "handler" : "delete_usager_chanson_handler"
+    },
+    {
+      "type" : "GET", 
+      "url" : "/superviseur/file",
+      "handler" : "get_superviseur_file_handler"
+    },
+    {
+      "type" : "DELETE", 
+      "url" : "/superviseur/chanson/{no: [0-9]+}",
+      "handler" : "delete_superviseur_chanson_handler"
+    }, 
+    {
+      "type" : "POST", 
+      "url" : "/superviseur/inversion",
+      "handler" : "post_superviseur_inversion_handler"
+    },
+    {
+      "type" : "GET", 
+      "url" : "/superviseur/volume",
+      "handler" : "get_superviseur_volume_handler"
+    }, 
+    {
+      "type" : "POST", 
+      "url" : "/superviseur/volume/augmenter/{pc: [0-9]+}",
+      "handler" : "post_superviseur_volume_augmenter_handler"
+    },
+    {
+      "type" : "POST", 
+      "url" : "/superviseur/volume/diminuer/{pc: [0-9]+}",
+      "handler" : "post_superviseur_volume__diminuer_handler"
+    }, 
+    {
+      "type" : "POST", 
+      "url" : "/superviseur/volume/sourdine/activer",
+      "handler" : "post_superviseur_volume_sourdine_activer_handler"
+    }, 
+    {
+      "type" : "POST", 
+      "url" : "/superviseur/volume/sourdine/desactiver",
+      "handler" : "post_superviseur_volume_sourdine_desactiver_handler"
+    },  
+    {
+      "type" : "GET", 
+      "url" : "/superviseur/statistiques",
+      "handler" : "get_superviseur_statistiques"
+    },  
+    {
+      "type" : "POST", 
+      "url" : "/superviseur/bloquer",
+      "handler" : "get_superviseur_bloquer"
+    },  
+    {
+      "type" : "POST", 
+      "url" : "/superviseur/debloquer",
+      "handler" : "get_superviseur_debloquer"
+    }, 
+    {
+      "type" : "GET", 
+      "url" : "/superviseur/listenoire",
+      "handler" : "get_superviseur_listenoire"
+    },   
+    {
+      "type" : "POST", 
+      "url" : "/superviseur/login",
+      "handler" : "post_superviseur_login"
+    },  
+    {
+      "type" : "POST", 
+      "url" : "/superviseur/logout",
+      "handler" : "post_superviseur_logout"
+    },  
+    {
+      "type" : "POST", 
+      "url" : "/superviseur/changement_mdp",
+      "handler" : "post_superviseur_changement_mdp"
+    }
+  ]
+}
