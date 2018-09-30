@@ -71,7 +71,6 @@ void Rest::createRoute(){
     rapidjson::Document document = getJsonFile();
     const rapidjson::Value& routes = document["routes"];
     std::map<std::string, std::function<void( const std::shared_ptr< restbed::Session > session )>> functions = mapFunction();
-    std::cout << functions.size() << std::endl;
     for (rapidjson::SizeType i = 0; i < routes.Size(); i++) { // boucle chaque route
         auto resource = std::make_shared<restbed::Resource>();
         rapidjson::Value::ConstMemberIterator itr = routes[i].MemberBegin();
@@ -115,8 +114,6 @@ int main( const int argc , const char* argv[] )
     Rest rest;
     std::string address = argc > 1 ? argv[1] : "132.207.89.35";
     uint16_t port = argc > 2 ? std::stoi(argv[2]) : 80;
-    std::cout << address << std::endl;
-    std::cout << port << std::endl;
     rest.initSettings(address, port);
     rest.initService();
     rest.createRoute();
