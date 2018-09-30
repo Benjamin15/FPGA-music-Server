@@ -30,3 +30,19 @@ $(EXECUTABLE): $(OBJECTS)
 
 clean:
 	$(RM) $(OBJECTS) $(EXECUTABLE)
+
+SHELL := /bin/bash
+
+all-tests := $(addsuffix .test, $(basename $(wildcard *.test-in)))
+
+.PHONY : test all %.test
+
+BC := /usr/bin/bc
+
+test : $(all-tests)
+
+%.test : %.test-in %.test-cmp $(BC)
+	@$(BC) <$< 2>&1 | diff -q $(word 2, $?) - >/dev/null || (echo "Test $@ failed" && exit 1)
+
+all : test 
+	@echo "Success, all tests passed."
