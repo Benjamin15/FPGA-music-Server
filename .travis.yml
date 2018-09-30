@@ -41,6 +41,18 @@ matrix:
       - COMPILERCXX="g++-5"
       - COMPILERC="gcc-5"
       - OPENSSL_VERSION=openssl-1.1.0
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources:
+          - ubuntu-toolchain-r-test
+          packages:
+          - g++-5 
+    - os: osx
+      compiler: gcc
+    - os: osx
+      compiler: clang
 
 script: make && make test
 
