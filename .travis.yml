@@ -31,7 +31,7 @@ matrix:
     - os: osx
       compiler: clang
 
-script: make -j3 && make test
+script: make && make test
 
 notifications:
   recipients:
