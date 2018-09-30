@@ -1,5 +1,5 @@
-INCLUDE = -I../include/
-LIBRARIES = -L../lib/ -lrestbed
+INCLUDE = -Iinclude/
+LIBRARIES = -Llib/ -lrestbed
 
 CXX=g++  -Wno-unused-result -std=c++11 -fuse-ld=bfd
 RM=rm -f
@@ -7,7 +7,7 @@ CPPFLAGS=-c -Wall
 LDFLAGS=-g $(INCLUDE)
 LDLIBS=$(LIBRARIES)
 
-SOURCES=Rest.cpp manager/ManagerMusic.cpp manager/ManagerStatistiques.cpp manager/ManagerUser.cpp
+SOURCES=src/Rest.cpp src/manager/ManagerMusic.cpp src/manager/ManagerStatistiques.cpp src/manager/ManagerUser.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=server
 

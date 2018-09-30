@@ -92,7 +92,7 @@ void Rest::createRoute(){
  * 
  */ 
 rapidjson::Document Rest::getJsonFile(){
-    FILE* fp = fopen("routes.json", "rb"); // non-Windows use "r"
+    FILE* fp = fopen("metadata/routes.json", "rb"); // non-Windows use "r"
     char readBuffer[65536];
     rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
     rapidjson::Document d;
