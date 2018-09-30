@@ -1,9 +1,11 @@
 #include "Rest.h"
 
-void ready_handler( restbed::Service& )
+void ready_handler( restbed::Service&  data)
 {
+    auto uri = data.get_http_uri();
     fprintf( stderr, "Service PID is '%i'.\n", getpid( ) );
-}
+    std::cout << "use : " << uri->get_authority() << ":" << uri->get_port()<< std::endl;
+} 
 
 /**
  * Map each functions
@@ -53,10 +55,11 @@ void Rest::initService() {
  * init settings server
  * 
  */ 
-void Rest::initSettings() {
-    settings->set_port( 80 );
+void Rest::initSettings(std::string address, uint16_t port) {
+    settings->set_port( port );
     settings->set_default_header( "Connection", "close" );
-    settings->set_bind_address("132.207.89.35");
+    //quand on utilise la fpga : settings->set_bind_address("132.207.89.35");
+    settings->set_bind_address(address);
 }
 
 /**
@@ -90,7 +93,6 @@ void Rest::createRoute(){
  * 
  */ 
 rapidjson::Document Rest::getJsonFile(){
-    fprintf( stderr, "get JSON FILE" );
     FILE* fp = fopen("routes.json", "rb"); // non-Windows use "r"
     char readBuffer[65536];
     rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
@@ -108,10 +110,14 @@ void Rest::run(){
     service->start( settings );
 }
 
-int main( const int, const char** )
+int main( const int argc , const char* argv[] )
 {
     Rest rest;
-    rest.initSettings();
+    std::string address = argc > 1 ? argv[1] : "132.207.89.35";
+    uint16_t port = argc > 2 ? std::stoi(argv[2]) : 80;
+    std::cout << address << std::endl;
+    std::cout << port << std::endl;
+    rest.initSettings(address, port);
     rest.initService();
     rest.createRoute();
     rest.run();

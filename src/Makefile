@@ -1,19 +1,32 @@
-PROG = server
-CC = g++
-LDFLAGS = -lboost_system -lcrypto -lssl -lrestbed -lpthread -pthread -L /usr/local/lib
-CPPFLAGS = -g -Wall -std=c++11 -L /usr/lib  -L /usr/local/lib
-OBJS = Rest.o ManagerUser.o ManagerStatistiques.o ManagerMusic.o
-PRECOMPILED_HEADER =
+### WARNING: If librestbed.so cannot be found, use the foloowing command: 
+###
+### export LD_LIBRARY_PATH=/usr/local/lib/restbed/distribution/library
+###
 
-$(PROG) : $(OBJS)
-	$(CC) $(LDFLAGS) -o $(PROG) $(OBJS) 
-ManagerMusic.o : manager/ManagerMusic.h
-	$(CC) $(CPPFLAGS) -c manager/ManagerMusic.cpp	
-ManagerUser.o : manager/ManagerUser.h
-	$(CC) $(CPPFLAGS) -c manager/ManagerUser.cpp	
-ManagerStatistiques.o : manager/ManagerStatistiques.h
-	$(CC) $(CPPFLAGS) -c manager/ManagerStatistiques.cpp		
-Rest.o : Rest.h
-	$(CC) $(CPPFLAGS) -c Rest.cpp	
+ifndef RESTBED_MODULES_PATH
+export RESTBED_MODULES_PATH=/usr/local/lib/restbed
+endif
+
+INCLUDE = -I"$(RESTBED_MODULES_PATH)/distribution/include/"
+LIBRARIES = -L"$(RESTBED_MODULES_PATH)/distribution/library" -lrestbed
+
+CXX=g++  -Wno-unused-result -std=c++11 -fuse-ld=bfd
+RM=rm -f
+CPPFLAGS=-c -Wall
+LDFLAGS=-g $(INCLUDE)
+LDLIBS=$(LIBRARIES)
+
+SOURCES=Rest.cpp manager/ManagerMusic.cpp manager/ManagerStatistiques.cpp manager/ManagerUser.cpp
+OBJECTS=$(SOURCES:.cpp=.o)
+EXECUTABLE=server
+
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CXX) $(LDFLAGS) $(OBJECTS) -o $@ $(LDLIBS)
+
+.cpp.o:
+	$(CXX) $(LDFLAGS) $(CPPFLAGS) $< -o $@ $(LDLIBS)
+
 clean:
-	rm -f core $(PROG) $(OBJS) $(PRECOMPILED_HEADER)
+	$(RM) $(OBJECTS) $(EXECUTABLE)
