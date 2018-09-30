@@ -30,6 +30,7 @@ matrix:
       compiler: gcc
     - os: osx
       compiler: clang
+before_script: cd src
 
 script: make && make test
 
