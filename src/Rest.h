@@ -30,7 +30,7 @@ class Rest
     Rest();
     ~Rest(){}
     void initService();
-    void initSettings();
+    void initSettings(std::string address, uint16_t port);
     void createRoute();
     void run();
 };
