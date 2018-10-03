@@ -38,8 +38,8 @@ std::map<std::string, std::function<void( const std::shared_ptr< restbed::Sessio
 }
 
 Rest::Rest() {
-    service = std::make_shared< restbed::Service >( );
-    settings = std::make_shared< restbed::Settings >( );
+    service_ = std::make_shared< restbed::Service >( );
+    settings_ = std::make_shared< restbed::Settings >( );
 }
 
 
@@ -47,7 +47,7 @@ Rest::Rest() {
  * Init service
  */ 
 void Rest::initService() {
-    service->set_ready_handler( ready_handler );
+    service_->set_ready_handler( ready_handler );
 }
 
 
@@ -56,10 +56,10 @@ void Rest::initService() {
  * 
  */ 
 void Rest::initSettings(std::string address, uint16_t port) {
-    settings->set_port( port );
-    settings->set_default_header( "Connection", "close" );
+    settings_->set_port( port );
+    settings_->set_default_header( "Connection", "close" );
     //quand on utilise la fpga : settings->set_bind_address("132.207.89.35");
-    settings->set_bind_address(address);
+    settings_->set_bind_address(address);
 }
 
 /**
@@ -82,7 +82,7 @@ void Rest::createRoute(){
         resources.push_back(resource);
     }
     for (auto resource : resources){
-        service->publish(resource);
+        service_->publish(resource);
     }
 }
 
@@ -106,7 +106,7 @@ rapidjson::Document Rest::getJsonFile(){
  * 
  */ 
 void Rest::run(){
-    service->start( settings );
+    service_->start( settings_ );
 }
 
 int main( const int argc , const char* argv[] )
