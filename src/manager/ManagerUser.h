@@ -1,5 +1,5 @@
 #ifndef MANAGE_USER_H
-#define MANGE_USER_H
+#define MANAGE_USER_H
 #include <memory>
 #include <restbed>
 #include <iostream>

@@ -58,7 +58,6 @@ void Rest::initService() {
 void Rest::initSettings(std::string address, uint16_t port) {
     settings_->set_port( port );
     settings_->set_default_header( "Connection", "close" );
-    //quand on utilise la fpga : settings->set_bind_address("132.207.89.35");
     settings_->set_bind_address(address);
 }
 
@@ -86,7 +85,6 @@ void Rest::createRoute(){
     }
 }
 
-
 /**
  * Get the JSON file which contain each routes
  * 
@@ -105,7 +103,8 @@ rapidjson::Document Rest::getJsonFile(){
  * Run the rest server
  * 
  */ 
-void Rest::run(){
+void Rest::run() {
+    ManagerMusic::create_list_music();
     service_->start( settings_ );
 }
 
@@ -114,9 +113,13 @@ int main( const int argc , const char* argv[] )
     Rest rest;
     std::string address = argc > 1 ? argv[1] : "132.207.89.35";
     uint16_t port = argc > 2 ? std::stoi(argv[2]) : 80;
+    std::cout << "launch init settings " << std::endl;
     rest.initSettings(address, port);
+    std::cout << "init service" << std::endl;
     rest.initService();
+    std::cout << "launch create route " << std::endl;
     rest.createRoute();
+    std::cout << "launch run " << std::endl;
     rest.run();
     return EXIT_SUCCESS;
 }
