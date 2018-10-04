@@ -1,0 +1,54 @@
+{
+  "musiques" : [
+    {
+      "no": 1,
+      "titre" : "titre1",
+      "artiste" : "artiste1",
+      "duree": "7.00", 
+      "proposeePar" : "personne1",
+      "ip": "127.0.0.1",
+      "MAC": "A0:B1:C3:D4:E5:F6",
+      "id": 3
+    },
+    {
+      "no": 2,
+      "titre" : "titre2",
+      "artiste" : "artiste2",
+      "duree": "8.00", 
+      "proposeePar" : "personne2",
+      "ip": "132.5.6.7",
+      "MAC": "AA:B0:C3:D4:E5:F6",
+      "id": 2
+    },
+    {
+      "no": 3,
+      "titre" : "titre3",
+      "artiste" : "artiste3",
+      "duree": "8.15", 
+      "proposeePar" : "personne3",
+      "ip": "162.65.89.36",
+      "MAC": "AB:CD:FA:12:E4:A5",
+      "id": 5
+    },
+    {
+      "no": 4,
+      "titre" : "titre4",
+      "artiste" : "artiste4",
+      "duree": "2.30", 
+      "proposeePar" : "personne4",
+      "ip": "3.35.34.2",
+      "MAC": "A6:B1:C3:D4:E5:F6",
+      "id": 6
+    },
+    {
+      "no": 5,
+      "titre" : "titre5",
+      "artiste" : "artiste5",
+      "duree": "2.00", 
+      "proposeePar" : "personne5",
+      "ip": "127.0.0.1",
+      "MAC": "A0:B1:C3:D4:E5:F6",
+      "id": 9
+    }
+  ]
+}

@@ -46,6 +46,13 @@
     "typeinfo": "cpp",
     "utility": "cpp",
     "cstring": "cpp",
-    "cinttypes": "cpp"
+    "cinttypes": "cpp",
+    "bitset": "cpp",
+    "deque": "cpp",
+    "complex": "cpp",
+    "list": "cpp",
+    "iomanip": "cpp",
+    "numeric": "cpp",
+    "typeindex": "cpp"
   }
 }

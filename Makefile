@@ -7,7 +7,7 @@ CPPFLAGS=-c -Wall
 LDFLAGS=-g $(INCLUDE)
 LDLIBS=$(LIBRARIES)
 
-SOURCES=src/Rest.cpp src/manager/ManagerMusic.cpp src/manager/ManagerStatistiques.cpp src/manager/ManagerUser.cpp
+SOURCES=src/model/User.cpp src/model/Music.cpp src/manager/ManagerMusic.cpp src/manager/ManagerStatistiques.cpp src/manager/ManagerUser.cpp src/Rest.cpp src/utils/json.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=server
 

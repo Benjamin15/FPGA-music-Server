@@ -38,8 +38,8 @@ std::map<std::string, std::function<void( const std::shared_ptr< restbed::Sessio
 }
 
 Rest::Rest() {
-    service = std::make_shared< restbed::Service >( );
-    settings = std::make_shared< restbed::Settings >( );
+    service_ = std::make_shared< restbed::Service >( );
+    settings_ = std::make_shared< restbed::Settings >( );
 }
 
 
@@ -47,7 +47,7 @@ Rest::Rest() {
  * Init service
  */ 
 void Rest::initService() {
-    service->set_ready_handler( ready_handler );
+    service_->set_ready_handler( ready_handler );
 }
 
 
@@ -56,10 +56,9 @@ void Rest::initService() {
  * 
  */ 
 void Rest::initSettings(std::string address, uint16_t port) {
-    settings->set_port( port );
-    settings->set_default_header( "Connection", "close" );
-    //quand on utilise la fpga : settings->set_bind_address("132.207.89.35");
-    settings->set_bind_address(address);
+    settings_->set_port( port );
+    settings_->set_default_header( "Connection", "close" );
+    settings_->set_bind_address(address);
 }
 
 /**
@@ -68,7 +67,7 @@ void Rest::initSettings(std::string address, uint16_t port) {
  */ 
 void Rest::createRoute(){
     std::vector<std::shared_ptr<restbed::Resource>> resources;
-    rapidjson::Document document = getJsonFile();
+    rapidjson::Document document = getJsonFile("metadata/routes.json");
     const rapidjson::Value& routes = document["routes"];
     std::map<std::string, std::function<void( const std::shared_ptr< restbed::Session > session )>> functions = mapFunction();
     for (rapidjson::SizeType i = 0; i < routes.Size(); i++) { // boucle chaque route
@@ -82,31 +81,17 @@ void Rest::createRoute(){
         resources.push_back(resource);
     }
     for (auto resource : resources){
-        service->publish(resource);
+        service_->publish(resource);
     }
-}
-
-
-/**
- * Get the JSON file which contain each routes
- * 
- */ 
-rapidjson::Document Rest::getJsonFile(){
-    FILE* fp = fopen("metadata/routes.json", "rb"); // non-Windows use "r"
-    char readBuffer[65536];
-    rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
-    rapidjson::Document d;
-    d.ParseStream(is);
-    fclose(fp);
-    return d;
 }
 
 /**
  * Run the rest server
  * 
  */ 
-void Rest::run(){
-    service->start( settings );
+void Rest::run() {
+    ManagerMusic::create_list_music();
+    service_->start( settings_ );
 }
 
 int main( const int argc , const char* argv[] )
@@ -114,9 +99,13 @@ int main( const int argc , const char* argv[] )
     Rest rest;
     std::string address = argc > 1 ? argv[1] : "132.207.89.35";
     uint16_t port = argc > 2 ? std::stoi(argv[2]) : 80;
+    std::cout << "launch init settings " << std::endl;
     rest.initSettings(address, port);
+    std::cout << "init service" << std::endl;
     rest.initService();
+    std::cout << "launch create route " << std::endl;
     rest.createRoute();
+    std::cout << "launch run " << std::endl;
     rest.run();
     return EXIT_SUCCESS;
 }

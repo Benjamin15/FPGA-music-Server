@@ -1,16 +1,19 @@
 #ifndef MANAGE_MUSIC_H
-#define MANGE_MUSIC_H
+#define MANAGE_MUSIC_H
 #include <memory>
 #include <restbed>
 #include <iostream>
-
-/**
- * Class which manage all users
- */  
-class ManagerMusic
-{  
-  private: 
-  public:
+#include <vector>
+#include "rapidjson/document.h"
+#include "rapidjson/filereadstream.h"
+#include "../model/Music.h"
+#include "../utils/json.h"
+  /**
+   * Class which manage all users
+   */  
+  class ManagerMusic
+  {  
+   public:
     static void get_usager_files(const std::shared_ptr< restbed::Session > session);
     static void insert_song(const std::shared_ptr< restbed::Session > session);
     static void delete_usager__song(const std::shared_ptr< restbed::Session > session);
@@ -23,5 +26,8 @@ class ManagerMusic
     static void set_down_volume(const std::shared_ptr< restbed::Session > session);
     static void enabledMute(const std::shared_ptr< restbed::Session > session);
     static void disabledMute(const std::shared_ptr< restbed::Session > session);
-};
+
+    static void create_list_music();
+    static std::vector<Music> musics;
+  };
 #endif

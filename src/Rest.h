@@ -12,20 +12,12 @@
 #include "manager/ManagerMusic.h"
 #include "manager/ManagerStatistiques.h"
 #include "manager/ManagerUser.h"
-
+#include "utils/json.h"
 /**
  * Class which create all page we need
  */  
 class Rest
 {  
-  private: 
-    std::shared_ptr<restbed::Service> service;
-    std::shared_ptr<restbed::Settings> settings;
-    
-    void createRouteUsager();
-    rapidjson::Document getJsonFile();
-    std::map<std::string, std::function<void( const std::shared_ptr< restbed::Session > session )>> mapFunction();
-
   public:
     Rest();
     ~Rest(){}
@@ -33,5 +25,12 @@ class Rest
     void initSettings(std::string address, uint16_t port);
     void createRoute();
     void run();
+
+  private: 
+    void createRouteUsager();
+    std::map<std::string, std::function<void( const std::shared_ptr< restbed::Session > session )>> mapFunction();
+
+    std::shared_ptr<restbed::Service> service_;
+    std::shared_ptr<restbed::Settings> settings_;
 };
 #endif

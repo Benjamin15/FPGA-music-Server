@@ -1,5 +1,5 @@
 #ifndef MANAGE_STATISTIQUES_H
-#define MENAGE_STATISTIQUES_H
+#define MANAGE_STATISTIQUES_H
 #include <memory>
 #include <restbed>
 #include <iostream>
