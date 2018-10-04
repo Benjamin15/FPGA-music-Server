@@ -3,15 +3,15 @@
 #include <memory>
 #include <iostream>
 #include <sstream>
-
+#include "User.h"
 /**
  * Class model of music
  */  
 class Music
 {  
  public:
-  Music(unsigned int id, std::string title, std::string artist, std::string duration, std::string suggestBy)
-      : id_(id), title_(title), artist_(artist), duration_(duration), suggestBy_(suggestBy), owner_(false){}
+  Music(unsigned int id, std::string title, std::string artist, std::string duration, User user)
+      : id_(id), title_(title), artist_(artist), duration_(duration), user_(user), owner_(false) {}
   
   std::ostream& operator<<(std::ostream &strm);
   std::string toStringForUser();
@@ -21,7 +21,7 @@ class Music
   std::string title_;
   std::string artist_;
   std::string duration_;
-  std::string suggestBy_;
+	User user_;
   bool owner_;
 
  private:

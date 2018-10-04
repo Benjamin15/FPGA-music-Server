@@ -9,5 +9,6 @@
 
 rapidjson::Document getJsonFile(const char* path);
 std::string getListForUser(std::vector<Music> musics);
+std::string getListForAdmin(std::vector<Music> musics);
 
 #endif

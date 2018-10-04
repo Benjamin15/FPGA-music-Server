@@ -18,7 +18,9 @@ void ManagerMusic::delete_usager__song(const std::shared_ptr< restbed::Session >
 
 void ManagerMusic::get_superviser_files(const std::shared_ptr< restbed::Session > session) {
   std::cout << "obtenir musique superviseur" << std::endl;
-
+  std::string result = getListForAdmin(musics);
+  std::cout << result << std::endl;
+  session->close( restbed::OK, result, { { "Content-Length", std::to_string(result.size()) }, { "Connection", "close" } } );
 }
 
 void ManagerMusic::delete_superviser_song(const std::shared_ptr< restbed::Session > session) {
@@ -60,12 +62,16 @@ void ManagerMusic::create_list_music() {
   for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
     auto resource = std::make_shared<restbed::Resource>();
     rapidjson::Value::ConstMemberIterator itr = musiques[i].MemberBegin();
-    const unsigned int id = itr++->value.GetUint();
+    const unsigned int idMusic = itr++->value.GetUint();
     const std::string title = itr++->value.GetString();
     const std::string artist = itr++->value.GetString();
     const std::string duration = itr++->value.GetString();
-    const std::string suggestBy = itr->value.GetString();
-    Music music(id, title, artist, duration, suggestBy);
+    const std::string suggestBy = itr++->value.GetString();
+    const std::string ip = itr++->value.GetString();
+    const std::string mac = itr++->value.GetString();
+    const unsigned int idUser = itr->value.GetUint();
+    User user(idUser, suggestBy, ip, mac);
+    Music music(idMusic, title, artist, duration, user);
     musics.push_back(music);
   }
   std::cout << "Musique bien ajouté" << std::endl;
