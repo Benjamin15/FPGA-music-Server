@@ -12,7 +12,7 @@
 #include "manager/ManagerMusic.h"
 #include "manager/ManagerStatistiques.h"
 #include "manager/ManagerUser.h"
-
+#include "utils/json.h"
 /**
  * Class which create all page we need
  */  
@@ -28,7 +28,6 @@ class Rest
 
   private: 
     void createRouteUsager();
-    rapidjson::Document getJsonFile();
     std::map<std::string, std::function<void( const std::shared_ptr< restbed::Session > session )>> mapFunction();
 
     std::shared_ptr<restbed::Service> service_;

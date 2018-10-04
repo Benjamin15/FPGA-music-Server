@@ -67,7 +67,7 @@ void Rest::initSettings(std::string address, uint16_t port) {
  */ 
 void Rest::createRoute(){
     std::vector<std::shared_ptr<restbed::Resource>> resources;
-    rapidjson::Document document = getJsonFile();
+    rapidjson::Document document = getJsonFile("metadata/routes.json");
     const rapidjson::Value& routes = document["routes"];
     std::map<std::string, std::function<void( const std::shared_ptr< restbed::Session > session )>> functions = mapFunction();
     for (rapidjson::SizeType i = 0; i < routes.Size(); i++) { // boucle chaque route
@@ -83,20 +83,6 @@ void Rest::createRoute(){
     for (auto resource : resources){
         service_->publish(resource);
     }
-}
-
-/**
- * Get the JSON file which contain each routes
- * 
- */ 
-rapidjson::Document Rest::getJsonFile(){
-    FILE* fp = fopen("metadata/routes.json", "rb"); // non-Windows use "r"
-    char readBuffer[65536];
-    rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
-    rapidjson::Document d;
-    d.ParseStream(is);
-    fclose(fp);
-    return d;
 }
 
 /**

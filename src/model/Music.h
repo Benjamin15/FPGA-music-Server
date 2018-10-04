@@ -14,6 +14,7 @@ class Music
       : id_(id), title_(title), artist_(artist), duration_(duration), suggestBy_(suggestBy), owner_(false){}
   
   std::ostream& operator<<(std::ostream &strm);
+  std::string toStringForUser();
   std::string toString();
   
   unsigned int id_;

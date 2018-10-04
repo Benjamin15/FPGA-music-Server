@@ -4,7 +4,7 @@ std::ostream& Music::operator<<(std::ostream &strm) {
   return strm << toString();
 }
 
-std::string Music::toString() {
+std::string Music::toStringForUser() {
   std::stringstream result;
   result << "{ "
     << "\"titre\": \"" << title_ << "\", "
@@ -13,5 +13,10 @@ std::string Music::toString() {
     << "\"proposeePar\": \"" << suggestBy_ << "\", "
     << "\"proprietaire\": \"" << owner_ << "\", "
     << "\"no \": \"" << id_ << "\" }";
+  return result.str();
+}
+
+std::string Music::toString() {
+  std::stringstream result;
   return result.str();
 }

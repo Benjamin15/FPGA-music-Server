@@ -7,7 +7,7 @@
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
 #include "../model/Music.h"
-
+#include "../utils/json.h"
   /**
    * Class which manage all users
    */  

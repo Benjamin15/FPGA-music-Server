@@ -3,20 +3,9 @@ std::vector<Music> ManagerMusic::musics;
 
 void ManagerMusic::get_usager_files(const std::shared_ptr< restbed::Session > session) {
   std::cout << "liste musique de l'usager" << std::endl;
-    std::stringstream result;
-  const char* separator = ", \n";
-  result << "{ \n  \"chansons\": [\n";
-  for (unsigned int i = 0 ; i < musics.size() ; i++) {
-    Music music = musics[i];
-    result << music.toString() << separator ;
-    if (i == musics.size() - 2)
-      separator = "\n";
-  };
-  result << "]\n}";
-  std::string val = result.str(); 
-  std::cout << val << std::endl;
-  session->close( restbed::OK, val, { { "Content-Length", std::to_string(val.size()) }, { "Connection", "close" } } );
-
+  std::string result = getListForUser(musics);
+  std::cout << result << std::endl;
+  session->close( restbed::OK, result, { { "Content-Length", std::to_string(result.size()) }, { "Connection", "close" } } );
 }
 
 void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session) {
