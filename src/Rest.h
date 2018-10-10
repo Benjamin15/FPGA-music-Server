@@ -13,6 +13,7 @@
 #include "manager/ManagerStatistiques.h"
 #include "manager/ManagerUser.h"
 #include "utils/json.h"
+
 /**
  * Class which create all page we need
  */  
