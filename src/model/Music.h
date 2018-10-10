@@ -14,6 +14,17 @@ class Music
       : id_(id), title_(title), artist_(artist), duration_(duration), user_(user), owner_(false) {}
   
   std::ostream& operator<<(std::ostream &strm);
+  friend bool operator==(const Music &musicFirst, const Music &musicSecond){
+      return (musicFirst.id_==musicSecond.id_ && musicFirst.title_==musicSecond.title_ 
+          && musicFirst.artist_==musicSecond.artist_ && musicFirst.duration_==musicSecond.duration_
+          && musicFirst.user_==musicSecond.user_);
+}
+
+  friend bool operator<(const Music &musicFirst, const Music &musicSecond) {
+  return (musicFirst.id_<musicSecond.id_ && musicFirst.title_<musicSecond.title_ 
+          && musicFirst.artist_<musicSecond.artist_ && musicFirst.duration_<musicSecond.duration_
+          && musicFirst.user_<musicSecond.user_);
+}
   std::string toStringForUser();
   std::string toString();
   
