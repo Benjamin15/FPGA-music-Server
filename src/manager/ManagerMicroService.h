@@ -4,8 +4,12 @@
 #include <iostream>
 #include <thread>
 #include <sys/syscall.h>
+#include <stdio.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
+#include "ManagerMusic.h"
+#include "../utils/json.h"
 #define gettid() syscall(SYS_gettid)
 
 
@@ -15,8 +19,8 @@
 class ManagerMicroService
 {  
  private:
-  static int call_player(std::string path); // fork et exec || thread exec
   static void manage_player(); // boucle sur musics, waitpid() à la fin de la boucle
+  static std::thread thread_manager_player_;
  public:
   static int run_player(); // il est appelé :) 
 };
