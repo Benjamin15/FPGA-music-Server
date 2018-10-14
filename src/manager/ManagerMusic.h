@@ -4,10 +4,18 @@
 #include <restbed>
 #include <iostream>
 #include <vector>
-#include "rapidjson/document.h"
+#include  <stdio.h>
+#include <unistd.h>
+#include <sys/syscall.h>
 #include "rapidjson/filereadstream.h"
+#include "rapidjson/document.h"
+
 #include "../model/Music.h"
 #include "../utils/json.h"
+#include "./ManagerMicroService.h"
+
+#define gettid() syscall(SYS_gettid)
+
   /**
    * Class which manage all users
    */  
@@ -28,6 +36,7 @@
     static void disabledMute(const std::shared_ptr< restbed::Session > session);
 
     static void create_list_music();
+    static void launch_music();
     static std::vector<Music> musics;
   };
 #endif

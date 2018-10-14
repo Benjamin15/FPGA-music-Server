@@ -2,7 +2,7 @@
   "musiques" : [
     {
       "no": 1,
-      "titre" : "titre1",
+      "titre" : "music",
       "artiste" : "artiste1",
       "duree": "7.00", 
       "proposeePar" : "personne1",
@@ -12,7 +12,7 @@
     },
     {
       "no": 2,
-      "titre" : "titre2",
+      "titre" : "music",
       "artiste" : "artiste2",
       "duree": "8.00", 
       "proposeePar" : "personne2",
@@ -22,7 +22,7 @@
     },
     {
       "no": 3,
-      "titre" : "titre3",
+      "titre" : "music",
       "artiste" : "artiste3",
       "duree": "8.15", 
       "proposeePar" : "personne3",
@@ -32,7 +32,7 @@
     },
     {
       "no": 4,
-      "titre" : "titre4",
+      "titre" : "music",
       "artiste" : "artiste4",
       "duree": "2.30", 
       "proposeePar" : "personne4",
@@ -42,7 +42,7 @@
     },
     {
       "no": 5,
-      "titre" : "titre5",
+      "titre" : "music",
       "artiste" : "artiste5",
       "duree": "2.00", 
       "proposeePar" : "personne5",

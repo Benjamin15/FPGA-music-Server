@@ -2,6 +2,8 @@
 std::vector<Music> ManagerMusic::musics;
 
 void ManagerMusic::get_usager_files(const std::shared_ptr< restbed::Session > session) {
+  int id = gettid();
+  std::cout << "id : " << id << std::endl;
   std::cout << "liste musique de l'usager" << std::endl;
   std::string result = getListForUser(musics);
   std::cout << result << std::endl;
@@ -52,6 +54,8 @@ void ManagerMusic::disabledMute(const std::shared_ptr< restbed::Session > sessio
 }
 
 void ManagerMusic::create_list_music() {
+  int id = gettid();
+  std::cout << "id : " << id << std::endl;
     FILE* fp = fopen("metadata/musiques.json", "rb"); // non-Windows use "r"
     char readBuffer[65536];
     rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
@@ -75,4 +79,8 @@ void ManagerMusic::create_list_music() {
     musics.push_back(music);
   }
   std::cout << "Musique bien ajouté" << std::endl;
+}
+
+void ManagerMusic::launch_music() {
+  ManagerMicroService::run_player();
 }
