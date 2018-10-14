@@ -3,6 +3,9 @@
 #include <memory>
 #include <restbed>
 #include <iostream>
+#include "rapidjson/filereadstream.h"
+#include "rapidjson/document.h"
+
 
 /**
  * Class which manage all users

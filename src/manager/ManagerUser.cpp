@@ -1,6 +1,20 @@
 #include "ManagerUser.h"
+#include "ManagerIdentification.h"
+
+
 
 void ManagerUser::identify(const std::shared_ptr< restbed::Session > session){
+  const auto request = session->get_request();
+  std::string content_length = request->get_header("Content-Length","");
+  session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
+  const restbed::Bytes& body){
+    rapidjson::Value json;
+    json= body;
+    std::cout << "body vaut :" <<(json.getString() << std::endl;
+  });
+  std::string result = "Ok";
+
+  session->close(restbed::OK,"",{{"Content-Length",std::to_string(result.size())},{"Connection","close"}});
   std::cout << "identification" << std::endl;
 }
 
