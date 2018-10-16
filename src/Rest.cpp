@@ -65,7 +65,6 @@ void Rest::initSettings(std::string address, uint16_t port) {
 }
 
 void Rest::initSSLSettings() {
-    //ssl_settings_->set_http_disabled( true );
     ssl_settings_->set_private_key( restbed::Uri( "file://certificates/server.key" ) );
     ssl_settings_->set_certificate( restbed::Uri( "file://certificates/server.crt" ) );
     ssl_settings_->set_temporary_diffie_hellman( restbed::Uri( "file://certificates/dh768.pem" ) );
@@ -88,7 +87,6 @@ void Rest::createRoute(){
         const std::string type = itr++->value.GetString();
         const std::string url = itr++->value.GetString();
         const std::string handler = itr++->value.GetString();
-       // const bool is_https = itr->value.GetBool();
         resource->set_path(url);
         resource->set_method_handler( type, functions[handler] );  
         resources.push_back(resource);
