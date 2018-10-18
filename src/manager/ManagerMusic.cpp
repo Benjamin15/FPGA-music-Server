@@ -84,3 +84,20 @@ void ManagerMusic::create_list_music() {
 void ManagerMusic::launch_music() {
   ManagerMicroService::run_player();
 }
+
+/**
+ * decode info of music
+ * @param path : link to the file
+ * @return write info in model music
+ */ 
+Music ManagerMusic::get_info(std::string path) {
+  TagLib::FileRef f(path.c_str());
+  std::string title, artist, year, duration;
+  if(!f.isNull() && f.tag() && f.audioProperties()) {
+    TagLib::AudioProperties *properties = f.audioProperties();
+    int seconds = properties->length() % 60;
+    int minutes = (properties->length() - seconds) / 60;
+    TagLib::Tag *tag = f.tag();
+    return Music(tag->title().to8Bit(), tag->artist().to8Bit(), std::to_string(minutes) + ":" +std::to_string(seconds));
+  }
+}
