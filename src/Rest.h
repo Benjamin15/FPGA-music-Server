@@ -29,9 +29,12 @@ class Rest
 
   private: 
     void createRouteUsager();
+    void initSSLSettings();
     std::map<std::string, std::function<void( const std::shared_ptr< restbed::Session > session )>> mapFunction();
 
     std::shared_ptr<restbed::Service> service_;
     std::shared_ptr<restbed::Settings> settings_;
+    std::shared_ptr<restbed::SSLSettings> ssl_settings_;
+
 };
 #endif

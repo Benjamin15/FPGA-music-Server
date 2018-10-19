@@ -1,6 +1,6 @@
 #include <ao/ao.h>
 #include <mpg123.h>
-
+#include <iostream>
 #define BITS 8
 
 int main(int argc, char *argv[])
@@ -41,8 +41,9 @@ int main(int argc, char *argv[])
     dev = ao_open_live(driver, &format, NULL);
 
     /* decode and play */
-    while (mpg123_read(handle, buffer, buffer_size, &done) == MPG123_OK)
+    while (mpg123_read(handle, buffer, buffer_size, &done) == MPG123_OK) {
         ao_play(dev, (char*)buffer, done);
+    }
 
     /* clean up */
     free(buffer);
