@@ -3,7 +3,9 @@
 #include <memory>
 #include <restbed>
 #include <iostream>
-
+#include <string>
+#include "rapidjson/filereadstream.h"
+#include "rapidjson/document.h"
 /**
  * Class which manage all users
  */  
@@ -16,7 +18,7 @@ class ManagerIdentification
     * 
    */
   public:
-    static int registerId();
+    static int registerId(std::string body);
     static bool checkId(int id);
     static bool checkMacAddress(std::string userMacQddress);
 };

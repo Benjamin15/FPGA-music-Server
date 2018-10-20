@@ -8,14 +8,11 @@ void ManagerUser::identify(const std::shared_ptr< restbed::Session > session){
   std::string content_length = request->get_header("Content-Length","");
   session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
   const restbed::Bytes& body){
-    rapidjson::Value json;
-    json= body;
-    std::cout << "body vaut :" <<(json.getString() << std::endl;
+    ManagerIdentification::registerId(std::string(body.begin(),body.end()));
+    std::string result = "Ok";
+    session->close(restbed::OK,"",{{"Content-Length",std::to_string(result.size())},
+    {"Connection","close"}});
   });
-  std::string result = "Ok";
-
-  session->close(restbed::OK,"",{{"Content-Length",std::to_string(result.size())},{"Connection","close"}});
-  std::cout << "identification" << std::endl;
 }
 
 void ManagerUser::lock(const std::shared_ptr< restbed::Session > session) {
