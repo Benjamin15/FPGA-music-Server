@@ -1,5 +1,5 @@
 INCLUDE = -Iinclude/
-LIBRARIES = -Llib/ -lrestbed -lmpg123 -lao -lpthread -ltag
+LIBRARIES = -Llib/ -lrestbed -lmpg123 -lao -lpthread -ltag -lssl -lcryp
 
 CXX=g++  -Wno-unused-result -std=c++11 -fuse-ld=bfd
 RM=rm -f
