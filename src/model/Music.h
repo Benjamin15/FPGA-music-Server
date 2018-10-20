@@ -12,6 +12,8 @@ class Music
  public:
   Music(unsigned int id, std::string title, std::string artist, std::string duration, User user)
       : id_(id), title_(title), artist_(artist), duration_(duration), user_(user), owner_(false) {}
+  Music(std::string title, std::string artist, std::string duration)
+      : id_(0), title_(title), artist_(artist), duration_(duration), owner_(false) {}
   
   std::ostream& operator<<(std::ostream &strm);
   friend bool operator==(const Music &musicFirst, const Music &musicSecond){

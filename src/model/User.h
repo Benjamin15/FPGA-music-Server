@@ -12,7 +12,7 @@ class User
  public:
   User(unsigned int id, std::string name, std::string ip, std::string mac)
       : id_(id), name_(name), ip_(ip), mac_(mac){}
-  
+  User() : id_(0), name_(""), ip_(""), mac_("") {}
   friend bool operator==(const User& userFirst, const User& userSecond){
           return (userFirst.id_== userSecond.id_ && userFirst.name_==userSecond.name_
     && userFirst.ip_==userSecond.ip_ && userFirst.mac_==userSecond.mac_);
