@@ -1,56 +1,127 @@
-#include <ao/ao.h>
-#include <mpg123.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <mad.h>
+#include <pulse/simple.h>
+#include <pulse/error.h>
 
-#define BITS 8
+pa_simple *device = NULL;
+int ret = 1;
+int error;
+struct mad_stream mad_stream;
+struct mad_frame mad_frame;
+struct mad_synth mad_synth;
 
-int main(int argc, char *argv[])
-{
-    if(argc < 2)
-        exit(0);
-    mpg123_handle *handle;
-    unsigned char *buffer;
-    size_t buffer_size;
-    size_t done;
-    int err;
-    char* musicPath = argv[1];
-    int driver;
-    ao_device *dev;
+void output(struct mad_header const *header, struct mad_pcm *pcm);
 
-    ao_sample_format format;
-    int channels, encoding;
-    long rate;
+int main(int argc, char **argv) {
+    // Parse command-line arguments
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s [filename.mp3]", argv[0]);
+        return 255;
+    }
 
-    /* initializations */
-    ao_initialize();
-    driver = ao_default_driver_id();
-    mpg123_init();
-    handle = mpg123_new(NULL, &err);
-    buffer_size = mpg123_outblock(handle);
-    buffer = (unsigned char*) malloc(buffer_size * sizeof(unsigned char));
+    // Set up PulseAudio 16-bit 44.1kHz stereo output
+    static const pa_sample_spec ss = { .format = PA_SAMPLE_S16LE, .rate = 44100, .channels = 2 };
+    if (!(device = pa_simple_new(NULL, "MP3 player", PA_STREAM_PLAYBACK, NULL, "playback", &ss, NULL, NULL, &error))) {
+        printf("pa_simple_new() failed\n");
+        return 255;
+    }
 
-    /* open the file and get the decoding format */
-    mpg123_open(handle, musicPath);
-    mpg123_getformat(handle, &rate, &channels, &encoding);
+    // Initialize MAD library
+    mad_stream_init(&mad_stream);
+    mad_synth_init(&mad_synth);
+    mad_frame_init(&mad_frame);
 
-    /* set the output format and open the output device */
-    format.bits = mpg123_encsize(encoding) * BITS;
-    format.rate = rate;
-    format.channels = channels;
-    format.byte_format = AO_FMT_NATIVE;
-    format.matrix = 0;
-    dev = ao_open_live(driver, &format, NULL);
+    // Filename pointer
+    char *filename = argv[1];
 
-    /* decode and play */
-    while (mpg123_read(handle, buffer, buffer_size, &done) == MPG123_OK)
-        ao_play(dev, (char*)buffer, done);
+    // File pointer
+    FILE *fp = fopen(filename, "r");
+    int fd = fileno(fp);
 
-    /* clean up */
-    free(buffer);
-    ao_close(dev);
-    mpg123_close(handle);
-    mpg123_delete(handle);
-    mpg123_exit();
-    ao_shutdown();
+    // Fetch file size, etc
+    struct stat metadata;
+    if (fstat(fd, &metadata) >= 0) {
+        printf("File size %d bytes\n", (int)metadata.st_size);
+    } else {
+        printf("Failed to stat %s\n", filename);
+        fclose(fp);
+        return 254;
+    }
 
-    return 0;
+    // Let kernel do all the dirty job of buffering etc, map file contents to memory
+    unsigned char *input_stream = static_cast<unsigned char*> (mmap(0, metadata.st_size, PROT_READ, MAP_SHARED, fd, 0));
+
+    // Copy pointer and length to mad_stream struct
+    mad_stream_buffer(&mad_stream, input_stream, metadata.st_size);
+
+    // Decode frame and synthesize loop
+    while (1) {
+
+        // Decode frame from the stream
+        if (mad_frame_decode(&mad_frame, &mad_stream)) {
+            if (MAD_RECOVERABLE(mad_stream.error)) {
+                continue;
+            } else if (mad_stream.error == MAD_ERROR_BUFLEN) {
+                continue;
+            } else {
+                break;
+            }
+        }
+        // Synthesize PCM data of frame
+        mad_synth_frame(&mad_synth, &mad_frame);
+        output(&mad_frame.header, &mad_synth.pcm);
+    }
+
+    // Close
+    fclose(fp);
+
+    // Free MAD structs
+    mad_synth_finish(&mad_synth);
+    mad_frame_finish(&mad_frame);
+    mad_stream_finish(&mad_stream);
+
+    // Close PulseAudio output
+    if (device)
+        pa_simple_free(device);
+
+    return EXIT_SUCCESS;
+}
+
+// Some helper functions, to be cleaned up in the future
+int scale(mad_fixed_t sample) {
+     /* round */
+     sample += (1L << (MAD_F_FRACBITS - 16));
+     /* clip */
+     if (sample >= MAD_F_ONE)
+         sample = MAD_F_ONE - 1;
+     else if (sample < -MAD_F_ONE)
+         sample = -MAD_F_ONE;
+     /* quantize */
+     return sample >> (MAD_F_FRACBITS + 1 - 16);
+}
+void output(struct mad_header const *header, struct mad_pcm *pcm) {
+    register int nsamples = pcm->length;
+    mad_fixed_t const *left_ch = pcm->samples[0], *right_ch = pcm->samples[1];
+    static char stream[1152*4];
+    if (pcm->channels == 2) {
+        while (nsamples--) {
+            signed int sample;
+            sample = scale(*left_ch++);
+            stream[(pcm->length-nsamples)*4 ] = ((sample >> 0) & 0xff);
+            stream[(pcm->length-nsamples)*4 +1] = ((sample >> 8) & 0xff);
+            sample = scale(*right_ch++);
+            stream[(pcm->length-nsamples)*4+2 ] = ((sample >> 0) & 0xff);
+            stream[(pcm->length-nsamples)*4 +3] = ((sample >> 8) & 0xff);
+        }
+        if (pa_simple_write(device, stream, (size_t)1152*4, &error) < 0) {
+            fprintf(stderr, "pa_simple_write() failed: %s\n", pa_strerror(error));
+            return;
+        }
+    } else {
+        printf("Mono not supported!");
+    }
 }
