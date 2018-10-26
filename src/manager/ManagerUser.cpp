@@ -2,6 +2,16 @@
 
 void ManagerUser::identify(const std::shared_ptr< restbed::Session > session){
   std::cout << "identification" << std::endl;
+  std::cout << "header" << std::endl;
+ // std::cout << session->get_headers(). << std::endl;
+  std::cout << "request" << std::endl;
+  const auto request = session->get_request( );
+  const auto body = request->get_body( );
+  std::string param1 = request->get_path_parameter("param1");
+  std::string param2 = request->get_path_parameter("param2");
+  std::cout << "param1 : " << param1 << " ; param2 : " << param2 << std::endl; 
+  fprintf( stdout, "Complete body content: %.*s\n", static_cast< int >( body.size( ) ), body.data( ) );
+
 }
 
 void ManagerUser::lock(const std::shared_ptr< restbed::Session > session) {

@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
+#include <iostream>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <mad.h>
 #include <pulse/simple.h>
 #include <pulse/error.h>
+#include <linux/membarrier.h>
 
 pa_simple *device = NULL;
 int ret = 1;
@@ -106,18 +109,18 @@ int scale(mad_fixed_t sample) {
 void output(struct mad_header const *header, struct mad_pcm *pcm) {
     register int nsamples = pcm->length;
     mad_fixed_t const *left_ch = pcm->samples[0], *right_ch = pcm->samples[1];
-    static char stream[1152*4];
+    std::vector<char> stream;
     if (pcm->channels == 2) {
         while (nsamples--) {
             signed int sample;
             sample = scale(*left_ch++);
-            stream[(pcm->length-nsamples)*4 ] = ((sample >> 0) & 0xff);
-            stream[(pcm->length-nsamples)*4 +1] = ((sample >> 8) & 0xff);
+            stream.push_back((sample >> 0) & 0xff);
+            stream.push_back((sample >> 8) & 0xff);
             sample = scale(*right_ch++);
-            stream[(pcm->length-nsamples)*4+2 ] = ((sample >> 0) & 0xff);
-            stream[(pcm->length-nsamples)*4 +3] = ((sample >> 8) & 0xff);
+            stream.push_back(((sample >> 0) & 0xff));
+            stream.push_back((sample >> 8) & 0xff);
         }
-        if (pa_simple_write(device, stream, (size_t)1152*4, &error) < 0) {
+        if (pa_simple_write(device, stream.data(), (size_t)pcm->length*4, &error) < 0) {
             fprintf(stderr, "pa_simple_write() failed: %s\n", pa_strerror(error));
             return;
         }
