@@ -3,6 +3,13 @@
 #include <memory>
 #include <restbed>
 #include <iostream>
+#include <fstream>
+#include <rapidjson/filewritestream.h>
+#include <rapidjson/filereadstream.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/document.h>
+#include <string>
+
 
 /**
  * Class which manage all users
@@ -19,5 +26,6 @@ class ManagerUser
     static void login(const std::shared_ptr< restbed::Session > session);
     static void logout(const std::shared_ptr< restbed::Session > session);
     static void set_password(const std::shared_ptr< restbed::Session > session);
+    static int Register(std::string body);
 };
 #endif
