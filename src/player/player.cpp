@@ -1,31 +1,67 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <vector>
-#include <iostream>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
-#include <mad.h>
-#include <alsa/asoundlib.h>
-#include <linux/membarrier.h>
-
-int error;
-snd_pcm_t *playback_handle = NULL;
-snd_pcm_hw_params_t *hw_params = NULL;
-struct mad_stream mad_stream;
-struct mad_frame mad_frame;
-struct mad_synth mad_synth;
-
-void output(struct mad_header const *header, struct mad_pcm *pcm);
-
+#include "player.h"
 int main(int argc, char **argv) {
-    // Parse command-line arguments
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s [filename.mp3]", argv[0]);
-        return 255;
-    }
 
-    // Set up Alsa 16-bit 44.1kHz stereo output
+    initPlayer();
+    initMad();
+    char *filename = argv[1];
+    FILE *fp = fopen(filename, "r");
+    int fd = fileno(fp);
+    struct stat metadata = get_metadata(fd, filename, fp);
+
+    // On laisse le kernel faire le travail d'optimistation de la mémoire.
+    unsigned char *input_stream = static_cast<unsigned char*> (mmap(0, metadata.st_size, PROT_READ, MAP_SHARED, fd, 0));
+
+    mad_stream_buffer(&mad_stream, input_stream, metadata.st_size);
+
+    decode();
+
+    // On libere les ressources
+    fclose(fp);
+    free_mad();
+    if (playback_handle)
+        snd_pcm_close (playback_handle);
+
+    return EXIT_SUCCESS;
+}
+
+/**
+ * La méthode permet de créer un vecteur de sample et de l'envoyer au player alsa.
+ * @param pcm : pointeur de pcm qui content la taille, les channels, les samples...
+ */ 
+void output(struct mad_pcm *pcm) {
+    std::vector<char> stream;
+    for (int i = 0 ; i < pcm->length ; i++) {
+        signed int sample;
+        sample = pcm->samples[0][i];
+        stream.push_back((sample >> 0) & 0xff);
+        stream.push_back((sample >> 8));
+        stream.push_back((sample >> 16));
+        stream.push_back((sample >> 24));
+
+        if (pcm->channels == 2) {
+            sample = pcm->samples[1][i];
+            stream.push_back(((sample >> 0) & 0xff));
+            stream.push_back((sample >> 8));
+            stream.push_back((sample >> 16));
+            stream.push_back((sample >> 24));
+        }
+    }
+    
+    if ((error = snd_pcm_writei (playback_handle, stream.data(), pcm->length)) != pcm->length) {
+        fprintf (stderr, "write to audio interface failed (%s)\n",
+                snd_strerror (error));
+        exit (1);
+    }
+}
+
+/**
+ * Cette fonction permet d'initialiser le player. On l'initialise en 32 bit à 44.1kHz, avec un son en stéréo.
+ * On choisi d'utiliser du 32 bits car le Alsa sur la FPGA ne sait lire que les samples en 32 bits.
+ * En plus, cela fonctionne correctement si un appareil ne peut lire que des samples de 16 bits. L'inverse n'est pas vrai (ralentissement et perte)
+ * 
+ */ 
+void initPlayer() {
+        // Set up Alsa 32-bit 44.1kHz stereo output
     if ((error = snd_pcm_open (&playback_handle, "default", SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
         fprintf (stderr, "cannot open audio device %s (%s)\n", 
                 "default",
@@ -51,7 +87,7 @@ int main(int argc, char **argv) {
         exit (1);
     }
 
-    if ((error = snd_pcm_hw_params_set_format (playback_handle, hw_params, SND_PCM_FORMAT_S16_LE)) < 0) {
+    if ((error = snd_pcm_hw_params_set_format (playback_handle, hw_params, SND_PCM_FORMAT_S32_LE)) < 0) {
         fprintf (stderr, "cannot set sample format (%s)\n",
                 snd_strerror (error));
         exit (1);
@@ -70,47 +106,48 @@ int main(int argc, char **argv) {
         exit (1);
     }
 
-
-    snd_pcm_uframes_t frames = 32;
-	if ((error = snd_pcm_hw_params_set_period_size_near(playback_handle, hw_params, &frames, 0)) < 0) {
-		printf("cannot set period size (%s)\n", snd_strerror(error));
-		return -1;
-    }
-
     if ((error = snd_pcm_hw_params (playback_handle, hw_params)) < 0) {
         fprintf (stderr, "cannot set parameters (%s)\n",
                 snd_strerror (error));
         exit (1);
     }
-    // Initialize MAD library
+}
+
+
+/**
+ * Cette fonction permet d'initialiser les variables de libmad pour le décodage
+ * 
+ */ 
+void initMad() {
     mad_stream_init(&mad_stream);
     mad_synth_init(&mad_synth);
     mad_frame_init(&mad_frame);
+}
 
-    // Filename pointer
-    char *filename = argv[1];
-
-    // File pointer
-    FILE *fp = fopen(filename, "r");
-    int fd = fileno(fp);
-
-    // Fetch file size, etc
+/**
+ * Cette fonction permet d'obtenir les metadatas d'un fichier.
+ * @param fd : numero du fichier
+ * @param filename : nom du fichier
+ * @param fp : le fichier
+ * @return metadata
+ */  
+struct stat get_metadata(int fd, char* filename, FILE* fp) {
     struct stat metadata;
     if (fstat(fd, &metadata) >= 0) {
         printf("File size %d bytes\n", (int)metadata.st_size);
     } else {
         printf("Failed to stat %s\n", filename);
         fclose(fp);
-        return 254;
     }
+    return metadata;
+}
 
-    // Let kernel do all the dirty job of buffering etc, map file contents to memory
-    unsigned char *input_stream = static_cast<unsigned char*> (mmap(0, metadata.st_size, PROT_READ, MAP_SHARED, fd, 0));
-
-    // Copy pointer and length to mad_stream struct
-    mad_stream_buffer(&mad_stream, input_stream, metadata.st_size);
-
-    // Decode frame and synthesize loop
+/**
+ * Fonction permettant de décoder l'audio et de l'envoyer au player progressivement
+ * 
+ */ 
+void decode() {
+        // Decode frame and synthesize loop
     while (1) {
 
         // Decode frame from the stream
@@ -125,59 +162,16 @@ int main(int argc, char **argv) {
         }
         // Synthesize PCM data of frame
         mad_synth_frame(&mad_synth, &mad_frame);
-        output(&mad_frame.header, &mad_synth.pcm);
+        output(&mad_synth.pcm);
     }
+}
 
-    // Close
-    fclose(fp);
-
-    // Free MAD structs
+/**
+ * Fonction permettant de libérer la mémoire affilé aux structures libmad.
+ * 
+ */ 
+void free_mad() {
     mad_synth_finish(&mad_synth);
     mad_frame_finish(&mad_frame);
     mad_stream_finish(&mad_stream);
-
-    // Close PulseAudio output
-    if (playback_handle)
-        snd_pcm_close (playback_handle);
-
-    return EXIT_SUCCESS;
-}
-
-// Some helper functions, to be cleaned up in the future
-int scale(mad_fixed_t sample) {
-     /* round */
-     sample += (1L << (MAD_F_FRACBITS - 16));
-     /* clip */
-     if (sample >= MAD_F_ONE)
-         sample = MAD_F_ONE - 1;
-     else if (sample < -MAD_F_ONE)
-         sample = -MAD_F_ONE;
-     /* quantize */
-     return sample >> (MAD_F_FRACBITS + 1 - 16);
-}
-void output(struct mad_header const *header, struct mad_pcm *pcm) {
-    register int nsamples = pcm->length;
-    mad_fixed_t const *left_ch = pcm->samples[0], *right_ch = pcm->samples[1];
-    std::vector<char> stream;
-    if (pcm->channels == 2) {
-        while (nsamples--) {
-            signed int sample;
-            sample = scale(*left_ch++);
-            stream.push_back((sample >> 0) & 0xff);
-            stream.push_back((sample >> 8) & 0xff);
-            sample = scale(*right_ch++);
-            stream.push_back(((sample >> 0) & 0xff));
-            stream.push_back((sample >> 8) & 0xff);
-        }
-        std::cout << "test : " << stream.size()<< std::endl;
-        
-            if ((error = snd_pcm_writei (playback_handle, stream.data(), pcm->length)) != pcm->length) {
-                fprintf (stderr, "write to audio interface failed (%s)\n",
-                        snd_strerror (error));
-                exit (1);
-            }
-        std::cout << "a ecrit" << std::endl;
-    } else {
-        printf("Mono not supported!");
-    }
 }
