@@ -59,3 +59,51 @@ void remove_last_music() {
   doc.Accept(writer);
   fclose(fp);
 }
+
+std::string removeMusicSelected(const unsigned int idMusic, const unsigned int noMusic) {
+  int pos=0;
+  bool musiqueTrouvee=false;
+  std::string titreMusique="";
+
+  FILE* fp = fopen("metadata/musiques.json", "rb");
+  char readBuffer[65536];
+  char buffer_writer[65536];
+  rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
+  rapidjson::Document d;
+  d.ParseStream(is);
+  fclose(fp);
+
+  rapidjson::Value& musiques = d["musiques"]; 
+
+  for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
+    if(musiques[i]["id"].GetUint()==idMusic && musiques[i]["no"].GetUint()==noMusic) {
+      std::cout<<"ID: " << musiques[i]["id"].GetUint() << " et numéro: " << musiques[i]["no"].GetUint() << " trouvés." <<std::endl;
+      titreMusique=musiques[i]["titre"].GetString();
+      pos=(int)i;
+      musiqueTrouvee=true;
+    }
+  }
+
+  if(musiqueTrouvee) {
+    fp = fopen("metadata/musiques.json", "wb");
+    musiques.Erase(musiques.Begin()+ pos--);
+    rapidjson::FileWriteStream os(fp, buffer_writer, sizeof(buffer_writer));
+    rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
+    d.Accept(writer);
+    fclose(fp);
+    std::cout<<"La musique dont l'ID est: " << idMusic << " et le numéro: " << noMusic << " est supprimée."<<std::endl;
+  }
+
+  return titreMusique;
+}
+
+void removeMP3Selected(const std::string titre) {
+  int response = 0;
+  std::string path= ("metadata/musique/" + titre + ".mp3");
+  response= remove(path.c_str());
+  if(response==0)
+    std::cout<<"Le fichier "<< titre << ".mp3 "<< "est supprimé."<<std::endl;
+  else
+    std::cout<<"Fichier introuvable"<<std::endl;
+}
+
