@@ -1,5 +1,5 @@
 INCLUDE = -Iinclude/
-LIBRARIES = -Llib/ -lrestbed -lmpg123 -lao -lpthread -lpulse -lpulse-simple -lmad
+LIBRARIES = -Llib/ -lrestbed -lmpg123 -lao -lpthread -lpulse -lpulse-simple -lmad -lasound
 
 CXX=g++  -Wno-unused-result -std=c++11 -fuse-ld=bfd
 RM=rm -f

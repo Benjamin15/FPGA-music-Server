@@ -6,13 +6,12 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <mad.h>
-#include <pulse/simple.h>
-#include <pulse/error.h>
+#include <alsa/asoundlib.h>
 #include <linux/membarrier.h>
 
-pa_simple *device = NULL;
-int ret = 1;
 int error;
+snd_pcm_t *playback_handle = NULL;
+snd_pcm_hw_params_t *hw_params = NULL;
 struct mad_stream mad_stream;
 struct mad_frame mad_frame;
 struct mad_synth mad_synth;
@@ -26,13 +25,63 @@ int main(int argc, char **argv) {
         return 255;
     }
 
-    // Set up PulseAudio 16-bit 44.1kHz stereo output
-    static const pa_sample_spec ss = { .format = PA_SAMPLE_S16LE, .rate = 44100, .channels = 2 };
-    if (!(device = pa_simple_new(NULL, "MP3 player", PA_STREAM_PLAYBACK, NULL, "playback", &ss, NULL, NULL, &error))) {
-        printf("pa_simple_new() failed\n");
-        return 255;
+    // Set up Alsa 16-bit 44.1kHz stereo output
+    if ((error = snd_pcm_open (&playback_handle, "default", SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+        fprintf (stderr, "cannot open audio device %s (%s)\n", 
+                "default",
+                snd_strerror (error));
+        exit (1);
+    }
+		   
+    if ((error = snd_pcm_hw_params_malloc (&hw_params)) < 0) {
+        fprintf (stderr, "cannot allocate hardware parameter structure (%s)\n",
+                snd_strerror (error));
+        exit (1);
+    }
+                
+    if ((error = snd_pcm_hw_params_any (playback_handle, hw_params)) < 0) {
+        fprintf (stderr, "cannot initialize hardware parameter structure (%s)\n",
+                snd_strerror (error));
+        exit (1);
     }
 
+    if ((error = snd_pcm_hw_params_set_access (playback_handle, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0) {
+        fprintf (stderr, "cannot set access type (%s)\n",
+                snd_strerror (error));
+        exit (1);
+    }
+
+    if ((error = snd_pcm_hw_params_set_format (playback_handle, hw_params, SND_PCM_FORMAT_S16_LE)) < 0) {
+        fprintf (stderr, "cannot set sample format (%s)\n",
+                snd_strerror (error));
+        exit (1);
+    }
+
+    unsigned int rate = 44100;
+    if ((error = snd_pcm_hw_params_set_rate_near (playback_handle, hw_params, &rate, 0)) < 0) {
+        fprintf (stderr, "cannot set sample rate (%s)\n",
+                snd_strerror (error));
+        exit (1);
+    }
+
+    if ((error = snd_pcm_hw_params_set_channels (playback_handle, hw_params, 2)) < 0) {
+        fprintf (stderr, "cannot set channel count (%s)\n",
+                snd_strerror (error));
+        exit (1);
+    }
+
+
+    snd_pcm_uframes_t frames = 32;
+	if ((error = snd_pcm_hw_params_set_period_size_near(playback_handle, hw_params, &frames, 0)) < 0) {
+		printf("cannot set period size (%s)\n", snd_strerror(error));
+		return -1;
+    }
+
+    if ((error = snd_pcm_hw_params (playback_handle, hw_params)) < 0) {
+        fprintf (stderr, "cannot set parameters (%s)\n",
+                snd_strerror (error));
+        exit (1);
+    }
     // Initialize MAD library
     mad_stream_init(&mad_stream);
     mad_synth_init(&mad_synth);
@@ -88,8 +137,8 @@ int main(int argc, char **argv) {
     mad_stream_finish(&mad_stream);
 
     // Close PulseAudio output
-    if (device)
-        pa_simple_free(device);
+    if (playback_handle)
+        snd_pcm_close (playback_handle);
 
     return EXIT_SUCCESS;
 }
@@ -120,10 +169,14 @@ void output(struct mad_header const *header, struct mad_pcm *pcm) {
             stream.push_back(((sample >> 0) & 0xff));
             stream.push_back((sample >> 8) & 0xff);
         }
-        if (pa_simple_write(device, stream.data(), (size_t)pcm->length*4, &error) < 0) {
-            fprintf(stderr, "pa_simple_write() failed: %s\n", pa_strerror(error));
-            return;
-        }
+        std::cout << "test : " << stream.size()<< std::endl;
+        
+            if ((error = snd_pcm_writei (playback_handle, stream.data(), pcm->length)) != pcm->length) {
+                fprintf (stderr, "write to audio interface failed (%s)\n",
+                        snd_strerror (error));
+                exit (1);
+            }
+        std::cout << "a ecrit" << std::endl;
     } else {
         printf("Mono not supported!");
     }
