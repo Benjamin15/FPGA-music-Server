@@ -3,12 +3,16 @@
 #include <memory>
 #include <restbed>
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include  <stdio.h>
 #include <unistd.h>
 #include <sys/syscall.h>
 #include "rapidjson/filereadstream.h"
 #include "rapidjson/document.h"
+#include <taglib/fileref.h>
+#include <taglib/tag.h>
+#include <taglib/tpropertymap.h>
 
 #include "../model/Music.h"
 #include "../utils/json.h"
@@ -37,6 +41,8 @@
 
     static void create_list_music();
     static void launch_music();
+    static Music get_info(std::string path);
+
     static std::vector<Music> musics;
   };
 #endif
