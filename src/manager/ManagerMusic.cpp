@@ -56,12 +56,12 @@ void ManagerMusic::disabledMute(const std::shared_ptr< restbed::Session > sessio
 void ManagerMusic::create_list_music() {
   int id = gettid();
   std::cout << "id : " << id << std::endl;
-    FILE* fp = fopen("metadata/musiques.json", "rb"); // non-Windows use "r"
-    char readBuffer[65536];
-    rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
-    rapidjson::Document d;
-    d.ParseStream(is);
-    fclose(fp);
+  FILE* fp = fopen("metadata/musiques.json", "rb"); // non-Windows use "r"
+  char readBuffer[65536];
+  rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
+  rapidjson::Document d;
+  d.ParseStream(is);
+  fclose(fp);
   const rapidjson::Value& musiques = d["musiques"];
   for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
     auto resource = std::make_shared<restbed::Resource>();
