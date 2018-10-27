@@ -15,6 +15,17 @@ rapidjson::Document getJsonFile(const char* path) {
   return d;
 }
 
+void registerIds(std::string body){
+  FILE* fp = fopen("metadata/idLogs.json", "wb");
+  char buffer_writer[65536];
+  rapidjson::Document doc;
+  doc.Parse<0>(body.c_str()).HasParseError();
+  rapidjson::FileWriteStream os(fp, buffer_writer, sizeof(buffer_writer));
+  rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
+  doc.Accept(writer);
+  fclose(fp);
+}
+
 std::string getListForUser(std::vector<Music> musics) {
   std::stringstream result;
   const char* separator = ", \n";
