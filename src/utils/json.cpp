@@ -15,7 +15,7 @@ rapidjson::Document getJsonFile(const char* path) {
   return d;
 }
 
-void registerIds(std::string parameter){
+std::string registerIds(std::string parameter){
   FILE* fp = fopen("metadata/idLogs.json", "rb");
   char buffer_reader[65536];
   rapidjson::FileReadStream is(fp, buffer_reader, sizeof(buffer_reader));
@@ -27,10 +27,12 @@ void registerIds(std::string parameter){
   rapidjson::Value& value = readDoc["UsersLogs"];
   rapidjson::Value& mac = writeDoc["MAC"];
   bool macNotRegistered = true;
+  std::string token = "";
   for (rapidjson::SizeType i = 0; i < value.Size(); i++) {
     std::string temp = value[i]["MAC"].GetString();
     if(!temp.compare(mac.GetString())) {
       macNotRegistered = false;
+      token = std::to_string(value[i]["Token"].GetUint());
     }
   }
   if(macNotRegistered){
@@ -41,7 +43,9 @@ void registerIds(std::string parameter){
     rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
     readDoc.Accept(writer);
     fclose(fp);
+    return token;
   }
+  return token;
 }
 
 std::string getListForUser(std::vector<Music> musics) {

@@ -20,10 +20,15 @@ void ManagerUser::identify(const std::shared_ptr< restbed::Session > session){
      rapidjson::StringBuffer buffer;
      rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
      document.Accept(writer);
-     registerIds(buffer.GetString());
-     fprintf( stdout, "%.*s\n", ( int ) body.size( ), body.data( ));
-     session->close(restbed::OK,std::to_string(token),{{"Content-Length","18"},
-     {"Connection","close"}});
+     std::string compare = registerIds(buffer.GetString());
+     std::cout << "valeur de compare : "<< compare << std::endl;
+     if(!compare.compare("")){
+       session->close(restbed::OK,std::to_string(token),{{"Content-Length","18"},
+       {"Connection","close"}});
+     }else {
+      session->close(restbed::OK,compare,{{"Content-Length","18"},
+      {"Connection","close"}});
+     }
   });
 }
 

@@ -13,6 +13,6 @@ rapidjson::Document getJsonFile(const char* path);
 std::string getListForUser(std::vector<Music> musics);
 std::string getListForAdmin(std::vector<Music> musics);
 void remove_last_music();
-void registerIds(std::string parameter);
+std::string registerIds(std::string parameter);
 
 #endif
