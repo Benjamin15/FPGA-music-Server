@@ -21,6 +21,8 @@ POST
 
 curl -d "id=5" -X POST 'http://132.207.89.35:80/usager/chanson/3'
 
+curl -d "id=59" -X POST 'http://10.0.2.15:8080/usager/chanson/59?music=%5BB%401439f551'
+
 curl -d "une=5&autre=8" -X POST 'http://132.207.89.35:80/superviseur/inversion'
 
 curl -d "pc=12" -X POST 'http://132.207.89.35:80/superviseur/volume/augmenter/12'

@@ -12,6 +12,15 @@ void ManagerMusic::get_usager_files(const std::shared_ptr< restbed::Session > se
 
 void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session) {
   std::cout << "Insert musique" << std::endl;
+  const auto request = session->get_request();
+  size_t content_length = request->get_body().size();
+  session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
+  const restbed::Bytes& body){
+     const std::string parameter = session->get_request()->get_query_parameter("music","Error getting Query parameter");
+     std::cout << parameter << std::endl;
+     session->close(restbed::OK,"Music well received",{{"Content-Length","180"},
+     {"Connection","close"}});
+  });
 }
 
 void ManagerMusic::delete_usager__song(const std::shared_ptr< restbed::Session > session) {
