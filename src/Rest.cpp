@@ -7,6 +7,13 @@ void ready_handler( restbed::Service&  data)
     std::cout << uri->to_string() <<  std::endl;
 } 
 
+void failed_filter_validation_handler( const std::shared_ptr< restbed::Session > session )
+{
+    std::cout << "erreur " << std::endl;
+    session->close( 400 );
+}
+
+
 /**
  * Map each functions
  * We need that because c++ doesn't implement reflection. So, it's the good way to do a pseudo reflection
@@ -88,7 +95,8 @@ void Rest::createRoute(){
         const std::string url = itr++->value.GetString();
         const std::string handler = itr++->value.GetString();
         resource->set_path(url);
-        resource->set_method_handler( type, functions[handler] );  
+        resource->set_failed_filter_validation_handler( failed_filter_validation_handler );
+        resource->set_method_handler( type, {{ "Accept", "application/json" }, { "Content-Type", "application/json" } },functions[handler] );  
         resources.push_back(resource);
     }
     for (auto resource : resources){

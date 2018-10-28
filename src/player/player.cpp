@@ -1,57 +1,177 @@
-#include <ao/ao.h>
-#include <mpg123.h>
-#include <iostream>
-#define BITS 8
+#include "player.h"
+int main(int argc, char **argv) {
 
-int main(int argc, char *argv[])
-{
-    if(argc < 2)
-        exit(0);
-    mpg123_handle *handle;
-    unsigned char *buffer;
-    size_t buffer_size;
-    size_t done;
-    int err;
-    char* musicPath = argv[1];
-    int driver;
-    ao_device *dev;
+    initPlayer();
+    initMad();
+    char *filename = argv[1];
+    FILE *fp = fopen(filename, "r");
+    int fd = fileno(fp);
+    struct stat metadata = get_metadata(fd, filename, fp);
 
-    ao_sample_format format;
-    int channels, encoding;
-    long rate;
+    // On laisse le kernel faire le travail d'optimistation de la mémoire.
+    unsigned char *input_stream = static_cast<unsigned char*> (mmap(0, metadata.st_size, PROT_READ, MAP_SHARED, fd, 0));
 
-    /* initializations */
-    ao_initialize();
-    driver = ao_default_driver_id();
-    mpg123_init();
-    handle = mpg123_new(NULL, &err);
-    buffer_size = mpg123_outblock(handle);
-    buffer = (unsigned char*) malloc(buffer_size * sizeof(unsigned char));
+    mad_stream_buffer(&mad_stream, input_stream, metadata.st_size);
 
-    /* open the file and get the decoding format */
-    mpg123_open(handle, musicPath);
-    mpg123_getformat(handle, &rate, &channels, &encoding);
+    decode();
 
-    /* set the output format and open the output device */
-    format.bits = mpg123_encsize(encoding) * BITS;
-    format.rate = rate;
-    format.channels = channels;
-    format.byte_format = AO_FMT_NATIVE;
-    format.matrix = 0;
-    dev = ao_open_live(driver, &format, NULL);
+    // On libere les ressources
+    fclose(fp);
+    free_mad();
+    if (playback_handle)
+        snd_pcm_close (playback_handle);
 
-    /* decode and play */
-    while (mpg123_read(handle, buffer, buffer_size, &done) == MPG123_OK) {
-        ao_play(dev, (char*)buffer, done);
+    return EXIT_SUCCESS;
+}
+
+/**
+ * La méthode permet de créer un vecteur de sample et de l'envoyer au player alsa.
+ * @param pcm : pointeur de pcm qui content la taille, les channels, les samples...
+ */ 
+void output(struct mad_pcm *pcm) {
+    std::vector<char> stream;
+    for (int i = 0 ; i < pcm->length ; i++) {
+        signed int sample;
+        sample = pcm->samples[0][i];
+        stream.push_back((sample >> 0) & 0xff);
+        stream.push_back((sample >> 8));
+        stream.push_back((sample >> 16));
+        stream.push_back((sample >> 24));
+
+        if (pcm->channels == 2) {
+            sample = pcm->samples[1][i];
+            stream.push_back(((sample >> 0) & 0xff));
+            stream.push_back((sample >> 8));
+            stream.push_back((sample >> 16));
+            stream.push_back((sample >> 24));
+        }
+    }
+    
+    if ((error = snd_pcm_writei (playback_handle, stream.data(), pcm->length)) != pcm->length) {
+        fprintf (stderr, "write to audio interface failed (%s)\n",
+                snd_strerror (error));
+        exit (1);
+    }
+}
+
+/**
+ * Cette fonction permet d'initialiser le player. On l'initialise en 32 bit à 44.1kHz, avec un son en stéréo.
+ * On choisi d'utiliser du 32 bits car le Alsa sur la FPGA ne sait lire que les samples en 32 bits.
+ * En plus, cela fonctionne correctement si un appareil ne peut lire que des samples de 16 bits. L'inverse n'est pas vrai (ralentissement et perte)
+ * 
+ */ 
+void initPlayer() {
+        // Set up Alsa 32-bit 44.1kHz stereo output
+    if ((error = snd_pcm_open (&playback_handle, "default", SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+        fprintf (stderr, "cannot open audio device %s (%s)\n", 
+                "default",
+                snd_strerror (error));
+        exit (1);
+    }
+		   
+    if ((error = snd_pcm_hw_params_malloc (&hw_params)) < 0) {
+        fprintf (stderr, "cannot allocate hardware parameter structure (%s)\n",
+                snd_strerror (error));
+        exit (1);
+    }
+                
+    if ((error = snd_pcm_hw_params_any (playback_handle, hw_params)) < 0) {
+        fprintf (stderr, "cannot initialize hardware parameter structure (%s)\n",
+                snd_strerror (error));
+        exit (1);
     }
 
-    /* clean up */
-    free(buffer);
-    ao_close(dev);
-    mpg123_close(handle);
-    mpg123_delete(handle);
-    mpg123_exit();
-    ao_shutdown();
+    if ((error = snd_pcm_hw_params_set_access (playback_handle, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0) {
+        fprintf (stderr, "cannot set access type (%s)\n",
+                snd_strerror (error));
+        exit (1);
+    }
 
-    return 0;
+    if ((error = snd_pcm_hw_params_set_format (playback_handle, hw_params, SND_PCM_FORMAT_S32_LE)) < 0) {
+        fprintf (stderr, "cannot set sample format (%s)\n",
+                snd_strerror (error));
+        exit (1);
+    }
+
+    unsigned int rate = 44100;
+    if ((error = snd_pcm_hw_params_set_rate_near (playback_handle, hw_params, &rate, 0)) < 0) {
+        fprintf (stderr, "cannot set sample rate (%s)\n",
+                snd_strerror (error));
+        exit (1);
+    }
+
+    if ((error = snd_pcm_hw_params_set_channels (playback_handle, hw_params, 2)) < 0) {
+        fprintf (stderr, "cannot set channel count (%s)\n",
+                snd_strerror (error));
+        exit (1);
+    }
+
+    if ((error = snd_pcm_hw_params (playback_handle, hw_params)) < 0) {
+        fprintf (stderr, "cannot set parameters (%s)\n",
+                snd_strerror (error));
+        exit (1);
+    }
+}
+
+
+/**
+ * Cette fonction permet d'initialiser les variables de libmad pour le décodage
+ * 
+ */ 
+void initMad() {
+    mad_stream_init(&mad_stream);
+    mad_synth_init(&mad_synth);
+    mad_frame_init(&mad_frame);
+}
+
+/**
+ * Cette fonction permet d'obtenir les metadatas d'un fichier.
+ * @param fd : numero du fichier
+ * @param filename : nom du fichier
+ * @param fp : le fichier
+ * @return metadata
+ */  
+struct stat get_metadata(int fd, char* filename, FILE* fp) {
+    struct stat metadata;
+    if (fstat(fd, &metadata) >= 0) {
+        printf("File size %d bytes\n", (int)metadata.st_size);
+    } else {
+        printf("Failed to stat %s\n", filename);
+        fclose(fp);
+    }
+    return metadata;
+}
+
+/**
+ * Fonction permettant de décoder l'audio et de l'envoyer au player progressivement
+ * 
+ */ 
+void decode() {
+        // Decode frame and synthesize loop
+    while (1) {
+
+        // Decode frame from the stream
+        if (mad_frame_decode(&mad_frame, &mad_stream)) {
+            if (MAD_RECOVERABLE(mad_stream.error)) {
+                continue;
+            } else if (mad_stream.error == MAD_ERROR_BUFLEN) {
+                continue;
+            } else {
+                break;
+            }
+        }
+        // Synthesize PCM data of frame
+        mad_synth_frame(&mad_synth, &mad_frame);
+        output(&mad_synth.pcm);
+    }
+}
+
+/**
+ * Fonction permettant de libérer la mémoire affilé aux structures libmad.
+ * 
+ */ 
+void free_mad() {
+    mad_synth_finish(&mad_synth);
+    mad_frame_finish(&mad_frame);
+    mad_stream_finish(&mad_stream);
 }
