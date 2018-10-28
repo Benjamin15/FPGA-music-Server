@@ -53,6 +53,7 @@
     "list": "cpp",
     "iomanip": "cpp",
     "numeric": "cpp",
-    "typeindex": "cpp"
+    "typeindex": "cpp",
+    "variant": "cpp"
   }
 }
