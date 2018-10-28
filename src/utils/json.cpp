@@ -98,10 +98,8 @@ std::string removeMusicSelected(const unsigned int idMusic, const unsigned int n
 }
 
 void removeMP3Selected(const std::string titre) {
-  int response = 0;
   std::string path= ("metadata/musique/" + titre + ".mp3");
-  response= remove(path.c_str());
-  if(response==0)
+  if(remove(path.c_str()) == 0)
     std::cout<<"Le fichier "<< titre << ".mp3 "<< "est supprimé."<<std::endl;
   else
     std::cout<<"Fichier introuvable"<<std::endl;
