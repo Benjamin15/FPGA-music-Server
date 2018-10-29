@@ -4,7 +4,7 @@ void ready_handler( restbed::Service&  data)
 {
     auto uri = data.get_https_uri();
     fprintf( stderr, "Service PID is '%i'.\n", getpid( ) );
-    std::cout << uri->to_string() <<  std::endl;
+    //std::cout << uri->to_string() <<  std::endl;
 } 
 
 void failed_filter_validation_handler( const std::shared_ptr< restbed::Session > session )
@@ -68,14 +68,15 @@ void Rest::initSettings(std::string address, uint16_t port) {
     settings_->set_port( port );
     settings_->set_default_header( "Connection", "close" );
     settings_->set_bind_address(address);
-    initSSLSettings();
+    //initSSLSettings();
 }
 
 void Rest::initSSLSettings() {
+    /* ssl_settings_->set_http_disabled( true );
     ssl_settings_->set_private_key( restbed::Uri( "file://certificates/server.key" ) );
     ssl_settings_->set_certificate( restbed::Uri( "file://certificates/server.crt" ) );
     ssl_settings_->set_temporary_diffie_hellman( restbed::Uri( "file://certificates/dh768.pem" ) );
-    settings_->set_ssl_settings( ssl_settings_ );
+    settings_->set_ssl_settings( ssl_settings_ );*/
 }
 
 
@@ -109,8 +110,8 @@ void Rest::createRoute(){
  * 
  */ 
 void Rest::run() {
-    //ManagerMusic::create_list_music();
-    //ManagerMusic::launch_music();
+    ManagerMusic::create_list_music();
+    ManagerMusic::launch_music();
     std::cout << settings_->get_bind_address() << std::endl;
     service_->start( settings_ );
 }
