@@ -67,7 +67,7 @@ void Rest::initService() {
 void Rest::initSettings(std::string address, uint16_t port) {
     settings_->set_port( port );
     settings_->set_default_header( "Connection", "close" );
-    //settings_->set_bind_address(address);
+    settings_->set_bind_address(address);
     initSSLSettings();
 }
 
@@ -109,16 +109,17 @@ void Rest::createRoute(){
  * 
  */ 
 void Rest::run() {
-    ManagerMusic::create_list_music();
-    ManagerMusic::launch_music();
+    //ManagerMusic::create_list_music();
+    //ManagerMusic::launch_music();
+    std::cout << settings_->get_bind_address() << std::endl;
     service_->start( settings_ );
 }
 
 int main( const int argc , const char* argv[] )
 {
     Rest rest;
-    std::string address = argc > 1 ? argv[1] : "132.207.89.35";
-    uint16_t port = argc > 2 ? std::stoi(argv[2]) : 80;
+    std::string address = argc > 1 ? argv[1] : "192.168.2.48";
+    uint16_t port = argc > 2 ? std::stoi(argv[2]) : 8080;
     std::cout << "launch init settings " << std::endl;
     rest.initSettings(address, port);
     std::cout << "init service" << std::endl;
