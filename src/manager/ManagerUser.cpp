@@ -7,7 +7,6 @@ void ManagerUser::identify(const std::shared_ptr< restbed::Session > session){
   session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
   const restbed::Bytes& body){
      const std::string parameter = session->get_request()->get_query_parameter("name","Error getting Query parameter");
-     std::cout << body.data() << std::endl;
      rapidjson::Document document;
      document.Parse(parameter.c_str());
      srand(time(NULL));
@@ -21,12 +20,11 @@ void ManagerUser::identify(const std::shared_ptr< restbed::Session > session){
      rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
      document.Accept(writer);
      std::string compare = registerIds(buffer.GetString());
-     std::cout << "valeur de compare : "<< compare << std::endl;
      if(!compare.compare("")){
        session->close(restbed::OK,std::to_string(token),{{"Content-Length","18"},
        {"Connection","close"}});
      }else {
-      session->close(restbed::OK,compare,{{"Content-Length","18"},
+      session->close(restbed::OK,compare,{{"Content-Length",std::to_string(compare.size())},
       {"Connection","close"}});
      }
   });

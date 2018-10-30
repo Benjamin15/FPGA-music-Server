@@ -13,12 +13,21 @@ void ManagerMusic::get_usager_files(const std::shared_ptr< restbed::Session > se
 void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session) {
   std::cout << "Insert musique" << std::endl;
   const auto request = session->get_request();
-  size_t content_length = request->get_body().size();
+  size_t content_length = std::stoi(request->get_header("Content-Length"));
   session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
   const restbed::Bytes& body){
-     const std::string parameter = session->get_request()->get_query_parameter("music","Error getting Query parameter");
-     std::cout << parameter << std::endl;
-     session->close(restbed::OK,"Music well received",{{"Content-Length","180"},
+     const std::string pathParameter = session->get_request()->get_path_parameter( "id" );
+     std::cout<<pathParameter<<std::endl;
+     std::stringstream ss;
+     for(auto byte: body){
+       ss<< byte;
+     }
+     std::string mp3EncodedMusic = ss.str();
+     std::cout<< "Avant decodage :" << mp3EncodedMusic <<std::endl;
+     std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
+     std::cout<< "Aprés decodage :" << mp3DecodedMusic <<std::endl;
+     base64_toBinary(mp3DecodedMusic);
+     session->close(restbed::OK,mp3DecodedMusic,{{"Content-Length",std::to_string(mp3DecodedMusic.size())},
      {"Connection","close"}});
   });
 }
