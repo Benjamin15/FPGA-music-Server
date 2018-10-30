@@ -42,11 +42,14 @@ std::string base64_decode(std::string input) {
   }
 }
 
-void base64_toBinary(std::string base64music){
+void base64_toBinary(std::string base64music,std::string title){
+    std::string path = "metadata/musique/" + title ;
+    FILE* fp = fopen(path.c_str(),"w+");
+    fclose(fp);
     char * buf;
     int size = base64music.size();
     std::ofstream output;
-    output.open("Ariana-Grande.mp3", std::ios::out | std::ios::binary);
+    output.open(path, std::ios::out | std::ios::binary);
     if(!output){
         std::cout<<"Can't open file"<<std::endl;
         exit(1);
