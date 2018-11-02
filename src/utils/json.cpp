@@ -15,6 +15,15 @@ rapidjson::Document getJsonFile(const char* path) {
   return d;
 }
 
+void writeJsonFile(const char* path, const rapidjson::Document& d) {
+  FILE* fp = fopen(path, "wb");
+  char buffer_writer[65536];
+  rapidjson::FileWriteStream os(fp, buffer_writer, sizeof(buffer_writer));
+  rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
+  d.Accept(writer);
+  fclose(fp);
+}
+
 std::string getListForUser(std::vector<Music> musics) {
   std::stringstream result;
   const char* separator = ", \n";
@@ -104,4 +113,5 @@ void removeMP3Selected(const std::string titre) {
   else
     std::cout<<"Fichier introuvable"<<std::endl;
 }
+
 
