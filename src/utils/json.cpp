@@ -62,6 +62,27 @@ std::string getListForUser(std::vector<Music> musics) {
   return result.str(); 
 }
 
+void registerMusic(Music music){
+  std::string musicJson = music.toString();
+  FILE* fp = fopen("metadata/musiques.json", "rb");
+  char buffer_reader[65536];
+  rapidjson::FileReadStream is(fp, buffer_reader, sizeof(buffer_reader));
+  rapidjson::Document readDoc;
+  readDoc.ParseStream(is);
+  fclose(fp);
+  rapidjson::Document writeDoc;
+  writeDoc.Parse<0>(musicJson.c_str()).HasParseError();
+  rapidjson::Value& value = readDoc["musiques"];
+  std::cout<<musicJson<<std::endl;
+  value.PushBack(writeDoc.GetObject(), readDoc.GetAllocator());
+  fp = fopen("metadata/musiques.json","w+");
+  char buffer_writer[65536];
+  rapidjson::FileWriteStream os(fp, buffer_writer, sizeof(buffer_writer));
+  rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
+  readDoc.Accept(writer);
+  fclose(fp);
+}
+
 std::string getListForAdmin(std::vector<Music> musics) {
   std::stringstream result;
   const char* separator = ", \n";

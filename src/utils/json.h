@@ -14,5 +14,6 @@ std::string getListForUser(std::vector<Music> musics);
 std::string getListForAdmin(std::vector<Music> musics);
 void remove_last_music();
 std::string registerIds(std::string parameter);
+void registerMusic(Music music);
 
 #endif

@@ -102,7 +102,7 @@ void Rest::createRoute(){
  */ 
 void Rest::run() {
     ManagerMusic::create_list_music();
-    ManagerMusic::launch_music();
+    //ManagerMusic::launch_music();
     service_->start( settings_ );
 }
 

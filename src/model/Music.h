@@ -29,6 +29,7 @@ class Music
 }
   std::string toStringForUser();
   std::string toString();
+  void setMusicUser(User user);
   
   unsigned int id_;
   std::string title_;
