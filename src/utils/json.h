@@ -3,6 +3,8 @@
 
 #include <string>
 #include <vector>
+#include <stdio.h>
+#include <stdlib.h>
 #include "rapidjson/filereadstream.h"
 #include "rapidjson/filewritestream.h"
 #include <rapidjson/writer.h>
@@ -16,5 +18,6 @@ void remove_last_music();
 std::string registerIds(std::string parameter);
 void registerMusic(Music music);
 std::string createIdentificationResponseJson(std::string token, std::string message);
-
+std::string removeMusicSelected(const unsigned int idMusic, const unsigned int noMusic);
+void removeMP3Selected(const std::string titre);
 #endif

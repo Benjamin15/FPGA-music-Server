@@ -39,6 +39,12 @@ void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session
 
 void ManagerMusic::delete_usager__song(const std::shared_ptr< restbed::Session > session) {
   std::cout << "supprimer musique utilisateur" << std::endl;
+  const unsigned int idMusic=atoi((session->get_request()->get_path_parameter("id")).c_str());
+  const unsigned int noMusic=atoi((session->get_request()->get_path_parameter("no")).c_str());
+  std::cout<<idMusic<<std::endl;
+  std::cout<<noMusic<<std::endl;
+  std::string musicToRemove=removeMusicSelected(idMusic, noMusic);
+  removeMP3Selected(musicToRemove);
 }
 
 void ManagerMusic::get_superviser_files(const std::shared_ptr< restbed::Session > session) {

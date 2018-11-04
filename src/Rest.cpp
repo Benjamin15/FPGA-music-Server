@@ -4,8 +4,15 @@ void ready_handler( restbed::Service&  data)
 {
     auto uri = data.get_https_uri();
     fprintf( stderr, "Service PID is '%i'.\n", getpid( ) );
-    std::cout << uri->to_string() <<  std::endl;
+    //std::cout << uri->to_string() <<  std::endl;
 } 
+
+void failed_filter_validation_handler( const std::shared_ptr< restbed::Session > session )
+{
+    std::cout << "erreur " << std::endl;
+    session->close( 400 );
+}
+
 
 /**
  * Map each functions
@@ -60,15 +67,16 @@ void Rest::initService() {
 void Rest::initSettings(std::string address, uint16_t port) {
     settings_->set_port( port );
     settings_->set_default_header( "Connection", "close" );
-    //settings_->set_bind_address(address);
-    initSSLSettings();
+    settings_->set_bind_address(address);
+    //initSSLSettings();
 }
 
 void Rest::initSSLSettings() {
+    /* ssl_settings_->set_http_disabled( true );
     ssl_settings_->set_private_key( restbed::Uri( "file://certificates/server.key" ) );
     ssl_settings_->set_certificate( restbed::Uri( "file://certificates/server.crt" ) );
     ssl_settings_->set_temporary_diffie_hellman( restbed::Uri( "file://certificates/dh768.pem" ) );
-    settings_->set_ssl_settings( ssl_settings_ );
+    settings_->set_ssl_settings( ssl_settings_ );*/
 }
 
 
@@ -88,7 +96,8 @@ void Rest::createRoute(){
         const std::string url = itr++->value.GetString();
         const std::string handler = itr++->value.GetString();
         resource->set_path(url);
-        resource->set_method_handler( type, functions[handler] );  
+        resource->set_failed_filter_validation_handler( failed_filter_validation_handler );
+        resource->set_method_handler( type, {{ "Accept", "application/json" }, { "Content-Type", "application/json" } },functions[handler] );  
         resources.push_back(resource);
     }
     for (auto resource : resources){
@@ -109,8 +118,8 @@ void Rest::run() {
 int main( const int argc , const char* argv[] )
 {
     Rest rest;
-    std::string address = argc > 1 ? argv[1] : "132.207.89.35";
-    uint16_t port = argc > 2 ? std::stoi(argv[2]) : 80;
+    std::string address = argc > 1 ? argv[1] : "192.168.2.48";
+    uint16_t port = argc > 2 ? std::stoi(argv[2]) : 8080;
     std::cout << "launch init settings " << std::endl;
     rest.initSettings(address, port);
     std::cout << "init service" << std::endl;
