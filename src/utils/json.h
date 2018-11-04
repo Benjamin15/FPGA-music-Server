@@ -15,5 +15,6 @@ std::string getListForAdmin(std::vector<Music> musics);
 void remove_last_music();
 std::string registerIds(std::string parameter);
 void registerMusic(Music music);
+std::string createIdentificationResponseJson(std::string token, std::string message);
 
 #endif

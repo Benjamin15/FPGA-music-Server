@@ -27,7 +27,7 @@ void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session
      std::string mp3EncodedMusic = ss.str();
      std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
      base64_toBinary(mp3DecodedMusic,musicTitle);
-     std::string path = "metadata/musique/" + musicTitle ;
+     std::string path = "metadata/musique/" + musicTitle;
      Music music = ManagerMusic::get_info(path);
      User user = ManagerMusic::get_user_for_sent_music(std::stoi(id));
      music.setMusicUser(user);

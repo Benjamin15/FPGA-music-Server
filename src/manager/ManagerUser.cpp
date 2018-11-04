@@ -20,11 +20,14 @@ void ManagerUser::identify(const std::shared_ptr< restbed::Session > session){
      rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
      document.Accept(writer);
      std::string compare = registerIds(buffer.GetString());
+     std::string response;
      if(!compare.compare("")){
-       session->close(restbed::OK,std::to_string(token),{{"Content-Length","18"},
+       response = createIdentificationResponseJson(std::to_string(token), "Bienvenue sur l'application Café-Bistro Elevation !");
+       session->close(restbed::OK,response,{{"Content-Length",std::to_string(response.size())},
        {"Connection","close"}});
      }else {
-      session->close(restbed::OK,compare,{{"Content-Length",std::to_string(compare.size())},
+      response = createIdentificationResponseJson(compare, "Bienvenue sur l'application Café-Bistro Elevation !");
+      session->close(restbed::OK,response,{{"Content-Length",std::to_string(response.size())},
       {"Connection","close"}});
      }
   });

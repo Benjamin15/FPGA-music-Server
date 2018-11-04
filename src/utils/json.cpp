@@ -48,6 +48,14 @@ std::string registerIds(std::string parameter){
   return token;
 }
 
+std::string createIdentificationResponseJson(std::string token, std::string message){
+  std::stringstream result;
+  result << "{ "
+    << "\"identificateur\": \"" << token << "\", "
+    << "\"message\": \"" << message << " }";
+  return result.str();
+}
+
 std::string getListForUser(std::vector<Music> musics) {
   std::stringstream result;
   const char* separator = ", \n";

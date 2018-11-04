@@ -4,7 +4,6 @@ curl -w'\n' -v -GET 'http://132.207.89.35:80/usager/identification'
 
 curl -w'\n' -v -GET 'http://10.0.2.15:8080/usager/identification?name=%7B%22nom%22%3A%22segason%22%2C%22MAC%22%3A%2252%3A54%3A00%3A12%3A34%3A56%22%2C%22ip%22%3A%2210.0.2.15%22%7D'
 
-
 curl -w'\n' -v -GET 'http://132.207.89.35:80/usager/file/5'
 
 curl -w'\n' -v -GET 'http://132.207.89.35:80/superviseur/file'
@@ -20,8 +19,6 @@ curl -w'\n' -v -GET 'http://132.207.89.35:80/superviseur/listenoire'
 POST
 
 curl -d "id=5" -X POST 'http://132.207.89.35:80/usager/chanson/3'
-
-curl -d "id=59" -X POST 'http://10.0.2.15:8080/usager/chanson/59?music=%5BB%401439f551'
 
 curl -d "une=5&autre=8" -X POST 'http://132.207.89.35:80/superviseur/inversion'
 
