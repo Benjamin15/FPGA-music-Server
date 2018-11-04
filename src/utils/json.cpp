@@ -63,7 +63,7 @@ std::string getListForUser(std::vector<Music> musics) {
 }
 
 void registerMusic(Music music){
-  std::string musicJson = music.toString();
+  std::string musicJson = music.toRegisterString();
   FILE* fp = fopen("metadata/musiques.json", "rb");
   char buffer_reader[65536];
   rapidjson::FileReadStream is(fp, buffer_reader, sizeof(buffer_reader));
