@@ -17,4 +17,5 @@ std::string getListForAdmin(std::vector<Music> musics);
 void remove_last_music();
 std::string removeMusicSelected(const unsigned int idMusic, const unsigned int noMusic);
 void removeMP3Selected(const std::string titre);
+void write_music(const std::vector<Music> musics);
 #endif

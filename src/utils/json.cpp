@@ -105,3 +105,16 @@ void removeMP3Selected(const std::string titre) {
     std::cout<<"Fichier introuvable"<<std::endl;
 }
 
+void write_music(const std::vector<Music> musics) {
+  std::string json = getListForAdmin(musics);
+  std::cout << "json : " << json.c_str() << std::endl;
+  rapidjson::Document document;
+  document.Parse(json.c_str());
+  remove("metadata/musiques.json");
+  FILE* fp = fopen("metadata/musiques.json", "wb"); // non-Windows use "w"
+  char writeBuffer[65536];
+  rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
+  rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
+  document.Accept(writer);
+  fclose(fp);
+}
