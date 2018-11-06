@@ -97,7 +97,7 @@ void Rest::createRoute(){
         const std::string handler = itr++->value.GetString();
         resource->set_path(url);
         resource->set_failed_filter_validation_handler( failed_filter_validation_handler );
-        resource->set_method_handler( type, {{ "Accept", "application/json" }, { "Content-Type", "application/json" } },functions[handler] );  
+        resource->set_method_handler( type, /*{{ "Accept", "application/json" }, { "Content-Type", "application/json" } },*/functions[handler] );  
         resources.push_back(resource);
     }
     for (auto resource : resources){
