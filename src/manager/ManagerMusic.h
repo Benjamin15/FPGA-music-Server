@@ -5,6 +5,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <algorithm>
 #include  <stdio.h>
 #include <unistd.h>
 #include <sys/syscall.h>
@@ -13,9 +14,10 @@
 #include <taglib/fileref.h>
 #include <taglib/tag.h>
 #include <taglib/tpropertymap.h>
-
+#include <system_error>
 #include "../model/Music.h"
 #include "../utils/json.h"
+#include "../utils/base64.h"
 #include "./ManagerMicroService.h"
 
 #define gettid() syscall(SYS_gettid)
@@ -38,6 +40,8 @@
     static void set_down_volume(const std::shared_ptr< restbed::Session > session);
     static void enabledMute(const std::shared_ptr< restbed::Session > session);
     static void disabledMute(const std::shared_ptr< restbed::Session > session);
+    static bool checkListSize();
+    static User get_user_for_sent_music(int userId);
 
     static void create_list_music();
     static void launch_music();

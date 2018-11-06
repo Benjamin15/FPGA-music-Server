@@ -15,6 +15,7 @@ rapidjson::Document getJsonFile(const char* path) {
   return d;
 }
 
+
 void writeJsonFile(const char* path, const rapidjson::Document& d) {
   FILE* fp = fopen(path, "wb");
   char buffer_writer[65536];
@@ -22,6 +23,46 @@ void writeJsonFile(const char* path, const rapidjson::Document& d) {
   rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
   d.Accept(writer);
   fclose(fp);
+  }
+std::string registerIds(std::string parameter){
+  FILE* fp = fopen("metadata/idLogs.json", "rb");
+  char buffer_reader[65536];
+  rapidjson::FileReadStream is(fp, buffer_reader, sizeof(buffer_reader));
+  rapidjson::Document readDoc;
+  readDoc.ParseStream(is);
+  fclose(fp);
+  rapidjson::Document writeDoc;
+  writeDoc.Parse<0>(parameter.c_str()).HasParseError();
+  rapidjson::Value& value = readDoc["UsersLogs"];
+  rapidjson::Value& mac = writeDoc["MAC"];
+  bool macNotRegistered = true;
+  std::string token = "";
+  for (rapidjson::SizeType i = 0; i < value.Size(); i++) {
+    std::string temp = value[i]["MAC"].GetString();
+    if(!temp.compare(mac.GetString())) {
+      macNotRegistered = false;
+      token = std::to_string(value[i]["Token"].GetUint());
+    }
+  }
+  if(macNotRegistered){
+    value.PushBack(writeDoc.GetObject(), readDoc.GetAllocator());
+    fp = fopen("metadata/idLogs.json","w+");
+    char buffer_writer[65536];
+    rapidjson::FileWriteStream os(fp, buffer_writer, sizeof(buffer_writer));
+    rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
+    readDoc.Accept(writer);
+    fclose(fp);
+    return token;
+  }
+  return token;
+}
+
+std::string createIdentificationResponseJson(std::string token, std::string message){
+  std::stringstream result;
+  result << "{ "
+    << "\"identificateur\": \"" << token << "\", "
+    << "\"message\": \"" << message << " }";
+  return result.str();
 }
 
 std::string getListForUser(std::vector<Music> musics) {
@@ -36,6 +77,27 @@ std::string getListForUser(std::vector<Music> musics) {
   };
   result << "]\n}";
   return result.str(); 
+}
+
+void registerMusic(Music music){
+  std::string musicJson = music.toRegisterString();
+  FILE* fp = fopen("metadata/musiques.json", "rb");
+  char buffer_reader[65536];
+  rapidjson::FileReadStream is(fp, buffer_reader, sizeof(buffer_reader));
+  rapidjson::Document readDoc;
+  readDoc.ParseStream(is);
+  fclose(fp);
+  rapidjson::Document writeDoc;
+  writeDoc.Parse<0>(musicJson.c_str()).HasParseError();
+  rapidjson::Value& value = readDoc["musiques"];
+  std::cout<<musicJson<<std::endl;
+  value.PushBack(writeDoc.GetObject(), readDoc.GetAllocator());
+  fp = fopen("metadata/musiques.json","w+");
+  char buffer_writer[65536];
+  rapidjson::FileWriteStream os(fp, buffer_writer, sizeof(buffer_writer));
+  rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
+  readDoc.Accept(writer);
+  fclose(fp);
 }
 
 std::string getListForAdmin(std::vector<Music> musics) {
@@ -115,3 +177,16 @@ void removeMP3Selected(const std::string titre) {
 }
 
 
+void write_music(const std::vector<Music> musics) {
+  std::string json = getListForAdmin(musics);
+  std::cout << "json : " << json.c_str() << std::endl;
+  rapidjson::Document document;
+  document.Parse(json.c_str());
+  remove("metadata/musiques.json");
+  FILE* fp = fopen("metadata/musiques.json", "wb"); // non-Windows use "w"
+  char writeBuffer[65536];
+  rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
+  rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
+  document.Accept(writer);
+  fclose(fp);
+}

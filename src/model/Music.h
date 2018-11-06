@@ -20,15 +20,19 @@ class Music
       return (musicFirst.id_==musicSecond.id_ && musicFirst.title_==musicSecond.title_ 
           && musicFirst.artist_==musicSecond.artist_ && musicFirst.duration_==musicSecond.duration_
           && musicFirst.user_==musicSecond.user_);
-}
+  }
+
+  bool operator==(const int rhs) const { return this->id_ == rhs;}
 
   friend bool operator<(const Music &musicFirst, const Music &musicSecond) {
   return (musicFirst.id_<musicSecond.id_ && musicFirst.title_<musicSecond.title_ 
           && musicFirst.artist_<musicSecond.artist_ && musicFirst.duration_<musicSecond.duration_
           && musicFirst.user_<musicSecond.user_);
-}
+  }
   std::string toStringForUser();
   std::string toString();
+  std::string toRegisterString();
+  void setMusicUser(User user);
   
   unsigned int id_;
   std::string title_;
