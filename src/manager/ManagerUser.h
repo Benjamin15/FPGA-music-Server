@@ -3,6 +3,16 @@
 #include <memory>
 #include <restbed>
 #include <iostream>
+#include <fstream>
+#include "../utils/json.h"
+#include <rapidjson/filewritestream.h>
+#include <rapidjson/filereadstream.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/document.h>
+#include <string>
+#include <ctime>
+#include <sstream>
+
 
 /**
  * Class which manage all users

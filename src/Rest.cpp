@@ -112,7 +112,6 @@ void Rest::run() {
     ManagerMusic::create_list_music();
     //ManagerMusic::launch_music();
     std::cout << settings_->get_bind_address() << std::endl;
-    
     service_->start( settings_ );
 }
 

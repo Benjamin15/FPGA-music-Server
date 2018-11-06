@@ -2,7 +2,7 @@
   "routes" : [
     {
       "type" : "GET", 
-      "url" : "/usager/identification",
+      "url" : "/usager/identification/",
       "handler" : "get_usager_identification_handler"
     },
     {
