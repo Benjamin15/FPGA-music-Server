@@ -1,12 +1,13 @@
 INCLUDE = -Iinclude/
-LIBRARIES = -Llib/ -lrestbed -lmpg123 -lao -lpthread -lmad -lasound -ltag -lssl -lcrypt
+
+LIBRARIES = -Llib/ -lrestbed -lpthread -lmad -lasound -ltag -lssl -lcrypto
 CXX=g++  -Wno-unused-result -std=c++11 -fuse-ld=bfd
 RM=rm -f
 CPPFLAGS=-c -Wall
 LDFLAGS=-g $(INCLUDE)
 LDLIBS=$(LIBRARIES)
 
-SOURCES_SERVER=src/model/User.cpp src/model/Music.cpp src/manager/ManagerMusic.cpp src/manager/ManagerStatistiques.cpp src/manager/ManagerUser.cpp src/Rest.cpp src/utils/json.cpp src/manager/ManagerMicroService.cpp
+SOURCES_SERVER=src/model/User.cpp src/model/Music.cpp src/manager/ManagerMusic.cpp src/manager/ManagerStatistiques.cpp src/manager/ManagerUser.cpp src/Rest.cpp src/utils/json.cpp src/manager/ManagerMicroService.cpp src/utils/base64.cpp
 OBJECTS_SERVER=$(SOURCES_SERVER:.cpp=.o)
 EXECUTABLE_SERVER=server
 

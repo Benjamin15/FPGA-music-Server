@@ -12,6 +12,29 @@ void ManagerMusic::get_usager_files(const std::shared_ptr< restbed::Session > se
 
 void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session) {
   std::cout << "Insert musique" << std::endl;
+  const auto request = session->get_request();
+  size_t content_length = std::stoi(request->get_header("Content-Length"));
+  session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
+  const restbed::Bytes& body){
+     const std::string id = session->get_request()->get_path_parameter( "id" );
+     const std::string musicTitle = session->get_request()->get_query_parameter( "title","Error getting Query parameter" );
+     std::cout<<id<<std::endl;
+     std::cout<<musicTitle<<std::endl;
+     std::stringstream ss;
+     for(auto byte: body){
+       ss<< byte;
+     }
+     std::string mp3EncodedMusic = ss.str();
+     std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
+     base64_toBinary(mp3DecodedMusic,musicTitle);
+     std::string path = "metadata/musique/" + musicTitle;
+     Music music = ManagerMusic::get_info(path);
+     User user = ManagerMusic::get_user_for_sent_music(std::stoi(id));
+     music.setMusicUser(user);
+     registerMusic(music);
+     session->close(restbed::OK,mp3DecodedMusic,{{"Content-Length",std::to_string(mp3DecodedMusic.size())},
+     {"Connection","close"}});
+  });
 }
 
 void ManagerMusic::delete_usager__song(const std::shared_ptr< restbed::Session > session) {
@@ -59,32 +82,45 @@ void ManagerMusic::disabledMute(const std::shared_ptr< restbed::Session > sessio
   std::cout << "désactiver mute" << std::endl;
 }
 
+User ManagerMusic::get_user_for_sent_music(int userId){
+  rapidjson::Document document = getJsonFile("metadata/idLogs.json");
+  rapidjson::Value& value = document["UsersLogs"];
+  std::string userMac, userIp, userName;
+  for (rapidjson::SizeType i = 0; i < value.Size(); i++) {
+    int temp = value[i]["Token"].GetUint();
+    if(temp == userId) {
+      userMac = value[i]["MAC"].GetString();
+      userIp = value[i]["ip"].GetString();
+      userName = value[i]["nom"].GetString();
+    }
+  }
+  User user(userId, userName, userIp, userMac);
+  return user;
+}
 void ManagerMusic::create_list_music() {
   int id = gettid();
   std::cout << "id : " << id << std::endl;
-    FILE* fp = fopen("metadata/musiques.json", "rb"); // non-Windows use "r"
-    char readBuffer[65536];
-    rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
-    rapidjson::Document d;
-    d.ParseStream(is);
-    fclose(fp);
+  FILE* fp = fopen("metadata/musiques.json", "rb"); // non-Windows use "r"
+  char readBuffer[65536];
+  rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
+  rapidjson::Document d;
+  d.ParseStream(is);
+  fclose(fp);
   const rapidjson::Value& musiques = d["musiques"];
-  for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
-    auto resource = std::make_shared<restbed::Resource>();
-    rapidjson::Value::ConstMemberIterator itr = musiques[i].MemberBegin();
-    const unsigned int idMusic = itr++->value.GetUint();
-    const std::string title = itr++->value.GetString();
-    const std::string artist = itr++->value.GetString();
-    const std::string duration = itr++->value.GetString();
-    const std::string suggestBy = itr++->value.GetString();
-    const std::string ip = itr++->value.GetString();
-    const std::string mac = itr++->value.GetString();
-    const unsigned int idUser = itr->value.GetUint();
+ for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
+    std::string mac = musiques[i]["MAC"].GetString();
+    int idUser = musiques[i]["id"].GetUint();
+    std::string suggestBy = musiques[i]["proposeePar"].GetString();
+    std::string ip = musiques[i]["ip"].GetString();
+    int idMusic = musiques[i]["no"].GetUint();
+    std::string duration = musiques[i]["duree"].GetString();
+    std::string artist = musiques[i]["artiste"].GetString();
+    std::string title = musiques[i]["titre"].GetString();
     User user(idUser, suggestBy, ip, mac);
     Music music(idMusic, title, artist, duration, user);
     musics.push_back(music);
-  }
-  std::cout << "Musique bien ajouté" << std::endl;
+    }
+  std::cout << "Musiques bien ajouté" << std::endl;
 }
 
 void ManagerMusic::launch_music() {
