@@ -16,7 +16,7 @@ std::string Music::toStringForUser() {
     << "\"duree\": \"" << duration_ << "\", "
     << "\"proposeePar\": \"" << user_.name_ << "\", "
     << "\"proprietaire\": \"" << owner_ << "\", "
-    << "\"no\": \"" << id_ << "\" }";
+    << "\"no\": " << id_ << " }";
   return result.str();
 }
 
@@ -46,6 +46,5 @@ std::string Music::toRegisterString() {
     << "\"id\":" << user_.id_ << ", "
     << "\"proposeePar\": \"" << user_.name_ << "\", "
     << "\"no\":" << id_ << " }";
-
   return result.str();
 }
