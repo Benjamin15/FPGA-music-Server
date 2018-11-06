@@ -15,6 +15,15 @@ rapidjson::Document getJsonFile(const char* path) {
   return d;
 }
 
+
+void writeJsonFile(const char* path, const rapidjson::Document& d) {
+  FILE* fp = fopen(path, "wb");
+  char buffer_writer[65536];
+  rapidjson::FileWriteStream os(fp, buffer_writer, sizeof(buffer_writer));
+  rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
+  d.Accept(writer);
+  fclose(fp);
+  }
 std::string registerIds(std::string parameter){
   FILE* fp = fopen("metadata/idLogs.json", "rb");
   char buffer_reader[65536];
@@ -166,6 +175,7 @@ void removeMP3Selected(const std::string titre) {
   else
     std::cout<<"Fichier introuvable"<<std::endl;
 }
+
 
 void write_music(const std::vector<Music> musics) {
   std::string json = getListForAdmin(musics);
