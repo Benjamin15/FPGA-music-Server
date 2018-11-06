@@ -24,19 +24,37 @@ void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session
      for(auto byte: body){
        ss<< byte;
      }
-     std::string mp3EncodedMusic = ss.str();
-     std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
-     base64_toBinary(mp3DecodedMusic,musicTitle);
-     std::string path = "metadata/musique/" + musicTitle;
-     Music music = ManagerMusic::get_info(path);
-     User user = ManagerMusic::get_user_for_sent_music(std::stoi(id));
-     music.setMusicUser(user);
-     registerMusic(music);
-     session->close(restbed::OK,mp3DecodedMusic,{{"Content-Length",std::to_string(mp3DecodedMusic.size())},
-     {"Connection","close"}});
+     if (checkListSize()){
+      std::string mp3EncodedMusic = ss.str();
+      std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
+      base64_toBinary(mp3DecodedMusic,musicTitle);
+      std::string path = "metadata/musique/" + musicTitle;
+      Music music = ManagerMusic::get_info(path);
+      User user = ManagerMusic::get_user_for_sent_music(std::stoi(id));
+      music.setMusicUser(user);
+      registerMusic(music);
+      session->close(restbed::OK,mp3DecodedMusic,{{"Content-Length",std::to_string(mp3DecodedMusic.size())},
+      {"Connection","close"}});
+    }else{
+      session->close(413,"La liste est pleine",{{"Content-Length","20"},
+      {"Connection","close"}});
+    }
   });
 }
 
+bool ManagerMusic::checkListSize(){
+  bool canAddMusic = true;
+  rapidjson::Document document = getJsonFile("metadata/musiques.json");
+  const rapidjson::Value& musiques = document["musiques"];
+  int size = 0;
+  for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
+    size = i;
+  }
+  if(size == 9){
+    canAddMusic = false;
+  }
+  return canAddMusic;
+}
 void ManagerMusic::delete_usager__song(const std::shared_ptr< restbed::Session > session) {
   std::cout << "supprimer musique utilisateur" << std::endl;
   const unsigned int idMusic=atoi((session->get_request()->get_path_parameter("id")).c_str());
