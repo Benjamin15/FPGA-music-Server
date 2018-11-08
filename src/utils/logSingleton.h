@@ -1,21 +1,21 @@
 #pragma once
 #include "log.h"
 
-  class MyLoggerSingleton
+  class SysLoggerSingleton
   {
   public:
-    MyLoggerSingleton(MyLoggerSingleton const&) = delete;             // Copy construct
-    MyLoggerSingleton(MyLoggerSingleton&&) = delete;                  // Move construct
-    MyLoggerSingleton& operator=(MyLoggerSingleton const&) = delete;  // Copy assign
-    MyLoggerSingleton& operator=(MyLoggerSingleton &&) = delete;      // Move assign
+    SysLoggerSingleton(SysLoggerSingleton const&) = delete;             
+    SysLoggerSingleton(SysLoggerSingleton&&) = delete;                  
+    SysLoggerSingleton& operator=(SysLoggerSingleton const&) = delete;  
+    SysLoggerSingleton& operator=(SysLoggerSingleton &&) = delete;      
  
-    static MyLogger& Instance()
+    static SysLogger& GetInstance()
     {
-      static MyLogger myInstance("metadata/log.txt");
+      static SysLogger myInstance("metadata/log.txt");
       return myInstance;
     }  
  
   protected:
-    MyLoggerSingleton() {}
-    ~MyLoggerSingleton() {}
+    SysLoggerSingleton() {}
+    ~SysLoggerSingleton() {}
   };

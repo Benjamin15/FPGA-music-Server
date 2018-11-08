@@ -1,19 +1,20 @@
 #include "log.h"
 
 
-  MyLogger::MyLogger(std::string fileName)
+  SysLogger::SysLogger(std::string fileName)
   {
-    mStream.open(fileName);
- 
+    mStream.open(fileName, std::ios::trunc);
+    mStream.close();
+    mStream.open(fileName, std::ios::app);
     if (mStream.fail())
     {
-        std::cout << "fail"<<std::endl;
+      std::cout << "fail"<<std::endl;
       throw std::iostream::failure("Cannot open file: " + fileName);
 
     }
   }  
  
-  void MyLogger::WriteLine(std::string content)
+  void SysLogger::WriteLine(std::string content)
   {
     std::lock_guard<std::mutex> lock(mMutex);
      

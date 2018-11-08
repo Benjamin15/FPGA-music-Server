@@ -8,24 +8,34 @@
 #include <time.h>
 
 
-  class MyLogger
+  class SysLogger
   {
   public:
-    // parametrized ctor
-    MyLogger(std::string fileName);
-    MyLogger(const MyLogger&) = delete;    
-    MyLogger& operator= (const MyLogger&) = delete;
+  
+    SysLogger(std::string fileName);
+    SysLogger(const SysLogger&) = delete;    
+    SysLogger& operator= (const SysLogger&) = delete;
+
+    SysLogger(SysLogger&& other){
+      mStream.close();
+      mStream = move(other.mStream);
+    }
+
+    SysLogger& operator=(SysLogger&& other){
+      mStream.close();
+      mStream = move(other.mStream);
+      return *this;
+    }
  
-    // dtor
-    ~MyLogger()     
+    ~SysLogger()     
     {
       mStream.close();
     }
  
-    // write to log file
     void WriteLine(std::string content);
  
   private:
     std::ofstream mStream;
     std::mutex mMutex;
   };
+
