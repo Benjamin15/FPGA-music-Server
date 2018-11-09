@@ -10,6 +10,7 @@
 
 #include "ManagerMusic.h"
 #include "../utils/json.h"
+#include "../utils/logSingleton.h"
 #define gettid() syscall(SYS_gettid)
 
 

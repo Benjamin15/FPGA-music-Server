@@ -30,6 +30,7 @@ void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session
       User user = ManagerMusic::get_user_for_sent_music(std::stoi(id));
       music.setMusicUser(user);
       registerMusic(music);
+      SysLoggerSingleton::GetInstance().WriteLine("Soumission d'une nouvelle chanson: " + musicTitle);
       session->close(restbed::OK,mp3DecodedMusic,{{"Content-Length",std::to_string(mp3DecodedMusic.size())},
       {"Connection","close"}});
     }else{
@@ -52,6 +53,7 @@ bool ManagerMusic::checkListSize(){
   }
   return canAddMusic;
 }
+
 void ManagerMusic::delete_usager__song(const std::shared_ptr< restbed::Session > session) {
   std::cout << "supprimer musique utilisateur" << std::endl;
   const unsigned int idMusic=atoi((session->get_request()->get_path_parameter("id")).c_str());
@@ -60,6 +62,9 @@ void ManagerMusic::delete_usager__song(const std::shared_ptr< restbed::Session >
   std::cout<<noMusic<<std::endl;
   std::string musicToRemove=removeMusicSelected(idMusic, noMusic);
   removeMP3Selected(musicToRemove);
+  std::string responseBody = "ok";
+  session->close( restbed::OK, responseBody, { { "Content-Length", std::to_string(responseBody.size()) }, { "Connection", "close" } } );
+  SysLoggerSingleton::GetInstance().WriteLine("Retrait de la chanson: " + musicToRemove);
 }
 
 void ManagerMusic::get_superviser_files(const std::shared_ptr< restbed::Session > session) {
@@ -74,17 +79,22 @@ void ManagerMusic::delete_superviser_song(const std::shared_ptr< restbed::Sessio
 }
 
 void ManagerMusic::reverse_song(const std::shared_ptr< restbed::Session > session) {
-  std::cout << "inverser musique" << std::endl;
-  const auto& request = session->get_request( );
-  size_t content_length = 0;
-  request->get_header( "Content-Length", content_length );
+  std::cout << "inverser musique" << std::endl; 
+  const auto request = session->get_request();
+  size_t content_length = std::stoi(request->get_header("Content-Length"));
   session->fetch( content_length, [ request ]( const std::shared_ptr< restbed::Session > session, const restbed::Bytes & body )
   {
+    std::cout << "test" << std::endl;
     rapidjson::Document document;
     document.SetObject();
+    std::cout << "after set object" << std::endl;
     std::string bodyString = std::string(body.begin(), body.end());
+    std::cout << " body String : " << bodyString << std::endl;
+    std::cout << "before parse" << std::endl;
     document.Parse<0>(bodyString.c_str(), bodyString.length());
+    std::cout << "before une" << std::endl;
     int first = document["une"].GetInt();
+    std::cout << "before autre" << std::endl;
     int second = document["autre"].GetInt();
     std::cout << "first : " << first << std::endl;
     std::cout << "second : " << second << std::endl;
@@ -95,6 +105,7 @@ void ManagerMusic::reverse_song(const std::shared_ptr< restbed::Session > sessio
     for (Music music : musics)
       std::cout << music.toString() << std::endl;  
     write_music(musics);
+    SysLoggerSingleton::GetInstance().WriteLine("Modification de l'ordre de passage des chansons");
     session->close( restbed::OK, "", { { "Content-Length", "0" }, { "Connection", "close" } } );
   });
 }

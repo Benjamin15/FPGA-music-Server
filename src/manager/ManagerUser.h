@@ -7,6 +7,9 @@
 #include "rapidjson/filereadstream.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
+#include "../utils/logSingleton.h"
+
+
 
 namespace CodeMessage {
     constexpr const auto BAD_REQUEST = "Error 400 - Bad request";

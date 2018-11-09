@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
@@ -8,6 +9,7 @@
 #include <mad.h>
 #include <alsa/asoundlib.h>
 #include <linux/membarrier.h>
+#include "../utils/logSingleton.h"
 
 int error;
 snd_pcm_t *playback_handle = NULL;

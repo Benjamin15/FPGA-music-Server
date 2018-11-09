@@ -19,6 +19,8 @@
 #include "../utils/json.h"
 #include "../utils/base64.h"
 #include "./ManagerMicroService.h"
+#include "../utils/logSingleton.h"
+
 
 #define gettid() syscall(SYS_gettid)
 

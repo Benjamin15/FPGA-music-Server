@@ -25,7 +25,14 @@ void ManagerUser::identify(const std::shared_ptr< restbed::Session > session){
        response = createIdentificationResponseJson(std::to_string(token), "Bienvenue sur l'application Café-Bistro Elevation !");
        session->close(restbed::OK,response,{{"Content-Length",std::to_string(response.size())},
        {"Connection","close"}});
-     }else {
+     }
+     else if(!compare.compare("Erreur")){
+       response = "Mauvaise requete (erreur dans le JSON)";
+       session->close(restbed::BAD_REQUEST, response,{{"Content-Length",std::to_string(response.size())},
+      {"Connection","close"}});
+     }
+     else {
+      SysLoggerSingleton::GetInstance().WriteLine("Emission d'un nouvel identificateur d'usager ordinaire: " + std::to_string(token)); 
       response = createIdentificationResponseJson(compare, "Bienvenue sur l'application Café-Bistro Elevation !");
       session->close(restbed::OK,response,{{"Content-Length",std::to_string(response.size())},
       {"Connection","close"}});

@@ -32,7 +32,9 @@ std::string registerIds(std::string parameter){
   readDoc.ParseStream(is);
   fclose(fp);
   rapidjson::Document writeDoc;
-  writeDoc.Parse<0>(parameter.c_str()).HasParseError();
+  if(writeDoc.Parse<0>(parameter.c_str()).HasParseError()){
+    return "Erreur";
+  }
   rapidjson::Value& value = readDoc["UsersLogs"];
   rapidjson::Value& mac = writeDoc["MAC"];
   bool macNotRegistered = true;
