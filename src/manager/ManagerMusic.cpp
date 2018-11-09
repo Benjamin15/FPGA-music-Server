@@ -2,9 +2,6 @@
 std::vector<Music> ManagerMusic::musics;
 
 void ManagerMusic::get_usager_files(const std::shared_ptr< restbed::Session > session) {
-  int id = gettid();
-  std::cout << "id : " << id << std::endl;
-  std::cout << "liste musique de l'usager" << std::endl;
   std::string result = getListForUser(musics);
   std::cout << result << std::endl;
   session->close( restbed::OK, result, { { "Content-Length", std::to_string(result.size()) }, { "Connection", "close" } } );
@@ -79,6 +76,28 @@ void ManagerMusic::delete_superviser_song(const std::shared_ptr< restbed::Sessio
 
 void ManagerMusic::reverse_song(const std::shared_ptr< restbed::Session > session) {
   std::cout << "inverser musique" << std::endl;
+  const auto& request = session->get_request( );
+  size_t content_length = 0;
+  request->get_header( "Content-Length", content_length );
+  session->fetch( content_length, [ request ]( const std::shared_ptr< restbed::Session > session, const restbed::Bytes & body )
+  {
+    rapidjson::Document document;
+    document.SetObject();
+    std::string bodyString = std::string(body.begin(), body.end());
+    document.Parse<0>(bodyString.c_str(), bodyString.length());
+    int first = document["une"].GetInt();
+    int second = document["autre"].GetInt();
+    std::cout << "first : " << first << std::endl;
+    std::cout << "second : " << second << std::endl;
+    for (Music music : musics)
+      std::cout << music.toString() << std::endl;    
+    std::iter_swap(find(musics.begin(), musics.end(), first), find(musics.begin(), musics.end(), second));
+    std::cout << "swap" << std::endl;
+    for (Music music : musics)
+      std::cout << music.toString() << std::endl;  
+    write_music(musics);
+    session->close( restbed::OK, "", { { "Content-Length", "0" }, { "Connection", "close" } } );
+  });
 }
 
 void ManagerMusic::get_volume(const std::shared_ptr< restbed::Session > session) {
@@ -126,7 +145,7 @@ void ManagerMusic::create_list_music() {
   d.ParseStream(is);
   fclose(fp);
   const rapidjson::Value& musiques = d["musiques"];
- for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
+  for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
     std::string mac = musiques[i]["MAC"].GetString();
     int idUser = musiques[i]["id"].GetUint();
     std::string suggestBy = musiques[i]["proposeePar"].GetString();

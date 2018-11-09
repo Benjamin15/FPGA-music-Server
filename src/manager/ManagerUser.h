@@ -3,16 +3,16 @@
 #include <memory>
 #include <restbed>
 #include <iostream>
-#include <fstream>
 #include "../utils/json.h"
-#include <rapidjson/filewritestream.h>
-#include <rapidjson/filereadstream.h>
-#include <rapidjson/writer.h>
-#include <rapidjson/document.h>
-#include <string>
-#include <ctime>
-#include <sstream>
+#include "rapidjson/filereadstream.h"
+#include "rapidjson/document.h"
+#include "rapidjson/stringbuffer.h"
 
+namespace CodeMessage {
+    constexpr const auto BAD_REQUEST = "Error 400 - Bad request";
+    constexpr const auto UNAUTHORIZED = "Error 401 - Unauthorized";
+    constexpr const auto REQUEST_OK = "Status 200 - OK";
+};
 
 /**
  * Class which manage all users
@@ -29,5 +29,6 @@ class ManagerUser
     static void login(const std::shared_ptr< restbed::Session > session);
     static void logout(const std::shared_ptr< restbed::Session > session);
     static void set_password(const std::shared_ptr< restbed::Session > session);
+    static int getStatusCode(std::string codeMessage);
 };
 #endif

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <algorithm>
 #include  <stdio.h>
 #include <unistd.h>
 #include <sys/syscall.h>
@@ -13,7 +14,7 @@
 #include <taglib/fileref.h>
 #include <taglib/tag.h>
 #include <taglib/tpropertymap.h>
-
+#include <system_error>
 #include "../model/Music.h"
 #include "../utils/json.h"
 #include "../utils/base64.h"

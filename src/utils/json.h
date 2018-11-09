@@ -12,6 +12,7 @@
 #include "../model/Music.h"
 
 rapidjson::Document getJsonFile(const char* path);
+void writeJsonFile(const char* path, const rapidjson::Document& d);
 std::string getListForUser(std::vector<Music> musics);
 std::string getListForAdmin(std::vector<Music> musics);
 void remove_last_music();
@@ -20,4 +21,5 @@ void registerMusic(Music music);
 std::string createIdentificationResponseJson(std::string token, std::string message);
 std::string removeMusicSelected(const unsigned int idMusic, const unsigned int noMusic);
 void removeMP3Selected(const std::string titre);
+void write_music(const std::vector<Music> musics);
 #endif
