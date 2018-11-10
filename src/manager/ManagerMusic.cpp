@@ -24,14 +24,17 @@ void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session
      if (checkListSize()){
       std::string mp3EncodedMusic = ss.str();
       std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
-      base64_toBinary(mp3DecodedMusic,musicTitle);
       std::string path = "metadata/musique/" + musicTitle;
       Music music = ManagerMusic::get_info(path);
       User user = ManagerMusic::get_user_for_sent_music(std::stoi(id));
       music.setMusicUser(user);
+      if(music.title_ == ""){
+        music.setMusicTitle("Unknown title");
+      }
       music.setMusicNumber("metadata/musiques.json");
       registerMusic(music);
       SysLoggerSingleton::GetInstance().WriteLine("Soumission d'une nouvelle chanson: " + musicTitle);
+      base64_toBinary(mp3DecodedMusic,std::to_string(music.id_)+".mp3");
       session->close(restbed::OK,mp3DecodedMusic,{{"Content-Length",std::to_string(mp3DecodedMusic.size())},
       {"Connection","close"}});
     }else{

@@ -9,6 +9,10 @@ void Music::setMusicUser(User user){
   user_= user;
 }
 
+void Music::setMusicTitle(std::string fileName){
+  title_= fileName;
+  }
+
 void Music::setMusicNumber(std::string path){
   rapidjson::Document document = getJsonFile(path.c_str());
   rapidjson::Value& value = document["musiques"];
@@ -24,7 +28,6 @@ void Music::setMusicNumber(std::string path){
   }else{
     id_ = 0;
   }
-}
 
 std::string Music::toStringForUser() {
   std::stringstream result;
