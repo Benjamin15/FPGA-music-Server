@@ -3,6 +3,10 @@
 #include <memory>
 #include <iostream>
 #include <sstream>
+#include "rapidjson/filereadstream.h"
+#include "rapidjson/filewritestream.h"
+#include <rapidjson/writer.h>
+#include "rapidjson/document.h"
 #include "User.h"
 /**
  * Class model of music
@@ -34,6 +38,8 @@ class Music
   std::string toRegisterString();
   void setMusicUser(User user);
   void setMusicTitle(std::string fileName);
+  void setMusicNumber(std::string path);
+
   
   unsigned int id_;
   std::string title_;
