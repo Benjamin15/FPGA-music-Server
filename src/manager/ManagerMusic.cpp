@@ -155,7 +155,7 @@ void ManagerMusic::create_list_music() {
   rapidjson::Document d;
   d.ParseStream(is);
   fclose(fp);
-  const rapidjson::Value& musiques = d["musiques"];
+  const rapidjson::Value& musiques = d["chansons"];
   for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
     std::string mac = musiques[i]["MAC"].GetString();
     int idUser = musiques[i]["id"].GetUint();
