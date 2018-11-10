@@ -118,8 +118,8 @@ void Rest::run() {
 int main( const int argc , const char* argv[] )
 {
     Rest rest;
-    std::string address = argc > 1 ? argv[1] : "10.200.14.52";
-    uint16_t port = argc > 2 ? std::stoi(argv[2]) : 443;
+    std::string address = argc > 1 ? argv[1] : "132.207.89.35";
+    uint16_t port = argc > 2 ? std::stoi(argv[2]) : 80;
     std::cout << "launch init settings " << std::endl;
     rest.initSettings(address, port);
     std::cout << "init service" << std::endl;
