@@ -8,6 +8,10 @@ void Music::setMusicUser(User user){
   user_= user;
 }
 
+void Music::setMusicTitle(std::string fileName){
+  title_= fileName;
+}
+
 std::string Music::toStringForUser() {
   std::stringstream result;
   result << "{ "

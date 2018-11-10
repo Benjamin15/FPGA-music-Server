@@ -33,6 +33,7 @@ class Music
   std::string toString();
   std::string toRegisterString();
   void setMusicUser(User user);
+  void setMusicTitle(std::string fileName);
   
   unsigned int id_;
   std::string title_;
