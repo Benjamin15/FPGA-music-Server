@@ -8,6 +8,8 @@
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 #include "../utils/logSingleton.h"
+#include "../utils/responseGenerator.h"
+
 
 
 
