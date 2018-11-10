@@ -29,6 +29,7 @@ void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session
       Music music = ManagerMusic::get_info(path);
       User user = ManagerMusic::get_user_for_sent_music(std::stoi(id));
       music.setMusicUser(user);
+      music.setMusicNumber("metadata/musiques.json");
       registerMusic(music);
       SysLoggerSingleton::GetInstance().WriteLine("Soumission d'une nouvelle chanson: " + musicTitle);
       session->close(restbed::OK,mp3DecodedMusic,{{"Content-Length",std::to_string(mp3DecodedMusic.size())},
