@@ -23,19 +23,17 @@ void ManagerUser::identify(const std::shared_ptr< restbed::Session > session){
      std::string response;
      if(!compare.compare("")){
        response = createIdentificationResponseJson(std::to_string(token), "Bienvenue sur l'application Café-Bistro Elevation !");
-       session->close(restbed::OK,response,{{"Content-Length",std::to_string(response.size())},
-       {"Connection","close"}});
+       ResponseGenerator::sendResponse(session,ResponseGenerator::createOkResponse(response));
      }
      else if(!compare.compare("Erreur")){
-       response = "Mauvaise requete (erreur dans le JSON)";
-       session->close(restbed::BAD_REQUEST, response,{{"Content-Length",std::to_string(response.size())},
-      {"Connection","close"}});
+       ResponseGenerator::sendResponse(session,ResponseGenerator::createBadRequestResponse());
      }
-     else {
+     else if(compare.compare("")){
       SysLoggerSingleton::GetInstance().WriteLine("Emission d'un nouvel identificateur d'usager ordinaire: " + std::to_string(token)); 
       response = createIdentificationResponseJson(compare, "Bienvenue sur l'application Café-Bistro Elevation !");
-      session->close(restbed::OK,response,{{"Content-Length",std::to_string(response.size())},
-      {"Connection","close"}});
+      ResponseGenerator::sendResponse(session,ResponseGenerator::createOkResponse(response));
+     }else{
+       ResponseGenerator::sendResponse(session,ResponseGenerator::createInternalServerErrorResponse());
      }
   });
 }
@@ -84,10 +82,10 @@ void ManagerUser::set_password(const std::shared_ptr< restbed::Session > session
         rapidjson::SizeType i = 0;
         rapidjson::Value& admin = d["admin"];
         if (oldPwdFromRequest!= (admin[i]["mot_de_passe"].GetString())) {
-          codeMessage= CodeMessage::UNAUTHORIZED;
+          ResponseGenerator::sendResponse(session,ResponseGenerator::createUnauthorizedResponse());
         }
         else if (newPwdFromRequest == "") {
-           codeMessage= CodeMessage::BAD_REQUEST;
+           ResponseGenerator::sendResponse(session,ResponseGenerator::createBadRequestResponse(responseBody::BAD_REQUEST_V2));
         }
         else {
           admin[i]["mot_de_passe"].SetObject();
@@ -96,27 +94,13 @@ void ManagerUser::set_password(const std::shared_ptr< restbed::Session > session
         }
       }
       else {
-        codeMessage= CodeMessage::BAD_REQUEST;
-      }
+        ResponseGenerator::sendResponse(session,ResponseGenerator::createBadRequestResponse(responseBody::BAD_REQUEST_V2));
+      } 
+      ResponseGenerator::sendResponse(session,ResponseGenerator::createOkResponse());   
     }
     else {
-     codeMessage= CodeMessage::UNAUTHORIZED;
+     ResponseGenerator::sendResponse(session,ResponseGenerator::createUnauthorizedResponse());
     }
-    statusCode=ManagerUser::getStatusCode(codeMessage);
-    session->close(statusCode, codeMessage, {{"Content-Length", std::to_string(codeMessage.length())},
-      {"Connection","close"}});
   });
-}
-
-int ManagerUser::getStatusCode(std::string codeMessage) {
-  if (codeMessage==CodeMessage::BAD_REQUEST){
-    return restbed::BAD_REQUEST;
-  }
-  else if (codeMessage==CodeMessage::UNAUTHORIZED) {
-    return restbed::UNAUTHORIZED;
-  }
-  else {
-    return restbed::OK;
-  }
 }
 

@@ -11,14 +11,6 @@
 #include "../utils/responseGenerator.h"
 
 
-
-
-namespace CodeMessage {
-    constexpr const auto BAD_REQUEST = "Error 400 - Bad request";
-    constexpr const auto UNAUTHORIZED = "Error 401 - Unauthorized";
-    constexpr const auto REQUEST_OK = "Status 200 - OK";
-};
-
 /**
  * Class which manage all users
  */  

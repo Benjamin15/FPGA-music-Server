@@ -20,6 +20,8 @@
 #include "../utils/base64.h"
 #include "./ManagerMicroService.h"
 #include "../utils/logSingleton.h"
+#include "../utils/defaultResponseBody.h"
+#include "../utils/responseGenerator.h"
 
 
 #define gettid() syscall(SYS_gettid)
@@ -50,5 +52,6 @@
     static Music get_info(std::string path);
     static bool checkIfMp3(std::string path);
     static std::vector<Music> musics;
+    static const int MAX_LIST_SIZE = 5;
   };
 #endif

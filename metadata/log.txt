@@ -1,10 +1,2 @@
-Sat Nov 10 17:49:03 2018: Emission d'un nouvel identificateur d'usager ordinaire: 1469123621
-Sat Nov 10 17:49:14 2018: Soumission d'une nouvelle chanson: Ariana Grande - goodnight n go (Audio).mp3
-Sat Nov 10 17:49:34 2018: Soumission d'une nouvelle chanson: Ariana Grande - goodnight n go (Audio).mp3
-Sat Nov 10 17:49:38 2018: Soumission d'une nouvelle chanson: Ariana Grande - goodnight n go (Audio).mp3
-Sat Nov 10 17:56:06 2018: Emission d'un nouvel identificateur d'usager ordinaire: 1693974589
-Sat Nov 10 17:56:06 2018: Emission d'un nouvel identificateur d'usager ordinaire: 1693974589
-Sat Nov 10 17:56:21 2018: Soumission d'une nouvelle chanson: Thirty Seconds To Mars - ATTACK.mp3
-Sat Nov 10 17:56:32 2018: Soumission d'une nouvelle chanson: Michael Jackson - Smooth Criminal (Official Video).mp3
-Sat Nov 10 17:56:35 2018: Soumission d'une nouvelle chanson: Cat Stevens - Father and Son.mp3
-Sat Nov 10 17:56:58 2018: Soumission d'une nouvelle chanson: The Little Mermaid - Under the Sea.mp3
+Sat Nov 10 20:24:05 2018: Soumission d'une nouvelle chanson: Michael Jackson - Smooth Criminal (Official Video)-1.mp3
+Sat Nov 10 20:26:37 2018: Soumission d'une nouvelle chanson: NF - Let You Down.mp3

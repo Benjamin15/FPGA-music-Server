@@ -23,13 +23,13 @@ void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session
      }
      if (checkListSize()){
       std::string mp3EncodedMusic = ss.str();
+      std::cout<<"MUSIQUE ENCODEE  :"<<mp3EncodedMusic<<std::endl;
       std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
       std::string fileName = std::to_string(Music::getNextMusicId("metadata/musiques.json"))+".mp3";
       base64_toBinary(mp3DecodedMusic,fileName);
       std::string path = "metadata/musique/" + fileName;
       if(!ManagerMusic::checkIfMp3(path)){
-        session->close(415,"Le fichier soumis n'est pas un MP3 ou n'a pas d'entête ID3",{{"Content-Length","20"},
-      {"Connection","close"}});
+        ResponseGenerator::sendResponse(session,ResponseGenerator::createUnsupportedMediaTypeResponse());
       }
       Music music = ManagerMusic::get_info(path);
       User user = ManagerMusic::get_user_for_sent_music(std::stoi(id));
@@ -41,11 +41,11 @@ void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session
       registerMusic(music);
       musics.push_back(music);
       SysLoggerSingleton::GetInstance().WriteLine("Soumission d'une nouvelle chanson: " + musicTitle);
-      session->close(restbed::OK,mp3DecodedMusic,{{"Content-Length",std::to_string(mp3DecodedMusic.size())},
-      {"Connection","close"}});
+      ResponseGenerator::sendResponse(session,ResponseGenerator::createOkResponse());
+    }else if(!checkListSize()){
+      ResponseGenerator::sendResponse(session,ResponseGenerator::createRequestEntityTooLargeResponse());
     }else{
-      session->close(413,"La liste est pleine",{{"Content-Length","20"},
-      {"Connection","close"}});
+      ResponseGenerator::sendResponse(session,ResponseGenerator::createInternalServerErrorResponse());
     }
   });
 }
@@ -58,7 +58,7 @@ bool ManagerMusic::checkListSize(){
   for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
     size = i;
   }
-  if(size == 9){
+  if(size == MAX_LIST_SIZE){
     canAddMusic = false;
   }
   return canAddMusic;

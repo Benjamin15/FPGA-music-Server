@@ -34,10 +34,12 @@ std::string base64_decode(std::string input) {
     std::replace(input.begin(), input.end(), '=', 'A');
     std::string output(ItBinaryT(input.begin()), ItBinaryT(input.end()));
     output.erase(output.end() - pad_chars, output.end());
+    std::cout<<"valeur aprés décodage :"<< output<<std::endl;
     return output;
   }
   catch (std::exception const&)
   {
+    std::cout<<"exception"<<std::endl;
     return std::string("");
   }
 }
