@@ -40,6 +40,16 @@ void ManagerMusic::delete_usager__song(const std::shared_ptr< restbed::Session >
   std::cout<<noMusic<<std::endl;
   std::string musicToRemove=removeMusicSelected(idMusic, noMusic);
   removeMP3Selected(musicToRemove);
+  int i = 0;
+  std::cout << "no : " << noMusic << std::endl;
+  while (i < musics.size()) {
+    std::cout << "no Music : " << musics[i].id_ << std::endl; 
+    if (musics[i].id_ == noMusic) {
+      std::cout << "musics find" << std::endl;
+      musics.erase(musics.begin() + i);
+    }
+    i++;
+  }
   std::string responseBody = "ok";
   session->close( restbed::OK, responseBody, { { "Content-Length", std::to_string(responseBody.size()) }, { "Connection", "close" } } );
   SysLoggerSingleton::GetInstance().WriteLine("Retrait de la chanson: " + musicToRemove);
@@ -54,6 +64,7 @@ void ManagerMusic::get_superviser_files(const std::shared_ptr< restbed::Session 
 
 void ManagerMusic::delete_superviser_song(const std::shared_ptr< restbed::Session > session) {
   std::cout << "supprimer song avec le superviseur" << std::endl;
+  delete_usager__song(session);
 }
 
 void ManagerMusic::reverse_song(const std::shared_ptr< restbed::Session > session) {

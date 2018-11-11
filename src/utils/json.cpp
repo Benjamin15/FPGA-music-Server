@@ -149,7 +149,7 @@ std::string removeMusicSelected(const unsigned int idMusic, const unsigned int n
   rapidjson::Value& musiques = d["musiques"]; 
 
   for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
-    if(musiques[i]["id"].GetUint()==idMusic && musiques[i]["no"].GetUint()==noMusic) {
+    if(musiques[i]["no"].GetUint()==noMusic) {
       std::cout<<"ID: " << musiques[i]["id"].GetUint() << " et numéro: " << musiques[i]["no"].GetUint() << " trouvés." <<std::endl;
       titreMusique=musiques[i]["titre"].GetString();
       pos=(int)i;
