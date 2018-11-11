@@ -48,7 +48,7 @@
     static void create_list_music();
     static void launch_music();
     static Music get_info(std::string path);
-
+    static bool checkIfMp3(std::string path);
     static std::vector<Music> musics;
   };
 #endif

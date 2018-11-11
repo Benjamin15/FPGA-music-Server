@@ -24,16 +24,22 @@ void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session
      if (checkListSize()){
       std::string mp3EncodedMusic = ss.str();
       std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
-      base64_toBinary(mp3DecodedMusic,std::to_string(Music::getNextMusicId("metadata/musiques.json"))+".mp3");
-      std::string path = "metadata/musique/" + musicTitle;
+      std::string fileName = std::to_string(Music::getNextMusicId("metadata/musiques.json"))+".mp3";
+      base64_toBinary(mp3DecodedMusic,fileName);
+      std::string path = "metadata/musique/" + fileName;
+      if(!ManagerMusic::checkIfMp3(path)){
+        session->close(415,"Le fichier soumis n'est pas un MP3 ou n'a pas d'entête ID3",{{"Content-Length","20"},
+      {"Connection","close"}});
+      }
       Music music = ManagerMusic::get_info(path);
       User user = ManagerMusic::get_user_for_sent_music(std::stoi(id));
       music.setMusicUser(user);
       if(music.title_ == ""){
-        music.setMusicTitle("Unknown title");
+        music.setMusicTitle(musicTitle);
       }
       music.setMusicNumber("metadata/musiques.json");
       registerMusic(music);
+      musics.push_back(music);
       SysLoggerSingleton::GetInstance().WriteLine("Soumission d'une nouvelle chanson: " + musicTitle);
       session->close(restbed::OK,mp3DecodedMusic,{{"Content-Length",std::to_string(mp3DecodedMusic.size())},
       {"Connection","close"}});
@@ -193,5 +199,15 @@ Music ManagerMusic::get_info(std::string path) {
     int minutes = (properties->length() - seconds) / 60;
     TagLib::Tag *tag = f.tag();
     return Music(tag->title().to8Bit(), tag->artist().to8Bit(), std::to_string(minutes) + ":" +std::to_string(seconds));
+  }
+}
+
+bool ManagerMusic::checkIfMp3(std::string path){
+  TagLib::FileRef f(path.c_str());
+  std::string title, artist, year, duration;
+  if(!f.isNull() && f.tag() && f.audioProperties()) {    
+    return true;
+  }else{
+    return false;
   }
 }
