@@ -12,7 +12,7 @@ void ManagerMicroService::manage_player() {
         std::string path_music = "metadata/musique/" + id + ".mp3";
         std::cout << "lancement de la chanson : " << id << std::endl;
         const char* parmList[] = {"./player", path_music.c_str(), NULL};
-        SysLoggerSingleton::GetInstance().WriteLine("Debut du decodage de la chanson: " + title);
+        SysLoggerSingleton::GetInstance().WriteLine("Debut du decodage de la chanson: " + id);
         execv(player_path, (char **) parmList);
       }
       wait(NULL);

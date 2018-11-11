@@ -28,6 +28,25 @@ void Music::setMusicNumber(std::string path){
   }else{
     id_ = 0;
   }
+}
+
+int Music::getNextMusicId(std::string path){
+  rapidjson::Document document = getJsonFile(path.c_str());
+  rapidjson::Value& value = document["musiques"];
+  std::cout<<"size de liste :" <<value.GetArray().Size()<<std::endl;
+  int higherMusicId = 0;
+  if(value.GetArray().Size() != 0){
+    for (rapidjson::SizeType i = 0; i < value.Size(); i++) {
+      if(value[i]["no"].GetUint() > higherMusicId){
+        higherMusicId = value[i]["no"].GetUint();
+      }
+    }
+    higherMusicId ++;
+    return higherMusicId;
+  }else{
+    return 0;
+  }
+}
 
 std::string Music::toStringForUser() {
   std::stringstream result;

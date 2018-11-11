@@ -39,6 +39,7 @@ class Music
   void setMusicUser(User user);
   void setMusicTitle(std::string fileName);
   void setMusicNumber(std::string path);
+  static int getNextMusicId(std::string path);
 
   
   unsigned int id_;

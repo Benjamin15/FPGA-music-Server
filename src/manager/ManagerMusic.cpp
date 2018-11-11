@@ -24,6 +24,7 @@ void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session
      if (checkListSize()){
       std::string mp3EncodedMusic = ss.str();
       std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
+      base64_toBinary(mp3DecodedMusic,std::to_string(Music::getNextMusicId("metadata/musiques.json"))+".mp3");
       std::string path = "metadata/musique/" + musicTitle;
       Music music = ManagerMusic::get_info(path);
       User user = ManagerMusic::get_user_for_sent_music(std::stoi(id));
@@ -34,7 +35,6 @@ void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session
       music.setMusicNumber("metadata/musiques.json");
       registerMusic(music);
       SysLoggerSingleton::GetInstance().WriteLine("Soumission d'une nouvelle chanson: " + musicTitle);
-      base64_toBinary(mp3DecodedMusic,std::to_string(music.id_)+".mp3");
       session->close(restbed::OK,mp3DecodedMusic,{{"Content-Length",std::to_string(mp3DecodedMusic.size())},
       {"Connection","close"}});
     }else{
@@ -158,7 +158,7 @@ void ManagerMusic::create_list_music() {
   rapidjson::Document d;
   d.ParseStream(is);
   fclose(fp);
-  const rapidjson::Value& musiques = d["chansons"];
+  const rapidjson::Value& musiques = d["musiques"];
   for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
     std::string mac = musiques[i]["MAC"].GetString();
     int idUser = musiques[i]["id"].GetUint();
