@@ -9,44 +9,12 @@ void ManagerMusic::get_usager_files(const std::shared_ptr< restbed::Session > se
 
 void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session) {
   std::cout << "Insert musique" << std::endl;
+    std::cout << &musics << std::endl;
   const auto request = session->get_request();
   size_t content_length = std::stoi(request->get_header("Content-Length"));
   session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
   const restbed::Bytes& body){
-     const std::string id = session->get_request()->get_path_parameter( "id" );
-     const std::string musicTitle = session->get_request()->get_query_parameter( "title","Error getting Query parameter" );
-     std::cout<<id<<std::endl;
-     std::cout<<musicTitle<<std::endl;
-     std::stringstream ss;
-     for(auto byte: body){
-       ss<< byte;
-     }
-     if (checkListSize()){
-      std::string mp3EncodedMusic = ss.str();
-      std::cout<<"MUSIQUE ENCODEE  :"<<mp3EncodedMusic<<std::endl;
-      std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
-      std::string fileName = std::to_string(Music::getNextMusicId("metadata/musiques.json"))+".mp3";
-      base64_toBinary(mp3DecodedMusic,fileName);
-      std::string path = "metadata/musique/" + fileName;
-      if(!ManagerMusic::checkIfMp3(path)){
-        ResponseGenerator::sendResponse(session,ResponseGenerator::createUnsupportedMediaTypeResponse());
-      }
-      Music music = ManagerMusic::get_info(path);
-      User user = ManagerMusic::get_user_for_sent_music(std::stoi(id));
-      music.setMusicUser(user);
-      if(music.title_ == ""){
-        music.setMusicTitle(musicTitle);
-      }
-      music.setMusicNumber("metadata/musiques.json");
-      registerMusic(music);
-      musics.push_back(music);
-      SysLoggerSingleton::GetInstance().WriteLine("Soumission d'une nouvelle chanson: " + musicTitle);
-      ResponseGenerator::sendResponse(session,ResponseGenerator::createOkResponse());
-    }else if(!checkListSize()){
-      ResponseGenerator::sendResponse(session,ResponseGenerator::createRequestEntityTooLargeResponse());
-    }else{
-      ResponseGenerator::sendResponse(session,ResponseGenerator::createInternalServerErrorResponse());
-    }
+     ManagerMicroService::insert_music(session,body);
   });
 }
 
@@ -183,6 +151,10 @@ void ManagerMusic::create_list_music() {
 
 void ManagerMusic::launch_music() {
   ManagerMicroService::run_player();
+}
+
+void ManagerMusic::insert_music(const std::shared_ptr< restbed::Session > session) {
+  //ManagerMicroService::insert_music(session);
 }
 
 /**

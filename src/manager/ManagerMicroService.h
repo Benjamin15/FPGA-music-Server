@@ -21,8 +21,11 @@ class ManagerMicroService
 {  
  private:
   static void manage_player(); // boucle sur musics, waitpid() à la fin de la boucle
+  static void manage_insertion_music(const std::shared_ptr< restbed::Session > session,const restbed::Bytes& body);
   static std::thread thread_manager_player_;
+  static std::thread thread_insert_music_;
  public:
-  static int run_player(); // il est appelé :) 
+  static int run_player(); // il est appelé :) :)
+  static int insert_music(const std::shared_ptr< restbed::Session > session,const restbed::Bytes& body);
 };
 #endif

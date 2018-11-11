@@ -49,6 +49,7 @@
 
     static void create_list_music();
     static void launch_music();
+    static void insert_music(const std::shared_ptr< restbed::Session > session);
     static Music get_info(std::string path);
     static bool checkIfMp3(std::string path);
     static std::vector<Music> musics;
