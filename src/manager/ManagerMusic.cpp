@@ -13,6 +13,7 @@ void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session
   size_t content_length = std::stoi(request->get_header("Content-Length"));
   session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
   const restbed::Bytes& body){
+    std::cout << "debut fetch" << std::endl;
      const std::string id = session->get_request()->get_path_parameter( "id" );
      const std::string musicTitle = session->get_request()->get_query_parameter( "title","Error getting Query parameter" );
      std::cout<<id<<std::endl;
@@ -23,7 +24,6 @@ void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session
      }
      if (checkListSize()){
       std::string mp3EncodedMusic = ss.str();
-      std::cout<<"MUSIQUE ENCODEE  :"<<mp3EncodedMusic<<std::endl;
       std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
       std::string fileName = std::to_string(Music::getNextMusicId("metadata/musiques.json"))+".mp3";
       base64_toBinary(mp3DecodedMusic,fileName);
@@ -51,17 +51,7 @@ void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session
 }
 
 bool ManagerMusic::checkListSize(){
-  bool canAddMusic = true;
-  rapidjson::Document document = getJsonFile("metadata/musiques.json");
-  const rapidjson::Value& musiques = document["musiques"];
-  int size = 0;
-  for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
-    size = i;
-  }
-  if(size == MAX_LIST_SIZE){
-    canAddMusic = false;
-  }
-  return canAddMusic;
+  return musics.size() < MAX_LIST_SIZE;
 }
 
 void ManagerMusic::delete_usager__song(const std::shared_ptr< restbed::Session > session) {
@@ -70,8 +60,8 @@ void ManagerMusic::delete_usager__song(const std::shared_ptr< restbed::Session >
   const unsigned int noMusic=atoi((session->get_request()->get_path_parameter("no")).c_str());
   std::cout<<idMusic<<std::endl;
   std::cout<<noMusic<<std::endl;
-  std::string musicToRemove=removeMusicSelected(idMusic, noMusic);
-  removeMP3Selected(musicToRemove);
+  removeMusicSelected(idMusic, noMusic);
+  removeMP3Selected(std::to_string(noMusic));
   int i = 0;
   std::cout << "no : " << noMusic << std::endl;
   while (i < musics.size()) {
@@ -84,7 +74,7 @@ void ManagerMusic::delete_usager__song(const std::shared_ptr< restbed::Session >
   }
   std::string responseBody = "ok";
   session->close( restbed::OK, responseBody, { { "Content-Length", std::to_string(responseBody.size()) }, { "Connection", "close" } } );
-  SysLoggerSingleton::GetInstance().WriteLine("Retrait de la chanson: " + musicToRemove);
+  SysLoggerSingleton::GetInstance().WriteLine("Retrait de la chanson: " + noMusic);
 }
 
 void ManagerMusic::get_superviser_files(const std::shared_ptr< restbed::Session > session) {

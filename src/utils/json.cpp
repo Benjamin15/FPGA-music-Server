@@ -133,7 +133,7 @@ void remove_last_music() {
   fclose(fp);
 }
 
-std::string removeMusicSelected(const unsigned int idMusic, const unsigned int noMusic) {
+void removeMusicSelected(const unsigned int idMusic, const unsigned int noMusic) {
   int pos=0;
   bool musiqueTrouvee=false;
   std::string titreMusique="";
@@ -166,14 +166,12 @@ std::string removeMusicSelected(const unsigned int idMusic, const unsigned int n
     fclose(fp);
     std::cout<<"La musique dont l'ID est: " << idMusic << " et le numéro: " << noMusic << " est supprimée."<<std::endl;
   }
-
-  return titreMusique;
 }
 
-void removeMP3Selected(const std::string titre) {
-  std::string path= ("metadata/musique/" + titre + ".mp3");
+void removeMP3Selected(const std::string no) {
+  std::string path= ("metadata/musique/" + no + ".mp3");
   if(remove(path.c_str()) == 0)
-    std::cout<<"Le fichier "<< titre << ".mp3 "<< "est supprimé."<<std::endl;
+    std::cout<<"Le fichier "<< no << ".mp3 "<< "est supprimé."<<std::endl;
   else
     std::cout<<"Fichier introuvable"<<std::endl;
 }

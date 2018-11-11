@@ -19,7 +19,7 @@ void remove_last_music();
 std::string registerIds(std::string parameter);
 void registerMusic(Music music);
 std::string createIdentificationResponseJson(std::string token, std::string message);
-std::string removeMusicSelected(const unsigned int idMusic, const unsigned int noMusic);
+void removeMusicSelected(const unsigned int idMusic, const unsigned int noMusic);
 void removeMP3Selected(const std::string titre);
 void write_music(const std::vector<Music> musics);
 #endif
