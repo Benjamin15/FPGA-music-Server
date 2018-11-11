@@ -1,6 +1,7 @@
 #include "ManagerMicroService.h"
 
 std::thread ManagerMicroService::thread_manager_player_;
+std::thread ManagerMicroService::thread_insert_music_;
 
 void ManagerMicroService::manage_player() {
   while(1) {
@@ -21,6 +22,55 @@ void ManagerMicroService::manage_player() {
     }
   }
 }
+
+void ManagerMicroService::manage_insertion_music(const std::shared_ptr< restbed::Session > session,const restbed::Bytes& body) {
+   std::cout << "insertion de la chanson thread: "<< std::endl;
+   std::cout << &ManagerMusic::musics << std::endl;
+           std::cout<<"fetch: "<<std::endl;
+            const std::string id = session->get_request()->get_path_parameter( "id" );
+            const std::string musicTitle = session->get_request()->get_query_parameter( "title","Error getting Query parameter" );
+            std::cout<<id<<std::endl;
+            std::cout<<musicTitle<<std::endl;
+            std::stringstream ss;
+            for(auto byte: body){
+              ss<< byte;
+            }
+            if (ManagerMusic::checkListSize()){
+              std::string mp3EncodedMusic = ss.str();
+              std::cout<<"MUSIQUE ENCODEE  :"<<mp3EncodedMusic<<std::endl;
+              std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
+              std::string fileName = std::to_string(Music::getNextMusicId("metadata/musiques.json"))+".mp3";
+              base64_toBinary(mp3DecodedMusic,fileName);
+              std::string path = "metadata/musique/" + fileName;
+              if(!ManagerMusic::checkIfMp3(path)){
+                ResponseGenerator::sendResponse(session,ResponseGenerator::createUnsupportedMediaTypeResponse());
+              }
+              Music music = ManagerMusic::get_info(path);
+              User user = ManagerMusic::get_user_for_sent_music(std::stoi(id));
+              music.setMusicUser(user);
+              if(music.title_ == ""){
+                music.setMusicTitle(musicTitle);
+              }
+              music.setMusicNumber("metadata/musiques.json");
+              registerMusic(music);
+              ManagerMusic::musics.push_back(music);
+              SysLoggerSingleton::GetInstance().WriteLine("Soumission d'une nouvelle chanson: " + musicTitle);
+              ResponseGenerator::sendResponse(session,ResponseGenerator::createOkResponse());
+            }else if(!ManagerMusic::checkListSize()){
+              ResponseGenerator::sendResponse(session,ResponseGenerator::createRequestEntityTooLargeResponse());
+            }else{
+              ResponseGenerator::sendResponse(session,ResponseGenerator::createInternalServerErrorResponse());
+            }
+      std::cout << "fin de l insertion de la chanson : "<< std::endl;
+}
+
 int ManagerMicroService::run_player() {
   thread_manager_player_ = std::thread(manage_player);
+}
+
+int ManagerMicroService::insert_music(const std::shared_ptr< restbed::Session > session,const restbed::Bytes& body) {
+  thread_insert_music_ = std::thread(manage_insertion_music,session,body);
+  std::cout<<"avant join :"<<std::endl;
+  thread_insert_music_.detach();
+  std::cout<<"apres join :"<<std::endl;
 }
