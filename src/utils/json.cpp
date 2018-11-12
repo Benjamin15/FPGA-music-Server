@@ -62,8 +62,8 @@ std::string registerIds(std::string parameter){
 std::string createIdentificationResponseJson(std::string token, std::string message){
   std::stringstream result;
   result << "{ "
-    << "\"identificateur\": \"" << token << "\", "
-    << "\"message\": \"" << message << " }";
+    << "\"identificateur\": " << token << ", "
+    << "\"message\": \"" << message << "\" }";
   return result.str();
 }
 
