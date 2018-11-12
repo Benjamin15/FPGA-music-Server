@@ -45,14 +45,15 @@
     static void enabledMute(const std::shared_ptr< restbed::Session > session);
     static void disabledMute(const std::shared_ptr< restbed::Session > session);
     static bool checkListSize();
+    static bool checkUserMusics(int userId);
     static User get_user_for_sent_music(int userId);
 
     static void create_list_music();
     static void launch_music();
-    static void insert_music(const std::shared_ptr< restbed::Session > session);
     static Music get_info(std::string path);
     static bool checkIfMp3(std::string path);
     static std::vector<Music> musics;
-    static const int MAX_LIST_SIZE = 5;
+    static const int MAX_LIST_SIZE = 10;
+    static const int MAX_USER_MUSICS = 10;
   };
 #endif

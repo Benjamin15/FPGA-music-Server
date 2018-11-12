@@ -35,9 +35,8 @@ void ManagerMicroService::manage_insertion_music(const std::shared_ptr< restbed:
             for(auto byte: body){
               ss<< byte;
             }
-            if (ManagerMusic::checkListSize()){
+            if (ManagerMusic::checkListSize() && ManagerMusic::checkUserMusics(std::stoi(id))){
               std::string mp3EncodedMusic = ss.str();
-              std::cout<<"MUSIQUE ENCODEE  :"<<mp3EncodedMusic<<std::endl;
               std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
               std::string fileName = std::to_string(Music::getNextMusicId("metadata/musiques.json"))+".mp3";
               base64_toBinary(mp3DecodedMusic,fileName);

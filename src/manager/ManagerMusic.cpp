@@ -22,6 +22,16 @@ bool ManagerMusic::checkListSize(){
   return musics.size() < MAX_LIST_SIZE;
 }
 
+bool ManagerMusic::checkUserMusics(int userId){
+  int userMusics = 0;
+  for(int i=0;i< musics.size();i++){
+    if(musics[i].user_.id_== userId){
+      userMusics ++;
+    }
+  }
+  return userMusics <5;
+}
+
 void ManagerMusic::delete_usager__song(const std::shared_ptr< restbed::Session > session) {
   std::cout << "supprimer musique utilisateur" << std::endl;
   const unsigned int idMusic=atoi((session->get_request()->get_path_parameter("id")).c_str());
@@ -154,9 +164,7 @@ void ManagerMusic::launch_music() {
   ManagerMicroService::run_player();
 }
 
-void ManagerMusic::insert_music(const std::shared_ptr< restbed::Session > session) {
-  //ManagerMicroService::insert_music(session);
-}
+
 
 /**
  * decode info of music
