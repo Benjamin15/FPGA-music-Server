@@ -46,6 +46,8 @@
     static void disabledMute(const std::shared_ptr< restbed::Session > session);
     static bool checkListSize();
     static bool checkUserMusics(int userId);
+    static bool checkUserToken(int token);
+    static bool supressionPermission(int noMusic,int userId);
     static User get_user_for_sent_music(int userId);
 
     static void create_list_music();
