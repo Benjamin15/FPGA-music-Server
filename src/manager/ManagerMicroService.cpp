@@ -35,9 +35,9 @@ void ManagerMicroService::manage_insertion_music(const std::shared_ptr< restbed:
             for(auto byte: body){
               ss<< byte;
             }
-            if (ManagerMusic::checkListSize()){
+            if (ManagerMusic::checkListSize() && ManagerMusic::checkUserMusics(std::stoi(id))
+                && ManagerMusic::checkUserToken(std::stoi(id))){
               std::string mp3EncodedMusic = ss.str();
-              std::cout<<"MUSIQUE ENCODEE  :"<<mp3EncodedMusic<<std::endl;
               std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
               std::string fileName = std::to_string(Music::getNextMusicId("metadata/musiques.json"))+".mp3";
               base64_toBinary(mp3DecodedMusic,fileName);
@@ -56,6 +56,8 @@ void ManagerMicroService::manage_insertion_music(const std::shared_ptr< restbed:
               ManagerMusic::musics.push_back(music);
               SysLoggerSingleton::GetInstance().WriteLine("Soumission d'une nouvelle chanson: " + musicTitle);
               ResponseGenerator::sendResponse(session,ResponseGenerator::createOkResponse());
+            }else if(!ManagerMusic::checkUserToken(std::stoi(id))){
+              ResponseGenerator::sendResponse(session,ResponseGenerator::createForbiddenResponse());
             }else if(!ManagerMusic::checkListSize()){
               ResponseGenerator::sendResponse(session,ResponseGenerator::createRequestEntityTooLargeResponse());
             }else{

@@ -2,9 +2,20 @@
 std::vector<Music> ManagerMusic::musics;
 
 void ManagerMusic::get_usager_files(const std::shared_ptr< restbed::Session > session) {
-  std::string result = getListForUser(musics);
-  std::cout << result << std::endl;
-  session->close( restbed::OK, result, { { "Content-Length", std::to_string(result.size()) }, { "Connection", "close" } } );
+  const std::string id = session->get_request()->get_path_parameter( "id" );
+  std::cout<<"id tentative get file :"<<id<<std::endl;
+  bool canProceed = ManagerMusic::checkUserToken(std::stoi(id));
+  std::cout<<"canproceed:"<<canProceed<<std::endl;
+  if(!canProceed){
+    ResponseGenerator::sendResponse(session,ResponseGenerator::createForbiddenResponse());
+  }else if (canProceed){
+    updateMusicsOwner(std::stoi(id));
+    std::string result = getListForUser(musics);
+    std::cout << result << std::endl;
+    ResponseGenerator::sendResponse(session,ResponseGenerator::createOkResponse(result));
+  }else{
+    ResponseGenerator::sendResponse(session,ResponseGenerator::createInternalServerErrorResponse());
+  }
 }
 
 void ManagerMusic::insert_song(const std::shared_ptr< restbed::Session > session) {
@@ -22,27 +33,65 @@ bool ManagerMusic::checkListSize(){
   return musics.size() < MAX_LIST_SIZE;
 }
 
+bool ManagerMusic::checkUserMusics(int userId){
+  int userMusics = 0;
+  for(int i=0;i< musics.size();i++){
+    if(musics[i].user_.id_== userId){
+      userMusics ++;
+    }
+  }
+  return userMusics <5;
+}
+
+bool ManagerMusic::supressionPermission(int noMusic,int userId){
+  for(int i=0;i< musics.size();i++){
+    if(musics[i].id_== noMusic){
+      if(musics[i].user_.id_ == userId){
+        return true;
+      }
+      return false;
+    }
+  }
+}
+
+bool ManagerMusic::checkUserToken(int token){
+   rapidjson::Document idLogs = getJsonFile("metadata/idLogs.json");
+   rapidjson::Value& value = idLogs["UsersLogs"];
+   for(int i=0; i < value.GetArray().Size(); i++){
+      if(value[i]["Token"].GetUint()== token){
+        return true;
+      }
+   }
+  return false;
+}
+
 void ManagerMusic::delete_usager__song(const std::shared_ptr< restbed::Session > session) {
   std::cout << "supprimer musique utilisateur" << std::endl;
-  const unsigned int idMusic=atoi((session->get_request()->get_path_parameter("id")).c_str());
+  const unsigned int idUser=atoi((session->get_request()->get_path_parameter("id")).c_str());
   const unsigned int noMusic=atoi((session->get_request()->get_path_parameter("no")).c_str());
-  std::cout<<idMusic<<std::endl;
+  std::cout<<idUser<<std::endl;
   std::cout<<noMusic<<std::endl;
-  removeMusicSelected(idMusic, noMusic);
-  removeMP3Selected(std::to_string(noMusic));
-  int i = 0;
-  std::cout << "no : " << noMusic << std::endl;
-  while (i < musics.size()) {
-    std::cout << "no Music : " << musics[i].id_ << std::endl; 
-    if (musics[i].id_ == noMusic) {
-      std::cout << "musics find" << std::endl;
-      musics.erase(musics.begin() + i);
+  if(!ManagerMusic::checkUserToken(idUser)){
+    ResponseGenerator::sendResponse(session,ResponseGenerator::createForbiddenResponse());
+  }else if(!ManagerMusic::supressionPermission(noMusic,idUser)){
+    ResponseGenerator::sendResponse(session,ResponseGenerator::createMethodNotAllowedResponse());
+  }else{
+    std::cout<<"permission : "<<ManagerMusic::supressionPermission(noMusic,idUser)<<std::endl;
+    removeMusicSelected(idUser, noMusic);
+    removeMP3Selected(std::to_string(noMusic));
+    int i = 0;
+    std::cout << "no : " << noMusic << std::endl;
+    while (i < musics.size()) {
+      std::cout << "no Music : " << musics[i].id_ << std::endl; 
+      if (musics[i].id_ == noMusic) {
+        std::cout << "musics find" << std::endl;
+        musics.erase(musics.begin() + i);
+      }
+      i++;
     }
-    i++;
+    ResponseGenerator::sendResponse(session,ResponseGenerator::createOkResponse());
+    SysLoggerSingleton::GetInstance().WriteLine("Retrait de la chanson: " + noMusic);
   }
-  std::string responseBody = "ok";
-  session->close( restbed::OK, responseBody, { { "Content-Length", std::to_string(responseBody.size()) }, { "Connection", "close" } } );
-  SysLoggerSingleton::GetInstance().WriteLine("Retrait de la chanson: " + noMusic);
 }
 
 void ManagerMusic::get_superviser_files(const std::shared_ptr< restbed::Session > session) {
@@ -50,6 +99,15 @@ void ManagerMusic::get_superviser_files(const std::shared_ptr< restbed::Session 
   std::string result = getListForAdmin(musics);
   std::cout << result << std::endl;
   session->close( restbed::OK, result, { { "Content-Length", std::to_string(result.size()) }, { "Connection", "close" } } );
+}
+
+void ManagerMusic::updateMusicsOwner(int userId){
+  for(int i = 0; i< musics.size();i++ ){
+    if(musics[i].user_.id_ == userId ){
+      musics[i].owner_ = true;
+      std::cout<<"chanson du proprietaire trouvee :"<<musics[i].owner_<<std::endl;
+    }
+  }
 }
 
 void ManagerMusic::delete_superviser_song(const std::shared_ptr< restbed::Session > session) {
@@ -154,9 +212,7 @@ void ManagerMusic::launch_music() {
   ManagerMicroService::run_player();
 }
 
-void ManagerMusic::insert_music(const std::shared_ptr< restbed::Session > session) {
-  //ManagerMicroService::insert_music(session);
-}
+
 
 /**
  * decode info of music
