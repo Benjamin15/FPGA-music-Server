@@ -57,6 +57,6 @@
     static bool checkIfMp3(std::string path);
     static std::vector<Music> musics;
     static const int MAX_LIST_SIZE = 10;
-    static const int MAX_USER_MUSICS = 10;
+    static const int MAX_USER_MUSICS = 5;
   };
 #endif

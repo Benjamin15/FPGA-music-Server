@@ -40,7 +40,7 @@ bool ManagerMusic::checkUserMusics(int userId){
       userMusics ++;
     }
   }
-  return userMusics <5;
+  return userMusics < MAX_USER_MUSICS;
 }
 
 bool ManagerMusic::supressionPermission(int noMusic,int userId){
