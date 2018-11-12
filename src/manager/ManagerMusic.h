@@ -44,6 +44,7 @@
     static void set_down_volume(const std::shared_ptr< restbed::Session > session);
     static void enabledMute(const std::shared_ptr< restbed::Session > session);
     static void disabledMute(const std::shared_ptr< restbed::Session > session);
+    static void updateMusicsOwner(int userId);
     static bool checkListSize();
     static bool checkUserMusics(int userId);
     static bool checkUserToken(int token);

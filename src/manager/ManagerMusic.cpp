@@ -9,6 +9,7 @@ void ManagerMusic::get_usager_files(const std::shared_ptr< restbed::Session > se
   if(!canProceed){
     ResponseGenerator::sendResponse(session,ResponseGenerator::createForbiddenResponse());
   }else if (canProceed){
+    updateMusicsOwner(std::stoi(id));
     std::string result = getListForUser(musics);
     std::cout << result << std::endl;
     ResponseGenerator::sendResponse(session,ResponseGenerator::createOkResponse(result));
@@ -98,6 +99,15 @@ void ManagerMusic::get_superviser_files(const std::shared_ptr< restbed::Session 
   std::string result = getListForAdmin(musics);
   std::cout << result << std::endl;
   session->close( restbed::OK, result, { { "Content-Length", std::to_string(result.size()) }, { "Connection", "close" } } );
+}
+
+void ManagerMusic::updateMusicsOwner(int userId){
+  for(int i = 0; i< musics.size();i++ ){
+    if(musics[i].user_.id_ == userId ){
+      musics[i].owner_ = true;
+      std::cout<<"chanson du proprietaire trouvee :"<<musics[i].owner_<<std::endl;
+    }
+  }
 }
 
 void ManagerMusic::delete_superviser_song(const std::shared_ptr< restbed::Session > session) {

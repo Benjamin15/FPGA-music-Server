@@ -1,3 +1,1 @@
-Sun Nov 11 19:12:41 2018: Emission d'un nouvel identificateur d'usager ordinaire: 1165102800
-Sun Nov 11 19:12:46 2018: Emission d'un nouvel identificateur d'usager ordinaire: 2109512874
-Sun Nov 11 19:12:52 2018: Emission d'un nouvel identificateur d'usager ordinaire: 2129340335
+Sun Nov 11 20:08:45 2018: Emission d'un nouvel identificateur d'usager ordinaire: 1365848947
