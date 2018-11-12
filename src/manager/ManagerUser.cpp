@@ -6,7 +6,7 @@ void ManagerUser::identify(const std::shared_ptr< restbed::Session > session){
   size_t content_length = request->get_body().size();
   session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
   const restbed::Bytes& body){
-     const std::string parameter = session->get_request()->get_query_parameter("name","Error getting Query parameter");
+     const std::string parameter = session->get_request()->get_query_parameter("body","Error getting Query parameter");
      rapidjson::Document document;
      document.Parse(parameter.c_str());
      srand(time(NULL));
@@ -22,17 +22,21 @@ void ManagerUser::identify(const std::shared_ptr< restbed::Session > session){
      std::string compare = registerIds(buffer.GetString());
      std::string response;
      if(!compare.compare("")){
+       std::cout << "succes 1 " << std::endl;
        response = createIdentificationResponseJson(std::to_string(token), "Bienvenue sur l'application Café-Bistro Elevation !");
        ResponseGenerator::sendResponse(session,ResponseGenerator::createOkResponse(response));
      }
      else if(!compare.compare("Erreur")){
+       std::cout << "Erreur" << std::endl;
        ResponseGenerator::sendResponse(session,ResponseGenerator::createBadRequestResponse());
      }
      else if(compare.compare("")){
+      std::cout << "succes 2 " << std::endl;
       SysLoggerSingleton::GetInstance().WriteLine("Emission d'un nouvel identificateur d'usager ordinaire: " + std::to_string(token)); 
       response = createIdentificationResponseJson(compare, "Bienvenue sur l'application Café-Bistro Elevation !");
       ResponseGenerator::sendResponse(session,ResponseGenerator::createOkResponse(response));
      }else{
+       std::cout << "erreur interne" << std::endl;
        ResponseGenerator::sendResponse(session,ResponseGenerator::createInternalServerErrorResponse());
      }
   });
