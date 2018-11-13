@@ -127,6 +127,7 @@ void remove_last_music() {
   fp = fopen("metadata/musiques.json", "wb");
   rapidjson::Value& items = doc["musiques"];
   items.Erase(items.Begin());
+  std::cout << "item remove" << std::endl;
   rapidjson::FileWriteStream os(fp, buffer_writer, sizeof(buffer_writer));
   rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
   doc.Accept(writer);

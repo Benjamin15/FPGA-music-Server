@@ -1,5 +1,4 @@
 #include "player.h"
-
 int main(int argc, char **argv) {
 
     initPlayer();
@@ -149,6 +148,8 @@ struct stat get_metadata(int fd, char* filename, FILE* fp) {
  */ 
 void decode() {
         // Decode frame and synthesize loop
+    std::cout << "debut decode" << std::endl;
+    int nbErrorBufLen = 0;
     while (1) {
 
         // Decode frame from the stream
@@ -156,6 +157,8 @@ void decode() {
             if (MAD_RECOVERABLE(mad_stream.error)) {
                 continue;
             } else if (mad_stream.error == MAD_ERROR_BUFLEN) {
+                if (nbErrorBufLen++ > 10)
+                    break;
                 continue;
             } else {
                 break;
@@ -165,6 +168,8 @@ void decode() {
         mad_synth_frame(&mad_synth, &mad_frame);
         output(&mad_synth.pcm);
     }
+
+    std::cout << "decodage fini" << std::endl;
 }
 
 /**
