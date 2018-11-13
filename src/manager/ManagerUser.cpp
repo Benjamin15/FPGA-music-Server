@@ -11,11 +11,11 @@ void ManagerUser::identify(const std::shared_ptr< restbed::Session > session){
      document.Parse(parameter.c_str());
      srand(time(NULL));
      int token = rand();
-     std::time_t time = std::time(0);
-     struct tm *aTime = localtime(&time);
-     int hour=aTime->tm_hour;
+     std::chrono::milliseconds timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()) ;
+     int time = timestamp.count();
+
      document.AddMember("Token", token, document.GetAllocator());
-     document.AddMember("Time", hour, document.GetAllocator());
+     document.AddMember("Time", time, document.GetAllocator());
      rapidjson::StringBuffer buffer;
      rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
      document.Accept(writer);

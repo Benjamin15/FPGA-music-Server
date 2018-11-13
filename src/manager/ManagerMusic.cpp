@@ -4,7 +4,7 @@ std::vector<Music> ManagerMusic::musics;
 void ManagerMusic::get_usager_files(const std::shared_ptr< restbed::Session > session) {
   const std::string id = session->get_request()->get_path_parameter( "id" );
   std::cout<<"id tentative get file :"<<id<<std::endl;
-  bool canProceed = ManagerMusic::checkUserToken(std::stoi(id));
+  bool canProceed = ManagerMusic::checkUserToken(std::stoi(id)) && isValidToken(std::stoi(id));
   std::cout<<"canproceed:"<<canProceed<<std::endl;
   if(!canProceed){
     ResponseGenerator::sendResponse(session,ResponseGenerator::createForbiddenResponse());
@@ -71,7 +71,7 @@ void ManagerMusic::delete_usager__song(const std::shared_ptr< restbed::Session >
   const unsigned int noMusic=atoi((session->get_request()->get_path_parameter("no")).c_str());
   std::cout<<idUser<<std::endl;
   std::cout<<noMusic<<std::endl;
-  if(!ManagerMusic::checkUserToken(idUser)){
+  if(!ManagerMusic::checkUserToken(idUser) && !isValidToken(idUser)){
     ResponseGenerator::sendResponse(session,ResponseGenerator::createForbiddenResponse());
   }else if(!ManagerMusic::supressionPermission(noMusic,idUser)){
     ResponseGenerator::sendResponse(session,ResponseGenerator::createMethodNotAllowedResponse());
