@@ -110,8 +110,7 @@ void Rest::createRoute(){
  */ 
 void Rest::run() {
     ManagerMusic::create_list_music();
-    //ManagerMusic::launch_music();
-    isValidToken(1297604460);
+    ManagerMusic::launch_music();
     std::cout << settings_->get_bind_address() << std::endl;
     service_->start( settings_ );
 }
