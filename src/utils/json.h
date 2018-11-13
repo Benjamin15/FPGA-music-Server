@@ -8,6 +8,7 @@
 #include "rapidjson/filereadstream.h"
 #include "rapidjson/filewritestream.h"
 #include <rapidjson/writer.h>
+#include <chrono>
 #include "rapidjson/document.h"
 #include "../model/Music.h"
 
@@ -22,4 +23,5 @@ std::string createIdentificationResponseJson(std::string token, std::string mess
 void removeMusicSelected(const unsigned int idMusic, const unsigned int noMusic);
 void removeMP3Selected(const std::string titre);
 void write_music(const std::vector<Music> musics);
+bool isValidToken(int token);
 #endif

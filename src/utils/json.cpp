@@ -185,3 +185,27 @@ void write_music(const std::vector<Music> musics) {
   document.Accept(writer);
   fclose(fp);
 }
+
+bool isValidToken(int token){
+  rapidjson::Document document = getJsonFile("metadata/idLogs.json");
+  rapidjson::Value& usersLogs = document["UsersLogs"];
+
+  std::chrono::milliseconds timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()) ;
+  int time = timestamp.count();
+  std::cout << "Current time: " << time << std::endl;  
+  for (rapidjson::SizeType i = 0; i < usersLogs.Size(); i++) { 
+    if(usersLogs[i]["Token"].GetUint()==token) {
+      std::cout<<"Token: " << usersLogs[i]["Token"].GetUint() <<  " trouvé." <<std::endl;
+      std::cout<<"Time: " << usersLogs[i]["Time"].GetUint() <<  " trouvé." <<std::endl;
+      if(time - usersLogs[i]["Time"].GetUint() >= 24*60*60*1000){
+        std::cout << "Token invalide" << std::endl; 
+        return false;
+      }
+      std::cout << "Token toujours valide" << std::endl;
+      return true;
+    }
+  }
+  std::cout << "user not found" << std::endl;
+  return false;
+
+}
