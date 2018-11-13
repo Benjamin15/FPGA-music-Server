@@ -23,7 +23,8 @@ void writeJsonFile(const char* path, const rapidjson::Document& d) {
   rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
   d.Accept(writer);
   fclose(fp);
-  }
+}
+
 std::string registerIds(std::string parameter){
   FILE* fp = fopen("metadata/idLogs.json", "rb");
   char buffer_reader[65536];
@@ -54,7 +55,6 @@ std::string registerIds(std::string parameter){
     rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
     readDoc.Accept(writer);
     fclose(fp);
-    return token;
   }
   return token;
 }
@@ -168,15 +168,10 @@ void removeMusicSelected(const unsigned int idMusic, const unsigned int noMusic)
   }
 }
 
-void removeMP3Selected(const std::string no) {
-  std::string path= ("metadata/musique/" + no + ".mp3");
-  if(remove(path.c_str()) == 0)
-    std::cout<<"Le fichier "<< no << ".mp3 "<< "est supprimé."<<std::endl;
-  else
-    std::cout<<"Fichier introuvable"<<std::endl;
-}
-
-
+/**
+ * This method write every musics in the vector to the musiques.json
+ * @param musics
+ */ 
 void write_music(const std::vector<Music> musics) {
   std::string json = getListForAdmin(musics);
   std::cout << "json : " << json.c_str() << std::endl;
