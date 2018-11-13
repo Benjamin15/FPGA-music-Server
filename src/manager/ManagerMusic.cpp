@@ -176,7 +176,8 @@ User ManagerMusic::get_user_for_sent_music(int userId){
     if(temp == userId) {
       userMac = value[i]["MAC"].GetString();
       userIp = value[i]["ip"].GetString();
-      userName = value[i]["nom"].GetString();
+      if (value[i]["nom"].IsString())
+        userName = value[i]["nom"].GetString();
     }
   }
   User user(userId, userName, userIp, userMac);
