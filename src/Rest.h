@@ -9,9 +9,9 @@
 #include "rapidjson/filereadstream.h"
 #include "rapidjson/document.h"
 #include <cstdio>
-#include "manager/ManagerMusic.h"
-#include "manager/ManagerStatistiques.h"
-#include "manager/ManagerUser.h"
+#include "dispatcher/DispatcherMusic.h"
+#include "dispatcher/DispatcherStatistics.h"
+#include "dispatcher/DispatcherUser.h"
 #include "utils/json.h"
 
 /**
@@ -35,6 +35,5 @@ class Rest
     std::shared_ptr<restbed::Service> service_;
     std::shared_ptr<restbed::Settings> settings_;
     std::shared_ptr<restbed::SSLSettings> ssl_settings_;
-
 };
 #endif

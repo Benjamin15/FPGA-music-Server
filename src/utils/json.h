@@ -1,5 +1,4 @@
-#ifndef JSON_H
-#define JSON_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -11,6 +10,7 @@
 #include <chrono>
 #include "rapidjson/document.h"
 #include "../model/Music.h"
+#include "../exception/Exception.h"
 
 rapidjson::Document getJsonFile(const char* path);
 void writeJsonFile(const char* path, const rapidjson::Document& d);
@@ -22,6 +22,5 @@ void registerMusic(Music music);
 std::string createIdentificationResponseJson(std::string token, std::string message);
 void removeMusicSelected(const unsigned int idMusic, const unsigned int noMusic);
 void removeMP3Selected(const std::string titre);
-void write_music(const std::vector<Music> musics);
+void write_music(std::vector<Music> musics);
 bool isValidToken(int token);
-#endif

@@ -148,7 +148,7 @@ struct stat get_metadata(int fd, char* filename, FILE* fp) {
  */ 
 void decode() {
         // Decode frame and synthesize loop
-    std::cout << "debut decode" << std::endl;
+    std::cout << "decodage" << std::endl; 
     int nbErrorBufLen = 0;
     while (1) {
 
@@ -168,8 +168,6 @@ void decode() {
         mad_synth_frame(&mad_synth, &mad_frame);
         output(&mad_synth.pcm);
     }
-
-    std::cout << "decodage fini" << std::endl;
 }
 
 /**

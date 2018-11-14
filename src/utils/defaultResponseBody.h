@@ -1,6 +1,6 @@
 #pragma once
 
-namespace responseBody{
+namespace responseBody {
 
     constexpr const auto OK = "Ok"; //200
     constexpr const auto BAD_REQUEST = "Mauvaise requete (erreur dans le json)"; //400

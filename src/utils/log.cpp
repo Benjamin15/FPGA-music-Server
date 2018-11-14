@@ -24,6 +24,6 @@
  
     std::string timestampWithoutEndl(timestamp);    
     timestampWithoutEndl = timestampWithoutEndl.substr(0, 24);
- 
+    std::cout << content << std::endl;
     mStream << timestampWithoutEndl << ": " << content << std::endl;
   }

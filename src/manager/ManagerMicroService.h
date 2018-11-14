@@ -1,5 +1,4 @@
-#ifndef MANAGE_MICRO_SERVICE_H
-#define MANAGE_MICRO_SERVICE_H
+#pragma once
 #include <memory>
 #include <iostream>
 #include <thread>
@@ -25,8 +24,9 @@ class ManagerMicroService
   static void manage_insertion_music(const std::shared_ptr< restbed::Session > session,const restbed::Bytes& body);
   static std::thread thread_manager_player_;
   static std::thread thread_insert_music_;
+  static std::mutex mutex;
+
  public:
   static int run_player();
   static int insert_music(const std::shared_ptr< restbed::Session > session,const restbed::Bytes& body);
 };
-#endif

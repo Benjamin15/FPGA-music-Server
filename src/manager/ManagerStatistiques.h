@@ -1,5 +1,4 @@
-#ifndef MANAGE_STATISTIQUES_H
-#define MANAGE_STATISTIQUES_H
+#pragma once
 #include <memory>
 #include <restbed>
 #include <iostream>
@@ -14,4 +13,3 @@ class ManagerStatistiques
   public:
     static void get_statistiques(const std::shared_ptr< restbed::Session > session);
 };
-#endif

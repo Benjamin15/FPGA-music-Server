@@ -25,6 +25,17 @@ void writeJsonFile(const char* path, const rapidjson::Document& d) {
   fclose(fp);
 }
 
+std::string find_token(rapidjson::Value& users, rapidjson::Value& mac) {
+  std::string token = "0";
+  for (rapidjson::SizeType i = 0; i < users.Size(); i++) {
+    std::string temp = users[i]["MAC"].GetString();
+    if(!temp.compare(mac.GetString())) {
+      token = std::to_string(users[i]["Token"].GetUint());
+    }
+  }
+  return token;
+}
+
 std::string registerIds(std::string parameter){
   FILE* fp = fopen("metadata/idLogs.json", "rb");
   char buffer_reader[65536];
@@ -33,22 +44,13 @@ std::string registerIds(std::string parameter){
   readDoc.ParseStream(is);
   fclose(fp);
   rapidjson::Document writeDoc;
-  if(writeDoc.Parse<0>(parameter.c_str()).HasParseError()){
-    return "Erreur";
-  }
-  rapidjson::Value& value = readDoc["UsersLogs"];
+  if(writeDoc.Parse<0>(parameter.c_str()).HasParseError())
+    throw BadRequestException();
+  rapidjson::Value& users = readDoc["UsersLogs"];
   rapidjson::Value& mac = writeDoc["MAC"];
-  bool macNotRegistered = true;
-  std::string token = "";
-  for (rapidjson::SizeType i = 0; i < value.Size(); i++) {
-    std::string temp = value[i]["MAC"].GetString();
-    if(!temp.compare(mac.GetString())) {
-      macNotRegistered = false;
-      token = std::to_string(value[i]["Token"].GetUint());
-    }
-  }
-  if(macNotRegistered){
-    value.PushBack(writeDoc.GetObject(), readDoc.GetAllocator());
+  std::string token = find_token(users, mac);
+  if (token == "0"){
+    users.PushBack(writeDoc.GetObject(), readDoc.GetAllocator());
     fp = fopen("metadata/idLogs.json","w+");
     char buffer_writer[65536];
     rapidjson::FileWriteStream os(fp, buffer_writer, sizeof(buffer_writer));
@@ -92,7 +94,6 @@ void registerMusic(Music music){
   rapidjson::Document writeDoc;
   writeDoc.Parse<0>(musicJson.c_str()).HasParseError();
   rapidjson::Value& value = readDoc["musiques"];
-  std::cout<<musicJson<<std::endl;
   value.PushBack(writeDoc.GetObject(), readDoc.GetAllocator());
   fp = fopen("metadata/musiques.json","w+");
   char buffer_writer[65536];
@@ -127,7 +128,6 @@ void remove_last_music() {
   fp = fopen("metadata/musiques.json", "wb");
   rapidjson::Value& items = doc["musiques"];
   items.Erase(items.Begin());
-  std::cout << "item remove" << std::endl;
   rapidjson::FileWriteStream os(fp, buffer_writer, sizeof(buffer_writer));
   rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
   doc.Accept(writer);
@@ -151,7 +151,6 @@ void removeMusicSelected(const unsigned int idMusic, const unsigned int noMusic)
 
   for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
     if(musiques[i]["no"].GetUint()==noMusic) {
-      std::cout<<"ID: " << musiques[i]["id"].GetUint() << " et numéro: " << musiques[i]["no"].GetUint() << " trouvés." <<std::endl;
       titreMusique=musiques[i]["titre"].GetString();
       pos=(int)i;
       musiqueTrouvee=true;
@@ -165,7 +164,6 @@ void removeMusicSelected(const unsigned int idMusic, const unsigned int noMusic)
     rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
     d.Accept(writer);
     fclose(fp);
-    std::cout<<"La musique dont l'ID est: " << idMusic << " et le numéro: " << noMusic << " est supprimée."<<std::endl;
   }
 }
 
@@ -182,9 +180,8 @@ void removeMP3Selected(const std::string no) {
  * This method write every musics in the vector to the musiques.json
  * @param musics
  */ 
-void write_music(const std::vector<Music> musics) {
+void write_music(std::vector<Music> musics) {
   std::string json = getListForAdmin(musics);
-  std::cout << "json : " << json.c_str() << std::endl;
   rapidjson::Document document;
   document.Parse(json.c_str());
   remove("metadata/musiques.json");
@@ -194,28 +191,4 @@ void write_music(const std::vector<Music> musics) {
   rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
   document.Accept(writer);
   fclose(fp);
-}
-
-bool isValidToken(int token){
-  rapidjson::Document document = getJsonFile("metadata/idLogs.json");
-  rapidjson::Value& usersLogs = document["UsersLogs"];
-
-  std::chrono::milliseconds timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()) ;
-  int time = timestamp.count();
-  std::cout << "Current time: " << time << std::endl;  
-  for (rapidjson::SizeType i = 0; i < usersLogs.Size(); i++) { 
-    if(usersLogs[i]["Token"].GetUint()==token) {
-      std::cout<<"Token: " << usersLogs[i]["Token"].GetUint() <<  " trouvé." <<std::endl;
-      std::cout<<"Time: " << usersLogs[i]["Time"].GetUint() <<  " trouvé." <<std::endl;
-      if(time - usersLogs[i]["Time"].GetUint() >= 24*60*60*1000){
-        std::cout << "Token invalide" << std::endl; 
-        return false;
-      }
-      std::cout << "Token toujours valide" << std::endl;
-      return true;
-    }
-  }
-  std::cout << "user not found" << std::endl;
-  return false;
-
 }
