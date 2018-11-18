@@ -2,12 +2,13 @@
 
 void insert(Music music) {
   mutex.lock();
+  registerMusic(music);
   musics.push_back(music);
   mutex.unlock();
 }
 
-void remove(int no) {
-  int i = 0;
+void remove(unsigned int no) {
+  std::size_t i = 0;
   mutex.lock();
   while (i < musics.size()) {
     if (musics[i].no_ == no) {
@@ -18,26 +19,26 @@ void remove(int no) {
   mutex.unlock();
 }
 
-void reverse(int noFirst, int noSecond) {
+void reverse(unsigned int noFirst, unsigned int noSecond) {
   mutex.lock();
   std::iter_swap(find(musics.begin(), musics.end(), noFirst), find(musics.begin(), musics.end(), noSecond));
   write_music(musics);
   mutex.unlock();
 }
 
-void updateMusicsOwner(int token) {
-  for(int i = 0; i< musics.size();i++ ){
-    if(musics[i].user_.id_ == token ){
+void updateMusicsOwner(unsigned int token) {
+  for(std::size_t i = 0; i< musics.size();i++ ) {
+    if(musics[i].user_.id_ == token ) {
       musics[i].owner_ = true;
     }
   }
 }
 
 
-bool checkUserMusics(int token) {
+bool checkUserMusics(unsigned int token) {
   int userMusics = 0;
-  for(int i=0;i< musics.size();i++){
-    if(musics[i].user_.id_== token ){
+  for (std::size_t i = 0 ; i < musics.size() ; i++) {
+    if (musics[i].user_.id_ == token ){
       userMusics ++;
     }
   }
@@ -55,10 +56,10 @@ void create_list_music() {
   const rapidjson::Value& musiques = d["musiques"];
   for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
     std::string mac = musiques[i]["MAC"].GetString();
-    int idUser = musiques[i]["id"].GetUint();
+    unsigned int idUser = musiques[i]["id"].GetUint();
     std::string suggestBy = musiques[i]["proposeePar"].GetString();
     std::string ip = musiques[i]["ip"].GetString();
-    int idMusic = musiques[i]["no"].GetUint();
+    unsigned int idMusic = musiques[i]["no"].GetUint();
     std::string duration = musiques[i]["duree"].GetString();
     std::string artist = musiques[i]["artiste"].GetString();
     std::string title = musiques[i]["titre"].GetString();
@@ -70,14 +71,22 @@ void create_list_music() {
 }
 
 
-bool supressionPermission(int noMusic, int token){
-  for(int i=0;i< musics.size();i++) {
-    if(musics[i].no_== noMusic){
-      if(musics[i].user_.id_ == token){
+bool supressionPermission(unsigned int noMusic, unsigned int token) {
+  for(size_t i = 0 ; i < musics.size() ; i++) {
+    if (musics[i].no_ == noMusic) {
+      if (musics[i].user_.id_ == token) {
         return true;
       }
       return false;
     }
   }
   return false;
+}
+
+bool checkListSize() {
+  return musics.size() < MAX_LIST_SIZE;
+}
+
+std::vector<Music> getMusics() {
+  return musics;
 }

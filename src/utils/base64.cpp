@@ -42,7 +42,6 @@ void base64_toBinary(std::string base64music,std::string title){
     std::string path = "metadata/musique/" + title ;
     FILE* fp = fopen(path.c_str(),"w+");
     fclose(fp);
-    char * buf;
     int size = base64music.size();
     std::ofstream output;
     output.open(path, std::ios::out | std::ios::binary);

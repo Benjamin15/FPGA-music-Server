@@ -1,24 +1,24 @@
 #include "ManagerUser.h"
 
-bool checkUserToken(int token) {
+bool checkUserToken(unsigned int token) {
    rapidjson::Document idLogs = getJsonFile("metadata/idLogs.json");
    rapidjson::Value& value = idLogs["UsersLogs"];
-   for(int i = 0; i < value.GetArray().Size(); i++){
-      if(value[i]["Token"].GetUint() == token){
+   for (rapidjson::SizeType i = 0; i < value.GetArray().Size(); i++) {
+      if (value[i]["Token"].GetUint() == token) {
         return true;
       }
    }
   return false;
 }
 
-bool isValidToken(int token) {
+bool isValidToken(unsigned int token) {
   rapidjson::Document document = getJsonFile("metadata/idLogs.json");
   rapidjson::Value& usersLogs = document["UsersLogs"];
-  std::chrono::milliseconds timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()) ;
+  std::chrono::milliseconds timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
   int time = timestamp.count();
   for (rapidjson::SizeType i = 0; i < usersLogs.Size(); i++) { 
     if (usersLogs[i]["Token"].GetUint() == token) {
-      if (time - usersLogs[i]["Time"].GetUint() >= 24*60*60*1000){
+      if (time - usersLogs[i]["Time"].GetUint() >= 24*60*60*1000) {
         std::cout << "Token invalide" << std::endl; 
         return false;
       }
@@ -28,16 +28,16 @@ bool isValidToken(int token) {
   return false;
 }
 
-bool identify(int token) {
+bool identify(unsigned int token) {
   return checkUserToken(token) && isValidToken(token);
 }
 
-User get_user_for_sent_music(int token){ 
+User get_user_for_sent_music(unsigned int token){ 
   rapidjson::Document document = getJsonFile("metadata/idLogs.json");
   rapidjson::Value& value = document["UsersLogs"];
   std::string userMac, userIp, userName;
   for (rapidjson::SizeType i = 0; i < value.Size(); i++) {
-    int temp = value[i]["Token"].GetUint();
+    unsigned int temp = value[i]["Token"].GetUint();
     if(temp == token) {
       userMac = value[i]["MAC"].GetString();
       userIp = value[i]["ip"].GetString();
@@ -58,6 +58,7 @@ void update_password(std::string old_password, std::string new_password) {
   else if (new_password == "")
     throw BadRequestException();
   else {
+    // TODO : Useless je pense, à verifier
     admin[i]["mot_de_passe"].SetObject();
     admin[i]["mot_de_passe"].SetString(new_password.c_str(), new_password.length());
     writeJsonFile("metadata/admin.json", d);
@@ -65,7 +66,7 @@ void update_password(std::string old_password, std::string new_password) {
 }
 
 std::string sign_in(std::string body) {
-  srand(time(NULL));
+  /*srand(time(NULL));
   std::string token = std::to_string(rand());
   std::chrono::milliseconds timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()) ;
   int64_t time = timestamp.count();
@@ -83,5 +84,6 @@ std::string sign_in(std::string body) {
   } else {
     SysLoggerSingleton::GetInstance().WriteLine("Emission de l'identificateur " + response_token); 
     return createIdentificationResponseJson(token, "Bienvenue sur l'application Café-Bistro Elevation !");
-  }
+  }*/ return "";
 }
+

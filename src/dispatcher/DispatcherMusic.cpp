@@ -6,25 +6,44 @@ void get_usager_files(const std::shared_ptr< restbed::Session > session) {
     sendResponse(session,createForbiddenResponse());
   else {
     updateMusicsOwner(token);
-    std::string result = getListForUser(musics);
+    std::string result = getListForUser(getMusics());
     std::cout << result << std::endl;
     sendResponse(session,createOkResponse(result));
   }
 }
 
 void insert_song(const std::shared_ptr< restbed::Session > session) {
-  const auto request = session->get_request();
-  const int token = atoi(request->get_path_parameter( "id" ).c_str());
-  if (!identify(token))
-    sendResponse(session,createForbiddenResponse());
-  else {
-    std::cout << "debut de l'insertion de la musique" << std::endl;
-    size_t content_length = std::stoi(request->get_header("Content-Length"));
-    session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
-    const restbed::Bytes& body){
-      ManagerMicroService::insert_music(session,body);
-    });
-  }
+  std::cout << "debut de l'insertion de la musique" << std::endl;
+  size_t content_length = std::stoi(session->get_request()->get_header("Content-Length"));
+  session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
+  const restbed::Bytes& body) {
+    const auto request = session->get_request();
+    const unsigned int token = atoi(request->get_path_parameter( "id" ).c_str());
+    if (!identify(token))
+      sendResponse(session,createForbiddenResponse());
+    std::string bodyString(body.begin(), body.end());
+    if (!checkUserToken(token) && !isValidToken(token))
+      sendResponse(session,createForbiddenResponse());
+    else if (checkListSize() && checkUserMusics(token) && checkUserToken(token)) {
+      std::string mp3EncodedMusic = bodyString;
+      std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
+      std::string fileName = std::to_string(Music::getNextMusicId("metadata/musiques.json"))+".mp3";
+      base64_toBinary(mp3DecodedMusic,fileName);
+      std::string path = "metadata/musique/" + fileName;
+      if (!checkIfMp3(path))
+        sendResponse(session, createUnsupportedMediaTypeResponse());
+      Music music = get_info(path);
+      User user = get_user_for_sent_music(token); // Ca fait quoi ça ?
+      music.setMusicUser(user);
+      music.setMusicNumber("metadata/musiques.json");
+      insert(music);
+      SysLoggerSingleton::GetInstance().WriteLine("Soumission d'une nouvelle chanson: " + music.title_);
+      sendResponse(session, createOkResponse());
+    } else if (!checkListSize())
+      sendResponse(session, createRequestEntityTooLargeResponse());
+    else
+      sendResponse(session, createInternalServerErrorResponse());
+  });
 }
 
 void delete_usager__song(const std::shared_ptr< restbed::Session > session) {
@@ -48,7 +67,7 @@ void delete_usager__song(const std::shared_ptr< restbed::Session > session) {
 }
 
 void get_superviser_files(const std::shared_ptr< restbed::Session > session) {
-  std::string result = getListForAdmin(musics);
+  std::string result = getListForAdmin(getMusics());
   session->close( restbed::OK, result, { { "Content-Length", std::to_string(result.size()) }, { "Connection", "close" } } );
 }
 
@@ -67,8 +86,8 @@ void reverse_song(const std::shared_ptr< restbed::Session > session) {
     document.SetObject();
     std::string bodyString = std::string(body.begin(), body.end());
     document.Parse<0>(bodyString.c_str(), bodyString.length());
-    int first = document["une"].GetInt();
-    int second = document["autre"].GetInt();
+    unsigned int first = document["une"].GetUint();
+    unsigned int second = document["autre"].GetUint();
     reverse(first, second); 
     std::cout << "Modification de l'ordre de passage des chansons" << std::endl;
     SysLoggerSingleton::GetInstance().WriteLine("Modification de l'ordre de passage des chansons");
@@ -97,5 +116,5 @@ void disabledMute(const std::shared_ptr< restbed::Session > session) {
 }
 
 void launch_music() {
-  ManagerMicroService::run_player();
+  run_player();
 }

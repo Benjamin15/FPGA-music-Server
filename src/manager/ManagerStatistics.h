@@ -1,4 +1,5 @@
 #pragma once
+
 #include <memory>
 #include <restbed>
 #include <iostream>
@@ -7,9 +8,9 @@
  * Class which manage all users
  */  
 
-class ManagerStatistiques
+class ManagerStatistics
 {  
   private: 
   public:
-    static void get_statistiques(const std::shared_ptr< restbed::Session > session);
+    static void get_statistics(const std::shared_ptr< restbed::Session > session);
 };

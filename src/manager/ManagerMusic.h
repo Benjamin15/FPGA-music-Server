@@ -1,25 +1,28 @@
 #pragma once
+
 #include <memory>
 #include <restbed>
 #include <iostream>
 #include <iomanip>
 #include <vector>
 #include <algorithm>
-#include "rapidjson/filereadstream.h"
-#include "rapidjson/document.h"
+#include <mutex>
+#include "../header/rapidjson.h"
 #include "../model/Music.h"
 #include "../utils/json.h"
 
 void insert(Music music);
-void remove(int no);
+void remove(unsigned int no);
 void create_list_music();
-void updateMusicsOwner(int token);
-void reverse(int noFirst, int noSecond);
-bool checkUserMusics(int token);
-bool supressionPermission(int noMusic, int token);
+void updateMusicsOwner(unsigned int token);
+void reverse(unsigned int noFirst, unsigned int noSecond);
+bool checkUserMusics(unsigned int token);
+bool supressionPermission(unsigned int noMusic, unsigned int token);
+bool checkListSize();
+std::vector<Music> getMusics();
 
-std::vector<Music> musics;
-std::mutex mutex;
+static std::vector<Music> musics;
+static std::mutex mutex;
 
 const int MAX_LIST_SIZE = 10;
 const int MAX_USER_MUSICS = 5;

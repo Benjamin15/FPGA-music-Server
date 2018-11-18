@@ -1,5 +1,5 @@
-#ifndef USER_H
-#define USER_H
+#pragma once
+
 #include <memory>
 #include <iostream>
 #include <sstream>
@@ -13,14 +13,7 @@ class User
   User(unsigned int id, std::string name, std::string ip, std::string mac)
       : id_(id), name_(name), ip_(ip), mac_(mac){}
   User() : id_(0), name_(""), ip_(""), mac_("") {}
-  friend bool operator==(const User& userFirst, const User& userSecond){
-          return (userFirst.id_== userSecond.id_ && userFirst.name_==userSecond.name_
-    && userFirst.ip_==userSecond.ip_ && userFirst.mac_==userSecond.mac_);
-  }
-  friend bool operator<(const User& userFirst, const User& userSecond){
-          return (userFirst.id_< userSecond.id_ && userFirst.name_<userSecond.name_
-    && userFirst.ip_<userSecond.ip_ && userFirst.mac_<userSecond.mac_);
-  }
+
   //std::ostream& operator<<(std::ostream &strm);
   //std::string toString();
   
@@ -31,5 +24,3 @@ class User
  private:
 
 };
-
-#endif

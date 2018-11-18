@@ -9,8 +9,10 @@ void connect(const std::shared_ptr< restbed::Session > session){
     const std::string body_parameter = session->get_request()->get_query_parameter("body","Error getting Query parameter");
     try {
       std::string response = sign_in(body_parameter);
+      std::cout << "return response" << std::endl;
       sendResponse(session, createOkResponse(response));
     } catch (BadRequestException& error) {
+      std::cout << "error" << std::endl;
       error.print_error();
       sendResponse(session, createBadRequestResponse());
     }

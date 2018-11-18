@@ -1,21 +1,22 @@
 #pragma once
+
 #include "log.h"
 
-  class SysLoggerSingleton
+class SysLoggerSingleton
+{
+ public:
+  SysLoggerSingleton(SysLoggerSingleton const&) = delete;             
+  SysLoggerSingleton(SysLoggerSingleton&&) = delete;                  
+  SysLoggerSingleton& operator=(SysLoggerSingleton const&) = delete;  
+  SysLoggerSingleton& operator=(SysLoggerSingleton &&) = delete;      
+
+  static SysLogger& GetInstance()
   {
-  public:
-    SysLoggerSingleton(SysLoggerSingleton const&) = delete;             
-    SysLoggerSingleton(SysLoggerSingleton&&) = delete;                  
-    SysLoggerSingleton& operator=(SysLoggerSingleton const&) = delete;  
-    SysLoggerSingleton& operator=(SysLoggerSingleton &&) = delete;      
- 
-    static SysLogger& GetInstance()
-    {
-      static SysLogger myInstance("metadata/log.txt");
-      return myInstance;
-    }  
- 
-  protected:
-    SysLoggerSingleton() {}
-    ~SysLoggerSingleton() {}
-  };
+    static SysLogger myInstance("metadata/log.txt");
+    return myInstance;
+  }  
+
+ protected:
+  SysLoggerSingleton() {}
+  ~SysLoggerSingleton() {}
+};

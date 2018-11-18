@@ -1,13 +1,11 @@
-#ifndef MUSIC_H
-#define MUSIC_H
+#pragma once
+
 #include <memory>
 #include <iostream>
 #include <sstream>
-#include "rapidjson/filereadstream.h"
-#include "rapidjson/filewritestream.h"
-#include <rapidjson/writer.h>
-#include "rapidjson/document.h"
+#include "../header/rapidjson.h"
 #include "User.h"
+
 /**
  * Class model of music
  */  
@@ -20,19 +18,9 @@ class Music
       : no_(0), title_(title), artist_(artist), duration_(duration), owner_(false) {}
   
   std::ostream& operator<<(std::ostream &strm);
-  friend bool operator==(const Music &musicFirst, const Music &musicSecond){
-      return (musicFirst.no_==musicSecond.no_ && musicFirst.title_==musicSecond.title_ 
-          && musicFirst.artist_==musicSecond.artist_ && musicFirst.duration_==musicSecond.duration_
-          && musicFirst.user_==musicSecond.user_);
-  }
 
   bool operator==(const unsigned int no) const { return this->no_ == no;}
 
-  friend bool operator<(const Music &musicFirst, const Music &musicSecond) {
-  return (musicFirst.no_<musicSecond.no_ && musicFirst.title_<musicSecond.title_ 
-          && musicFirst.artist_<musicSecond.artist_ && musicFirst.duration_<musicSecond.duration_
-          && musicFirst.user_<musicSecond.user_);
-  }
   std::string toStringForUser();
   std::string toString();
   std::string toRegisterString();
@@ -41,7 +29,7 @@ class Music
   void setMusicNumber(std::string path);
   static int getNextMusicId(std::string path);
 
-  
+
   unsigned int no_;
   std::string title_;
   std::string artist_;
@@ -52,5 +40,3 @@ class Music
  private:
 
 };
-
-#endif

@@ -20,14 +20,21 @@ void removeMP3Selected(const std::string no) {
  */ 
 Music get_info(std::string path) {
   TagLib::FileRef f(path.c_str());
-  std::string title, artist, year, duration;
+  std::string title;
+  TagLib::Tag *tag;
+  unsigned int seconds;
+  unsigned int minutes;
   if (!f.isNull() && f.tag() && f.audioProperties()) {
     TagLib::AudioProperties *properties = f.audioProperties();
-    int seconds = properties->length() % 60;
-    int minutes = (properties->length() - seconds) / 60;
-    TagLib::Tag *tag = f.tag();
-    return Music(tag->title().to8Bit(), tag->artist().to8Bit(), std::to_string(minutes) + ":" +std::to_string(seconds));
-  }
+    seconds = properties->length() % 60;
+    minutes = (properties->length() - seconds) / 60;
+    tag = f.tag();
+    title = tag->title().to8Bit();
+    if (title == "")
+      title = "Unknown";
+  } else 
+    throw UnsupportedException();
+  return Music(tag->title().to8Bit(), tag->artist().to8Bit(), std::to_string(minutes) + ":" +std::to_string(seconds));
 }
 
 /**
