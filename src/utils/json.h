@@ -14,7 +14,7 @@ void writeJsonFile(const char* path, const rapidjson::Document& d);
 std::string getListForUser(std::vector<Music> musics);
 std::string getListForAdmin(std::vector<Music> musics);
 void remove_last_music();
-std::string registerIds(std::string parameter);
+std::string registerIds(std::string body_json);
 void registerMusic(Music music);
 std::string createIdentificationResponseJson(std::string token, std::string message);
 void removeMusicSelected(const unsigned int idMusic, const unsigned int noMusic);

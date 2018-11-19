@@ -1,10 +1,12 @@
 #include "DispatcherMusic.h"
 
 void get_usager_files(const std::shared_ptr< restbed::Session > session) {
+  std::cout << "GET " << std::endl;
   const int token = atoi(session->get_request()->get_path_parameter( "id" ).c_str());
   if(!identify(token))
     sendResponse(session,createForbiddenResponse());
   else {
+    std::cout << "id success" << std::endl;
     updateMusicsOwner(token);
     std::string result = getListForUser(getMusics());
     std::cout << result << std::endl;
@@ -19,6 +21,7 @@ void insert_song(const std::shared_ptr< restbed::Session > session) {
   const restbed::Bytes& body) {
     const auto request = session->get_request();
     const unsigned int token = atoi(request->get_path_parameter( "id" ).c_str());
+    std::cout << token << std::endl;
     if (!identify(token))
       sendResponse(session,createForbiddenResponse());
     std::string bodyString(body.begin(), body.end());
@@ -37,12 +40,15 @@ void insert_song(const std::shared_ptr< restbed::Session > session) {
       music.setMusicUser(user);
       music.setMusicNumber("metadata/musiques.json");
       insert(music);
-      SysLoggerSingleton::GetInstance().WriteLine("Soumission d'une nouvelle chanson: " + music.title_);
+      write_log("Soumission d'une nouvelle chanson: " + music.title_);
       sendResponse(session, createOkResponse());
-    } else if (!checkListSize())
+    } else if (!checkListSize()) {
+      std::cout << "checkListSize non respecte" << std::endl;
       sendResponse(session, createRequestEntityTooLargeResponse());
-    else
+    }else {
+      std::cout << "erreur interne" << std::endl;
       sendResponse(session, createInternalServerErrorResponse());
+    }
   });
 }
 
@@ -60,7 +66,7 @@ void delete_usager__song(const std::shared_ptr< restbed::Session > session) {
       removeMP3Selected(std::to_string(noMusic));
       remove(noMusic);
       std::cout << "Retrait de la chanson " << std::endl;
-      SysLoggerSingleton::GetInstance().WriteLine("Retrait de la chanson: " + noMusic);
+      write_log("Retrait de la chanson: " + noMusic);
       sendResponse(session, createOkResponse());
     }
   }
@@ -90,7 +96,7 @@ void reverse_song(const std::shared_ptr< restbed::Session > session) {
     unsigned int second = document["autre"].GetUint();
     reverse(first, second); 
     std::cout << "Modification de l'ordre de passage des chansons" << std::endl;
-    SysLoggerSingleton::GetInstance().WriteLine("Modification de l'ordre de passage des chansons");
+    write_log("Modification de l'ordre de passage des chansons");
     session->close( restbed::OK, "", { { "Content-Length", "0" }, { "Connection", "close" } } );
   });
 }

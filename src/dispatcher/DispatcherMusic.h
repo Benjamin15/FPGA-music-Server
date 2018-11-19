@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <vector>
 #include <algorithm>
-#include  <stdio.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <sys/syscall.h>
 #include "../header/rapidjson.h"

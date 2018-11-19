@@ -36,7 +36,7 @@ std::string find_token(rapidjson::Value& users, rapidjson::Value& mac) {
   return token;
 }
 
-std::string registerIds(std::string parameter){
+std::string registerIds(std::string body_json){
   FILE* fp = fopen("metadata/idLogs.json", "rb");
   char buffer_reader[65536];
   rapidjson::FileReadStream is(fp, buffer_reader, sizeof(buffer_reader));
@@ -44,19 +44,26 @@ std::string registerIds(std::string parameter){
   readDoc.ParseStream(is);
   fclose(fp);
   rapidjson::Document writeDoc;
-  if(writeDoc.Parse<0>(parameter.c_str()).HasParseError())
+  if(writeDoc.Parse<0>(body_json.c_str()).HasParseError())
     throw BadRequestException();
   rapidjson::Value& users = readDoc["UsersLogs"];
   rapidjson::Value& mac = writeDoc["MAC"];
   std::string token = find_token(users, mac);
-  if (token == "0"){
+  std::cout << "token : " << token << std::endl;
+  if (token == "0"){ 
     users.PushBack(writeDoc.GetObject(), readDoc.GetAllocator());
+    std::cout << "push done" << std::endl;
     fp = fopen("metadata/idLogs.json","w+");
+    std::cout << "open file" << std::endl;
     char buffer_writer[65536];
     rapidjson::FileWriteStream os(fp, buffer_writer, sizeof(buffer_writer));
+    std::cout << "stream writer done" << std::endl;
     rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
+    std::cout << "writer done" << std::endl;
     readDoc.Accept(writer);
-    fclose(fp);
+    std::cout << "accept done" << std::endl;
+    fclose(fp);    
+    std::cout << "close done" << std::endl;
   }
   return token;
 }
@@ -66,6 +73,7 @@ std::string createIdentificationResponseJson(std::string token, std::string mess
   result << "{ "
     << "\"identificateur\": " << token << ", "
     << "\"message\": \"" << message << "\" }";
+  std::cout << result.str() << std::endl;
   return result.str();
 }
 

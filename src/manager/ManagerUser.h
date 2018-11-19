@@ -9,6 +9,7 @@
 #include "rapidjson/stringbuffer.h"
 #include "../utils/utils.h"
 #include "../exception/exception.h"
+#include "../model/User.h"
 
 bool checkUserToken(unsigned int token);
 bool isValidToken(unsigned int token);

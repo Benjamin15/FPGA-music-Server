@@ -7,35 +7,9 @@
 #include <fstream>
 #include <time.h>
 
+void write_log(std::string content);
+void init();
 
-  class SysLogger
-  {
-  public:
-  
-    SysLogger(std::string fileName);
-    SysLogger(const SysLogger&) = delete;    
-    SysLogger& operator= (const SysLogger&) = delete;
-
-    SysLogger(SysLogger&& other){
-      mStream.close();
-      mStream = move(other.mStream);
-    }
-
-    SysLogger& operator=(SysLogger&& other){
-      mStream.close();
-      mStream = move(other.mStream);
-      return *this;
-    }
- 
-    ~SysLogger()     
-    {
-      mStream.close();
-    }
- 
-    void WriteLine(std::string content);
- 
-  private:
-    std::ofstream mStream;
-    std::mutex mMutex;
-  };
-
+static std::ofstream mStream;
+static std::mutex mMutex;
+const std::string file_path = "metadata/log.txt";

@@ -1,30 +1,39 @@
 #include "ManagerUser.h"
 
 bool checkUserToken(unsigned int token) {
-   rapidjson::Document idLogs = getJsonFile("metadata/idLogs.json");
-   rapidjson::Value& value = idLogs["UsersLogs"];
-   for (rapidjson::SizeType i = 0; i < value.GetArray().Size(); i++) {
-      if (value[i]["Token"].GetUint() == token) {
-        return true;
-      }
-   }
+  std::cout << "checkUserToken :  " <<  token << std::endl;
+  rapidjson::Document document = getJsonFile("metadata/idLogs.json");
+  rapidjson::Value& users = document["UsersLogs"];
+  for (rapidjson::SizeType i = 0; i < users.GetArray().Size(); i++) {
+    if (users[i]["Token"].GetUint() == token) {
+      return true;
+    }
+  }
+  std::cout << "check fail" << std::endl;
   return false;
 }
 
 bool isValidToken(unsigned int token) {
+  std::cout << "is Valid Token " << std::endl;
   rapidjson::Document document = getJsonFile("metadata/idLogs.json");
   rapidjson::Value& usersLogs = document["UsersLogs"];
+  const unsigned int day = 24 * 60 * 60 * 1000;
   std::chrono::milliseconds timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
-  int time = timestamp.count();
+  uint64_t time = timestamp.count();
   for (rapidjson::SizeType i = 0; i < usersLogs.Size(); i++) { 
     if (usersLogs[i]["Token"].GetUint() == token) {
-      if (time - usersLogs[i]["Time"].GetUint() >= 24*60*60*1000) {
-        std::cout << "Token invalide" << std::endl; 
-        return false;
+      if (usersLogs[i]["Time"].IsUint64()) {
+        if (time - usersLogs[i]["Time"].GetUint64() >= day) {
+          std::cout << "Token invalide" << std::endl; 
+          return false;
+        }
+        std::cout << "token valide" << std::endl;
+        return true;
       }
-      return true;
+      std::cout << "error parse uint" << std::endl;
     }
   }
+  std::cout << "aucun token trouve" << std::endl;
   return false;
 }
 
@@ -66,11 +75,14 @@ void update_password(std::string old_password, std::string new_password) {
 }
 
 std::string sign_in(std::string body) {
-  /*srand(time(NULL));
-  std::string token = std::to_string(rand());
+  srand(time(NULL));
+  unsigned int token = rand();
+
   std::chrono::milliseconds timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()) ;
   int64_t time = timestamp.count();
   rapidjson::Document document;
+  std::cout << "body : " << std::endl;
+  std::cout << body.c_str() << std::endl;
   document.Parse<0>(body.c_str());
   document.AddMember("Token", token, document.GetAllocator());
   document.AddMember("Time", time, document.GetAllocator());
@@ -79,11 +91,15 @@ std::string sign_in(std::string body) {
   document.Accept(writer);
   std::string response_token = registerIds(buffer.GetString());
   if (response_token == "0") {
-    SysLoggerSingleton::GetInstance().WriteLine("Emission d'un nouvel identificateur d'usager ordinaire: " + token); 
-    return createIdentificationResponseJson(token, "Bienvenue sur l'application Café-Bistro Elevation !");
+    std::cout << "response = 0" << std::endl;
+    write_log("Emission d'un nouvel identificateur d'usager ordinaire: " + std::to_string(token)); 
+    std::cout <<" log done" << std::endl;
+    return createIdentificationResponseJson(std::to_string(token), "Bienvenue sur l'application Café-Bistro Elevation !");
   } else {
-    SysLoggerSingleton::GetInstance().WriteLine("Emission de l'identificateur " + response_token); 
-    return createIdentificationResponseJson(token, "Bienvenue sur l'application Café-Bistro Elevation !");
-  }*/ return "";
+    std::cout << "response token " << std::endl;
+    write_log("Emission de l'identificateur " + response_token); 
+    std::cout << "log done" << std::endl;
+    return createIdentificationResponseJson(response_token, "Bienvenue sur l'application Café-Bistro Elevation !");
+  }
 }
 
