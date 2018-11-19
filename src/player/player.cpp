@@ -148,7 +148,6 @@ struct stat get_metadata(int fd, char* filename, FILE* fp) {
  */ 
 void decode() {
         // Decode frame and synthesize loop
-    std::cout << "decodage" << std::endl; 
     int nbErrorBufLen = 0;
     while (1) {
 

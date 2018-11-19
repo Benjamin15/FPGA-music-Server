@@ -2,8 +2,6 @@
 
 void write_log(std::string content)
 {
-  std::cout << "j'komprin po" << std::endl;
-  std::cout << "try write" << std::endl;
   init();
   std::lock_guard<std::mutex> lock(mMutex);
     
@@ -19,13 +17,9 @@ void write_log(std::string content)
 }
 
 void init() {
-  std::cout << "constructor" << std::endl;
   mStream.open(file_path, std::ios::trunc);
-  std::cout << "open trunc" << std::endl;
   mStream.close();
-  std::cout << "close" << std::endl;
   mStream.open(file_path, std::ios::app);
-  std::cout << "open app" << std::endl;
   if (mStream.fail())
   {
     std::cout << "fail"<<std::endl;

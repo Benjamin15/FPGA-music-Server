@@ -8,6 +8,7 @@
 #include "../header/rapidjson.h"
 #include "../model/Music.h"
 #include "../exception/exception.h"
+#include "../metadata/metadata.h"
 
 rapidjson::Document getJsonFile(const char* path);
 void writeJsonFile(const char* path, const rapidjson::Document& d);
@@ -17,6 +18,6 @@ void remove_last_music();
 std::string registerIds(std::string body_json);
 void registerMusic(Music music);
 std::string createIdentificationResponseJson(std::string token, std::string message);
-void removeMusicSelected(const unsigned int idMusic, const unsigned int noMusic);
+void removeMusicSelected(const unsigned int noMusic);
 void write_music(std::vector<Music> musics);
 bool isValidToken(int token);

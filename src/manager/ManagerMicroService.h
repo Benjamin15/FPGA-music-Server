@@ -14,3 +14,7 @@
 
 void manage_player();
 void run_player();
+
+const std::string player_path = "./player";
+const std::string music_path = "metadata/musique/";
+const std::string mp3_ext = ".mp3";

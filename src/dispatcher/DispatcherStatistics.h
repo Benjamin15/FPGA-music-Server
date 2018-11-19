@@ -4,4 +4,4 @@
 #include <restbed>
 #include <iostream>
 
-void get_statistiques(const std::shared_ptr< restbed::Session > session);
+void get_statistics(const std::shared_ptr< restbed::Session > session);

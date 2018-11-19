@@ -21,9 +21,9 @@ std::map<std::string, std::function<void( const std::shared_ptr< restbed::Sessio
     std::map<std::string, std::function<void( const std::shared_ptr< restbed::Session > session )>>  funcMap =
     {
         { "get_usager_identification_handler", connect},
-        { "get_usager_file_handler", get_usager_files},
+        { "get_usager_file_handler", get_users_files},
         { "post_usager_chanson_handler", insert_song},
-        { "delete_usager_chanson_handler", delete_usager__song},
+        { "delete_usager_chanson_handler", delete_usager_song},
         { "get_superviseur_file_handler", get_superviser_files},
         { "delete_superviseur_chanson_handler", delete_superviser_song},
         { "post_superviseur_inversion_handler", reverse_song},
@@ -32,7 +32,7 @@ std::map<std::string, std::function<void( const std::shared_ptr< restbed::Sessio
         { "post_superviseur_volume__diminuer_handler", set_down_volume},
         { "post_superviseur_volume_sourdine_activer_handler", enabledMute},
         { "post_superviseur_volume_sourdine_desactiver_handler", disabledMute},
-        { "get_superviseur_statistiques", get_statistiques},
+        { "get_superviseur_statistiques", get_statistics},
         { "get_superviseur_bloquer", lock},
         { "get_superviseur_debloquer", unlock},
         { "get_superviseur_listenoire", get_black_list},
@@ -110,7 +110,7 @@ void Rest::createRoute(){
  */ 
 void Rest::run() {
     create_list_music();
-    launch_music();
+    run_player();
     service_->start( settings_ );
 }
 
