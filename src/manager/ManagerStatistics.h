@@ -9,7 +9,7 @@
 #include "../model/User.h"
 #include "../model/Music.h"
 
-void reset();
+void reset_stats();
 void add_user(User user);
 void add_music(Music music);
 void add_remove_music();

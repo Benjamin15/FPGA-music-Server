@@ -4,10 +4,12 @@
  * reset stats each 24 hours
  * 
  */ 
-void reset() {
+void reset_stats() {
+  mutex.lock();
   users.clear();
   musics.clear();
   n_music_remove_admin = 0;
+  mutex.unlock();
 }
 
 /**
