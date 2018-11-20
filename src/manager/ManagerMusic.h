@@ -1,63 +1,32 @@
-#ifndef MANAGE_MUSIC_H
-#define MANAGE_MUSIC_H
+#pragma once
+
 #include <memory>
 #include <restbed>
 #include <iostream>
 #include <iomanip>
 #include <vector>
 #include <algorithm>
-#include  <stdio.h>
-#include <unistd.h>
-#include <sys/syscall.h>
-#include "rapidjson/filereadstream.h"
-#include "rapidjson/document.h"
-#include <taglib/fileref.h>
-#include <taglib/tag.h>
-#include <taglib/tpropertymap.h>
-#include <system_error>
+#include <mutex>
+#include "../header/rapidjson.h"
 #include "../model/Music.h"
 #include "../utils/json.h"
-#include "../utils/base64.h"
-#include "./ManagerMicroService.h"
-#include "../utils/logSingleton.h"
-#include "../utils/defaultResponseBody.h"
-#include "../utils/responseGenerator.h"
-//#include "../utils/file.h"
+#include "../metadata/users_log.h"
+#include "../metadata/musics_log.h"
+
+void insert(Music music);
+void remove(unsigned int no);
+void create_list_music();
+void updateMusicsOwner(unsigned int token);
+void reverse(unsigned int noFirst, unsigned int noSecond);
+bool checkUserMusics(unsigned int token);
+bool canRemove(unsigned int noMusic, unsigned int token);
+bool checkListSize();
+std::vector<Music> getMusics();
+
+static std::vector<Music> musics;
+static std::mutex mutex;
+
+const int MAX_LIST_SIZE = 10;
+const int MAX_USER_MUSICS = 5;
 
 
-#define gettid() syscall(SYS_gettid)
-
-  /**
-   * Class which manage all users
-   */  
-  class ManagerMusic
-  {  
-   public:
-    static void get_usager_files(const std::shared_ptr< restbed::Session > session);
-    static void insert_song(const std::shared_ptr< restbed::Session > session);
-    static void delete_usager__song(const std::shared_ptr< restbed::Session > session);
-
-    static void get_superviser_files(const std::shared_ptr< restbed::Session > session);
-    static void delete_superviser_song(const std::shared_ptr< restbed::Session > session);
-    static void reverse_song(const std::shared_ptr< restbed::Session > session);
-    static void get_volume(const std::shared_ptr< restbed::Session > session);
-    static void set_up_volume(const std::shared_ptr< restbed::Session > session);
-    static void set_down_volume(const std::shared_ptr< restbed::Session > session);
-    static void enabledMute(const std::shared_ptr< restbed::Session > session);
-    static void disabledMute(const std::shared_ptr< restbed::Session > session);
-    static void updateMusicsOwner(int userId);
-    static bool checkListSize();
-    static bool checkUserMusics(int userId);
-    static bool checkUserToken(int token);
-    static bool supressionPermission(int noMusic,int userId);
-    static User get_user_for_sent_music(int userId);
-
-    static void create_list_music();
-    static void launch_music();
-    static Music get_info(std::string path);
-    static bool checkIfMp3(std::string path);
-    static std::vector<Music> musics;
-    static const int MAX_LIST_SIZE = 10;
-    static const int MAX_USER_MUSICS = 5;
-  };
-#endif

@@ -1,32 +1,22 @@
-#ifndef MANAGE_USER_H
-#define MANAGE_USER_H
+#pragma once
+
 #include <memory>
 #include <chrono>
 #include <restbed>
 #include <iostream>
-#include "../utils/json.h"
 #include "rapidjson/filereadstream.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
-#include "../utils/logSingleton.h"
-#include "../utils/responseGenerator.h"
+#include "../utils/utils.h"
+#include "../exception/exception.h"
+#include "../model/User.h"
+#include "../metadata/admin_log.h"
+#include "../metadata/users_log.h"
 
-
-/**
- * Class which manage all users
- */  
-class ManagerUser
-{  
-  private:
-   
-  public:
-    static void identify(const std::shared_ptr< restbed::Session > session);
-    static void lock(const std::shared_ptr< restbed::Session > session);
-    static void unlock(const std::shared_ptr< restbed::Session > session);
-    static void get_black_list(const std::shared_ptr< restbed::Session > session);
-    static void login(const std::shared_ptr< restbed::Session > session);
-    static void logout(const std::shared_ptr< restbed::Session > session);
-    static void set_password(const std::shared_ptr< restbed::Session > session);
-    static int getStatusCode(std::string codeMessage);
-};
-#endif
+bool checkUserToken(unsigned int token);
+bool isValidToken(unsigned int token);
+bool identify(unsigned int token);
+User get_user(unsigned int token);
+void update_password(std::string old_password, std::string new_password);
+std::string sign_in(std::string body);
+std::string registerIds(std::string body_json);

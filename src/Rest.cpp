@@ -13,34 +13,33 @@ void failed_filter_validation_handler( const std::shared_ptr< restbed::Session >
     session->close( 400 );
 }
 
-
 /**
  * Map each functions
  * We need that because c++ doesn't implement reflection. So, it's the good way to do a pseudo reflection
  */ 
 std::map<std::string, std::function<void( const std::shared_ptr< restbed::Session > session )>> Rest::mapFunction(){
     std::map<std::string, std::function<void( const std::shared_ptr< restbed::Session > session )>>  funcMap =
-        {
-            { "get_usager_identification_handler", ManagerUser::identify},
-            { "get_usager_file_handler", ManagerMusic::get_usager_files},
-            { "post_usager_chanson_handler", ManagerMusic::insert_song},
-            { "delete_usager_chanson_handler", ManagerMusic::delete_usager__song},
-            { "get_superviseur_file_handler", ManagerMusic::get_superviser_files},
-            { "delete_superviseur_chanson_handler", ManagerMusic::delete_superviser_song},
-            { "post_superviseur_inversion_handler", ManagerMusic::reverse_song},
-            { "get_superviseur_volume_handler", ManagerMusic::get_volume},
-            { "post_superviseur_volume_augmenter_handler", ManagerMusic::set_up_volume},
-            { "post_superviseur_volume__diminuer_handler", ManagerMusic::set_down_volume},
-            { "post_superviseur_volume_sourdine_activer_handler", ManagerMusic::enabledMute},
-            { "post_superviseur_volume_sourdine_desactiver_handler", ManagerMusic::disabledMute},
-            { "get_superviseur_statistiques", ManagerStatistiques::get_statistiques},
-            { "get_superviseur_bloquer", ManagerUser::lock},
-            { "get_superviseur_debloquer", ManagerUser::unlock},
-            { "get_superviseur_listenoire", ManagerUser::get_black_list},
-            { "post_superviseur_login", ManagerUser::login},
-            { "post_superviseur_logout", ManagerUser::logout},
-            { "post_superviseur_changement_mdp", ManagerUser::set_password}
-        };
+    {
+        { "get_usager_identification_handler", connect},
+        { "get_usager_file_handler", get_users_files},
+        { "post_usager_chanson_handler", insert_song},
+        { "delete_usager_chanson_handler", delete_usager_song},
+        { "get_superviseur_file_handler", get_superviser_files},
+        { "delete_superviseur_chanson_handler", delete_superviser_song},
+        { "post_superviseur_inversion_handler", reverse_song},
+        { "get_superviseur_volume_handler", get_volume},
+        { "post_superviseur_volume_augmenter_handler", set_up_volume},
+        { "post_superviseur_volume__diminuer_handler", set_down_volume},
+        { "post_superviseur_volume_sourdine_activer_handler", enabledMute},
+        { "post_superviseur_volume_sourdine_desactiver_handler", disabledMute},
+        { "get_superviseur_statistiques", get_statistics},
+        { "get_superviseur_bloquer", lock},
+        { "get_superviseur_debloquer", unlock},
+        { "get_superviseur_listenoire", get_black_list},
+        { "post_superviseur_login", login},
+        { "post_superviseur_logout", logout},
+        { "post_superviseur_changement_mdp", set_password}
+    };
     return funcMap;
 }
 
@@ -67,6 +66,7 @@ void Rest::initSettings(std::string address, uint16_t port) {
     settings_->set_port( port );
     settings_->set_default_header( "Connection", "close" );
     settings_->set_bind_address(address);
+    settings_->set_worker_limit( 4 );
     //initSSLSettings();
 }
 
@@ -99,7 +99,7 @@ void Rest::createRoute(){
         resource->set_method_handler( type,functions[handler] );  
         resources.push_back(resource);
     }
-    for (auto resource : resources){
+    for (auto resource : resources) {
         service_->publish(resource);
     }
 }
@@ -109,24 +109,20 @@ void Rest::createRoute(){
  * 
  */ 
 void Rest::run() {
-    ManagerMusic::create_list_music();
-    ManagerMusic::launch_music();
-    std::cout << settings_->get_bind_address() << std::endl;
+    create_list_music();
+    run_player();
     service_->start( settings_ );
 }
 
-int main( const int argc , const char* argv[] )
-{
+int main( const int argc , const char* argv[] ) {
     Rest rest;
-    std::string address = argc > 1 ? argv[1] : "132.207.89.35";
-    uint16_t port = argc > 2 ? std::stoi(argv[2]) : 80;
-    std::cout << "launch init settings " << std::endl;
+    const std::string ip_fpga = "132.207.89.35";
+    const int port_fpga = 80;
+    std::string address = argc > 1 ? argv[1] : ip_fpga;
+    uint16_t port = argc > 2 ? std::stoi(argv[2]) : port_fpga;
     rest.initSettings(address, port);
-    std::cout << "init service" << std::endl;
     rest.initService();
-    std::cout << "launch create route " << std::endl;
     rest.createRoute();
-    std::cout << "launch run " << std::endl;
     rest.run();
     return EXIT_SUCCESS;
 }

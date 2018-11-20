@@ -1,11 +1,5 @@
 #include "base64.h"
 
-
-
-const std::string base64_chars = 
-             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-             "abcdefghijklmnopqrstuvwxyz"
-             "0123456789+/";
 /**
  * Check if the char is base64
  * 
@@ -43,11 +37,11 @@ std::string base64_decode(std::string input) {
   }
 }
 
+
 void base64_toBinary(std::string base64music,std::string title){
     std::string path = "metadata/musique/" + title ;
     FILE* fp = fopen(path.c_str(),"w+");
     fclose(fp);
-    char * buf;
     int size = base64music.size();
     std::ofstream output;
     output.open(path, std::ios::out | std::ios::binary);
