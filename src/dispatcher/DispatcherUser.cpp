@@ -8,7 +8,7 @@
 void connect(const std::shared_ptr< restbed::Session > session){
   std::cout << "Tentative d'identification" << std::endl;
   const auto request = session->get_request();
-  size_t content_length = request->get_body().size();
+  size_t content_length = std::stoi(session->get_request()->get_header("Content-Length"));
   session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
   const restbed::Bytes& body){
     const std::string body_parameter = session->get_request()->get_query_parameter("body","Error getting Query parameter");
