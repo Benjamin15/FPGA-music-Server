@@ -72,8 +72,13 @@ int get_n_music_remove_admin() {
  * 
  */ 
 std::string get_avg_time() {
-  /*for (Music music : musics) {
-    music.duration_
-  }*/
-  return "";
+  time_t sum_time;
+  for (Music music : musics) {
+    struct tm duration;
+    strptime(music.duration_.c_str(), "%M:%S", &duration);
+    sum_time += mktime(&duration);  
+  }
+  time_t avg_time = (sum_time / musics.size());
+  struct tm* avg_time_tm = localtime(&avg_time);
+  return avg_time_tm->tm_min + ":"+avg_time_tm->tm_sec;
 }
