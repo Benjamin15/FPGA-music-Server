@@ -36,7 +36,7 @@ void add_music(Music music) {
  * we need to increase the number of music remove by the admin. Reset at each day
  * 
  */ 
-void new_remove_music() {
+void add_remove_music() {
   n_music_remove_admin++;
 }
 
@@ -69,9 +69,9 @@ int get_n_music_remove_admin() {
  * get the average time of music. Reset at each day
  * 
  */ 
-int get_avg_time() {
+std::string get_avg_time() {
   /*for (Music music : musics) {
     music.duration_
   }*/
-  return 0;
+  return "";
 }

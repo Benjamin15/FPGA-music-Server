@@ -49,6 +49,8 @@ void insert_song(const std::shared_ptr< restbed::Session > session) {
       music.setMusicUser(user);
       music.setMusicNumber("metadata/musiques.json");
       insert(music);
+      add_music(music);
+      add_user(user);
       write_log("Soumission d'une nouvelle chanson: " + music.title_);
       sendResponse(session, createOkResponse());
     } else if (!checkListSize()) {
@@ -104,6 +106,7 @@ void get_superviser_files(const std::shared_ptr< restbed::Session > session) {
 void delete_superviser_song(const std::shared_ptr< restbed::Session > session) {
   std::cout << "supprimer song avec le superviseur" << std::endl;
   delete_usager_song(session);
+  add_remove_music();
 }
 
 /**

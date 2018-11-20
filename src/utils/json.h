@@ -21,3 +21,4 @@ std::string createIdentificationResponseJson(std::string token, std::string mess
 void removeMusicSelected(const unsigned int noMusic);
 void write_music(std::vector<Music> musics);
 bool isValidToken(int token);
+std::string getStats(int n_music, int n_user, int n_music_remove, std::string avg_duration);
