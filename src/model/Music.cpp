@@ -15,7 +15,7 @@ void Music::setMusicTitle(std::string fileName){
 
 void Music::setMusicNumber(std::string path){
   rapidjson::Document document = getJsonFile(path.c_str());
-  rapidjson::Value& value = document["musiques"];
+  rapidjson::Value& value = document["musics"];
   unsigned int higherMusicNo = 0;
   if(value.GetArray().Size() != 0) {
     for (rapidjson::SizeType i = 0; i < value.Size(); i++) {
@@ -31,7 +31,7 @@ void Music::setMusicNumber(std::string path){
 
 int Music::getNextMusicId(std::string path) {
   rapidjson::Document document = getJsonFile(path.c_str());
-  rapidjson::Value& value = document["musiques"];
+  rapidjson::Value& value = document["musics"];
   unsigned int higherMusicNo = 0;
   if (value.GetArray().Size() != 0) {
     for (rapidjson::SizeType i = 0; i < value.Size(); i++) {
