@@ -28,5 +28,5 @@ void manage_player() {
  *
  */  
 void run_player() {
-  std::thread(manage_player);
+  std::thread manage_player;
 }
