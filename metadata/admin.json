@@ -1,1 +1,1 @@
-{"admin":[{"password":"new"}]}
+{"supervisor":{"username":"admin","password":"new","isLog":true}}
