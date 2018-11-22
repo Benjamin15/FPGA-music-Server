@@ -138,7 +138,6 @@ void remove_last_music() {
 void removeMusicSelected(const unsigned int noMusic) {
   int pos=0;
   bool musiqueTrouvee=false;
-  std::string titreMusique="";
 
   FILE* fp = fopen(music_json_path.c_str(), "rb");
   char readBuffer[65536];
@@ -152,7 +151,6 @@ void removeMusicSelected(const unsigned int noMusic) {
 
   for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
     if(musiques[i][no_log.c_str()].GetUint()==noMusic) {
-      titreMusique=musiques[i][title_log.c_str()].GetString();
       pos=(int)i;
       musiqueTrouvee=true;
     }

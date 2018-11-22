@@ -61,13 +61,13 @@ std::string Music::toStringForUser() {
 std::string Music::toString() {
   std::stringstream result;
   result << "{ "
-    << "\"titre\": \"" << title_ << "\", "
-    << "\"artiste\": \"" << artist_ << "\", "
-    << "\"duree\": \"" << duration_ << "\", "
+    << "\"title\": \"" << title_ << "\", "
+    << "\"artist\": \"" << artist_ << "\", "
+    << "\"duration\": \"" << duration_ << "\", "
     << "\"ip\": \"" << user_.ip_ << "\", "
-    << "\"MAC\": \"" << user_.mac_ << "\", "
+    << "\"mac\": \"" << user_.mac_ << "\", "
     << "\"id\":" << user_.id_ << ", "
-    << "\"proposeePar\": \"" << user_.name_ << "\", "
+    << "\"suggested_by\": \"" << user_.name_ << "\", "
     << "\"proprietaire\": \"" << owner_ << "\", "
     << "\"no\":" << no_ << " }";
   return result.str();
@@ -76,13 +76,13 @@ std::string Music::toString() {
 std::string Music::toRegisterString() {
   std::stringstream result;
   result << "{ "
-    << "\"titre\": \"" << title_ << "\", "
-    << "\"artiste\": \"" << artist_ << "\", "
-    << "\"duree\": \"" << duration_ << "\", "
+    << "\"title\": \"" << title_ << "\", "
+    << "\"artist\": \"" << artist_ << "\", "
+    << "\"duration\": \"" << duration_ << "\", "
     << "\"ip\": \"" << user_.ip_ << "\", "
-    << "\"MAC\": \"" << user_.mac_ << "\", "
+    << "\"mac\": \"" << user_.mac_ << "\", "
     << "\"id\":" << user_.id_ << ", "
-    << "\"proposeePar\": \"" << user_.name_ << "\", "
+    << "\"suggested_by\": \"" << user_.name_ << "\", "
     << "\"no\":" << no_ << " }";
   return result.str();
 }
