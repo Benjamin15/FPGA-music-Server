@@ -37,20 +37,16 @@ void insert_song(const std::shared_ptr< restbed::Session > session) {
     if (!checkUserToken(token) && !isValidToken(token))
       sendResponse(session,createForbiddenResponse());
     else if (checkListSize() && checkUserMusics(token) && checkUserToken(token)) {
-      std::cout<<"1"<<std::endl;
       std::string mp3EncodedMusic = bodyString;
-      std::cout<<"2"<<std::endl;
       std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
-      std::cout<<"3"<<std::endl;
       std::string fileName = std::to_string(Music::getNextMusicId("metadata/musics.json"))+".mp3";
       base64_toBinary(mp3DecodedMusic,fileName);
-      std::cout<<"5"<<std::endl;
       std::string path = "metadata/musique/" + fileName;
       if (!checkIfMp3(path))
         sendResponse(session, createUnsupportedMediaTypeResponse());
       Music music = get_info(path);
-      std::cout<<"5.25"<<std::endl;
-      User user = get_user(token); // Ca fait quoi ça ?
+      User user = get_user(token); // Ca fait quoi ça ? Réponse: ça inscrit le user qui a envoyé la chanson
+      std::cout<< "id du user" << user.id_ <<std::endl;
       music.setMusicUser(user);
       std::cout<<"5.5"<<std::endl;
       music.setMusicNumber("metadata/musics.json");

@@ -53,6 +53,7 @@ std::string Music::toStringForUser() {
     << "\"duree\": \"" << duration_ << "\", "
     << "\"proposeePar\": \"" << user_.name_ << "\", "
     << "\"proprietaire\": \"" << owner_ << "\", "
+    << "\"IdProprietaire\": \"" << user_.id_ << "\", "
     << "\"no\": " << no_ << " }";
   return result.str();
 }
