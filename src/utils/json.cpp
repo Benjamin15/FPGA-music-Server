@@ -107,6 +107,27 @@ std::string getListForAdmin(std::vector<Music> musics) {
   return result.str(); 
 }
 
+
+/**
+ * get the list of the music for the metadate file
+ * @param list of musics
+ * @return list_json
+ */ 
+std::string getListForUsersMetadata(std::vector<Music> musics) {
+  std::cout << "hein ? ? ? ? ? ? ?" << std::endl;
+  std::stringstream result;
+  const char* separator = ", \n";
+  result << "{ \n  \"musics\": [\n";
+  for (unsigned int i = 0 ; i < musics.size() ; i++) {
+    Music music = musics[i];
+    result << music.toString() << separator ;
+    if (i == musics.size() - 2)
+      separator = "\n";
+  };
+  result << "]\n}";
+  return result.str(); 
+}
+
 /**
  * remove the last music in the metadata json file
  * 
@@ -171,14 +192,19 @@ void removeMusicSelected(const unsigned int noMusic) {
  * @param musics
  */ 
 void write_music(std::vector<Music> musics) {
-  std::string json = getListForAdmin(musics);
+  std::cout << "bonjour" << std::endl;
+  std::string json = getListForUsersMetadata(musics);
+  std::cout << "fin bonjour" << std::endl;
+  std::cout << "get list " << std::endl;
   rapidjson::Document document;
   document.Parse(json.c_str());
   remove(music_json_path.c_str());
+  std::cout << "remove done " << std::endl;
   FILE* fp = fopen(music_json_path.c_str(), "wb"); // non-Windows use "w"
   char writeBuffer[65536];
   rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
   rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
   document.Accept(writer);
   fclose(fp);
+  std::cout << "fini " << std::endl;
 }

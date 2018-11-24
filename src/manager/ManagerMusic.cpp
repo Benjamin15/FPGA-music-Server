@@ -36,10 +36,16 @@ void remove(unsigned int no) {
  * 
  */ 
 void reverse(unsigned int noFirst, unsigned int noSecond) {
+  std::cout << "debut : " << std::endl;
+  for (Music music : musics) 
+    std::cout << music.no_ << std::endl;
   mutex.lock();
-  std::iter_swap(find(musics.begin(), musics.end(), noFirst), find(musics.begin(), musics.end(), noSecond));
+  std::rotate(find(musics.begin(), musics.end(), noFirst), find(musics.begin(), musics.end(), noFirst) + 1, find(musics.begin(), musics.end(), noSecond) + 1);
   write_music(musics);
   mutex.unlock();
+  std::cout << "fini ! " << std::endl;
+  for (Music music : musics) 
+    std::cout << music.no_ << std::endl;
 }
 
 /**

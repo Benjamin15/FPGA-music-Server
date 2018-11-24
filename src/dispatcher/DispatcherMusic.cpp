@@ -122,16 +122,19 @@ void reverse_song(const std::shared_ptr< restbed::Session > session) {
   size_t content_length = std::stoi(request->get_header("Content-Length"));
   session->fetch( content_length, [ request ]( const std::shared_ptr< restbed::Session > session, const restbed::Bytes & body )
   {
+    std::cout << "fetch " << std::endl;
     const std::string first_json = "une";
     const std::string second_json = "autre";
     rapidjson::Document document;
     document.SetObject();
     std::string bodyString = std::string(body.begin(), body.end());
     document.Parse<0>(bodyString.c_str(), bodyString.length());
+    std::cout << "body : " << bodyString << std::endl;
     unsigned int first = document[first_json.c_str()].GetUint();
     unsigned int second = document[second_json.c_str()].GetUint();
-    reverse(first, second); 
-    std::cout << "Modification de l'ordre de passage des chansons" << std::endl;
+    std::cout << "first : " << first << std::endl;
+    std::cout << "second : " << second << std::endl;
+    reverse(first, second) ; 
     write_log("Modification de l'ordre de passage des chansons");
     session->close( restbed::OK, "", { { "Content-Length", "0" }, { "Connection", "close" } } );
   });

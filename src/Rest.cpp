@@ -6,7 +6,7 @@ void ready_handler( restbed::Service&  data)
     //auto uri_https = data.get_https_uri();
     fprintf( stderr, "Service PID is '%i'.\n", getpid( ) );
     std::cout << uri_http->to_string() <<  std::endl;
-    //std::cout << uri_https->to_string() <<  std::endl;
+   // std::cout << uri_https->to_string() <<  std::endl;
 
 } 
 
