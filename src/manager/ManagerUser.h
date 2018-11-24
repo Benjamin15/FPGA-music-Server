@@ -20,3 +20,5 @@ User get_user(unsigned int token);
 void update_password(std::string old_password, std::string new_password);
 std::string sign_in(std::string body);
 std::string registerIds(std::string body_json);
+
+std::vector<User> users;

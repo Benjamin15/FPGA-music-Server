@@ -20,7 +20,10 @@ class User
   unsigned int id_;
   std::string name_;
   std::string ip_;
-  std::string mac_;
+  std::string mac_; 
+  bool is_block_;
+  
+  std::string to_string();
  private:
 
 };

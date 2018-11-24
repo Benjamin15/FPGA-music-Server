@@ -114,7 +114,6 @@ std::string getListForAdmin(std::vector<Music> musics) {
  * @return list_json
  */ 
 std::string getListForUsersMetadata(std::vector<Music> musics) {
-  std::cout << "hein ? ? ? ? ? ? ?" << std::endl;
   std::stringstream result;
   const char* separator = ", \n";
   result << "{ \n  \"musics\": [\n";
@@ -122,6 +121,25 @@ std::string getListForUsersMetadata(std::vector<Music> musics) {
     Music music = musics[i];
     result << music.toString() << separator ;
     if (i == musics.size() - 2)
+      separator = "\n";
+  };
+  result << "]\n}";
+  return result.str(); 
+}
+
+/**
+ * get the list of users
+ * @param list of musics
+ * @return list_json
+ */ 
+std::string getListUsers(std::vector<User> users) {
+  std::stringstream result;
+  const char* separator = ", \n";
+  result << "{ \n  \"user\": [\n";
+  for (unsigned int i = 0 ; i < users.size() ; i++) {
+    User user = users[i];
+    result << user.toString() << separator ;
+    if (i == users.size() - 2)
       separator = "\n";
   };
   result << "]\n}";

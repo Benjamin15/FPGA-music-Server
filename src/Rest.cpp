@@ -41,7 +41,8 @@ std::map<std::string, std::function<void( const std::shared_ptr< restbed::Sessio
         { "get_superviseur_listenoire", get_black_list},
         { "post_superviseur_login", login},
         { "post_superviseur_logout", logout},
-        { "post_superviseur_changement_mdp", set_password}
+        { "post_superviseur_changement_mdp", set_password}, 
+        { "get_superviseur_user", get_users}  
     };
     return funcMap;
 }
