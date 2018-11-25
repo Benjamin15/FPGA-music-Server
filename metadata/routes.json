@@ -27,7 +27,7 @@
     },
     {
       "type" : "DELETE", 
-      "url" : "/superviseur/chanson/{id: [0-9]+}/{no: [0-9]+}",
+      "url" : "/superviseur/chanson/{no: [0-9]+}",
       "handler" : "delete_superviseur_chanson_handler"
     }, 
     {

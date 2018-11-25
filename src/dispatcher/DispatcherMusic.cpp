@@ -103,7 +103,12 @@ void get_superviser_files(const std::shared_ptr< restbed::Session > session) {
  */ 
 void delete_superviser_song(const std::shared_ptr< restbed::Session > session) {
   std::cout << "supprimer song avec le superviseur" << std::endl;
-  delete_usager_song(session);
+  const unsigned int noMusic = atoi((session->get_request()->get_path_parameter("no")).c_str());
+  removeMusicSelected(noMusic);
+  removeMP3Selected(std::to_string(noMusic));
+  remove(noMusic);
+  write_log("Retrait de la chanson par le superviseur: " + noMusic);
+  sendResponse(session, createOkResponse());
 }
 
 /**
