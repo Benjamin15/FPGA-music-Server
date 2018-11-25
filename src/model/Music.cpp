@@ -136,13 +136,13 @@ rapidjson::Document Music::to_json() {
   rapidjson::Document document;
  	document.SetObject();
   rapidjson::Document::AllocatorType& allocator = document.GetAllocator();
-  document.AddMember("no", rapidjson::Value().SetUint(no_), allocator);
+  document.AddMember("no", no_, allocator);
   document.AddMember("title", rapidjson::Value().SetString(title_.c_str(), title_.size()), allocator);
   document.AddMember("artist", rapidjson::Value().SetString(artist_.c_str(), artist_.size()), allocator);
   document.AddMember("duration", rapidjson::Value().SetString(duration_.c_str(), duration_.size()), allocator);
   document.AddMember("ip", rapidjson::Value().SetString(user_.ip_.c_str(), user_.ip_.size()), allocator);
   document.AddMember("mac", rapidjson::Value().SetString(user_.mac_.c_str(), user_.mac_.size()), allocator);
-  document.AddMember("id", rapidjson::Value().SetUint(user_.token_), allocator);
+  document.AddMember("id", user_.token_, allocator);
   document.AddMember("suggest_by", rapidjson::Value().SetString(user_.name_.c_str(), user_.name_.size()), allocator);
   return document;
 }
