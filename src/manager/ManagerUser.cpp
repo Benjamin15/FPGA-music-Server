@@ -132,7 +132,6 @@ unsigned int find_token(rapidjson::Value& users, std::string mac) {
  * 
  */ 
 std::string registerIds(std::string body_json) {
-  std::cout << "register id " << std::endl;
   mutex_user.lock();
   FILE* fp = fopen(user_log_path.c_str(), "rb");
   char buffer_reader[65536];
