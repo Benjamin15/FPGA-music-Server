@@ -31,6 +31,27 @@ void connect(const std::shared_ptr< restbed::Session > session){
 
 void lock(const std::shared_ptr< restbed::Session > session) {
   std::cout << "bloquer" << std::endl;
+  const auto request = session->get_request();
+  size_t content_length = request->get_body().size();
+  session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
+  const restbed::Bytes& body){
+    std::cout << "fetch " << std::endl;
+    const std::string mac_label = "mac";
+    rapidjson::Document document;
+    document.SetObject();
+    std::string bodyString = std::string(body.begin(), body.end());
+    document.Parse<0>(bodyString.c_str(), bodyString.length());
+    std::cout << "body : " << bodyString << std::endl;
+    std::string mac_value = document[mac_label.c_str()].GetString();
+    try {
+      lock_user(mac_value, true);
+      sendResponse(session, createOkResponse(responseBody::OK));
+    } catch (BadRequestException& error) {
+      std::cout << "error" << std::endl;
+      error.print_error();
+      sendResponse(session, createBadRequestResponse());
+    }
+  });
 }
 
 /**
@@ -40,6 +61,27 @@ void lock(const std::shared_ptr< restbed::Session > session) {
 
 void unlock(const std::shared_ptr< restbed::Session > session) {
   std::cout << "debloquer" << std::endl;
+  const auto request = session->get_request();
+  size_t content_length = request->get_body().size();
+  session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
+  const restbed::Bytes& body){
+    std::cout << "fetch " << std::endl;
+    const std::string mac_label = "mac";
+    rapidjson::Document document;
+    document.SetObject();
+    std::string bodyString = std::string(body.begin(), body.end());
+    document.Parse<0>(bodyString.c_str(), bodyString.length());
+    std::cout << "body : " << bodyString << std::endl;
+    std::string mac_value = document[mac_label.c_str()].GetString();
+    try {
+      lock_user(mac_value, false);
+      sendResponse(session, createOkResponse(responseBody::OK));
+    } catch (BadRequestException& error) {
+      std::cout << "error" << std::endl;
+      error.print_error();
+      sendResponse(session, createBadRequestResponse());
+    }
+  });
 }
 
 /**
@@ -48,8 +90,10 @@ void unlock(const std::shared_ptr< restbed::Session > session) {
  */
 
 void get_black_list(const std::shared_ptr< restbed::Session > session) {
-  std::cout << "liste noire" << std::endl;
-}
+  std::cout << "get bkack list " << std::endl;
+  std::string vector_users = getListUsers(get_list_users());
+  sendResponse(session, createOkResponse(vector_users));
+  }
 
 
 /**

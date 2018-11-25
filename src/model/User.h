@@ -23,8 +23,10 @@ class User
   User(Object value);
   User(ObjectMetadata value);
   //std::ostream& operator<<(std::ostream &strm);
-  //std::string toString();
-  
+
+  bool operator==(const unsigned int token) const { return this->token_ == token;}
+
+
   unsigned int token_;
   std::string name_;
   std::string ip_;

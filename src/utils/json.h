@@ -23,3 +23,5 @@ void write_music(std::vector<Music> musics);
 bool isValidToken(int token);
 std::string getListForUsersMetadata(std::vector<Music> musics);
 std::string getListUsers(std::vector<User> users);
+std::string getListUsersMetadata(std::vector<User> users);
+void write_users(std::vector<User> users);

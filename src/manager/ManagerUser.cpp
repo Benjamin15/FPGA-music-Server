@@ -113,11 +113,11 @@ std::string sign_in(std::string body) {
  * @param mac
  * @return token
  */ 
-unsigned int find_token(rapidjson::Value& users, rapidjson::Value& mac) {
+unsigned int find_token(rapidjson::Value& users, std::string mac) {
   unsigned int token = 0;
   for (rapidjson::SizeType i = 0; i < users.Size(); i++) {
     std::string temp = users[i][mac_log.c_str()].GetString();
-    if(!temp.compare(mac.GetString())) {
+    if(!temp.compare(mac)) {
       token = users[i][token_log.c_str()].GetUint();
     }
   }
@@ -145,7 +145,7 @@ std::string registerIds(std::string body_json) {
     throw BadRequestException();
   rapidjson::Value& users = readDoc[users_log.c_str()];
   rapidjson::Value& mac = writeDoc[mac_log.c_str()];
-  unsigned int token = find_token(users, mac);
+  unsigned int token = find_token(users, mac.GetString());
   if (token == 0){ 
     User user(writeDoc.GetObject());
     token = user.token_;
@@ -235,4 +235,25 @@ void checkIfLogin(std::string username) {
   rapidjson::Value& admin = d[admin_log.c_str()];
   if (!admin[isLog_log.c_str()].GetBool())
     throw UnauthorizedException();
+}
+
+
+void lock_user(std::string mac, bool is_blocked) {
+  std::cout << "lock " << std::endl;
+  mutex_user.lock();
+  FILE* fp = fopen(user_log_path.c_str(), "rb");
+  char buffer_reader[65536];
+  rapidjson::FileReadStream is(fp, buffer_reader, sizeof(buffer_reader));
+  rapidjson::Document readDoc;
+  readDoc.ParseStream(is);
+  fclose(fp);
+  rapidjson::Document writeDoc;
+  rapidjson::Value& users = readDoc[users_log.c_str()];
+  unsigned int token = find_token(users, mac);
+  auto it_user = find(users_sign.begin(), users_sign.end(), token);
+  it_user->is_blocked_ = is_blocked;
+  write_users(users_sign);
+  mutex_user.unlock();
+  for (User user : users_sign)
+    std::cout << user.is_blocked_ << std::endl;
 }
