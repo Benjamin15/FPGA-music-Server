@@ -23,6 +23,11 @@ void update_password(std::string old_password, std::string new_password);
 std::string sign_in(std::string body);
 std::string registerIds(std::string body_json);
 void create_list_user();
+void loginSupervisor(std::string username, std::string password);
+void saveLogin(std::string username);
+void logoutSupervisor(std::string username);
+void checkIfLogin(std::string username);
 
 static std::vector<User> users_sign;
 static std::mutex mutex_user;
+

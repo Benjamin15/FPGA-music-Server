@@ -79,15 +79,14 @@ User get_user(unsigned int token){
  */ 
 void update_password(std::string old_password, std::string new_password) {
   rapidjson::Document d = getJsonFile(admin_log_path.c_str());
-  rapidjson::SizeType i = 0;
   rapidjson::Value& admin = d[admin_log.c_str()];
-  if (old_password != (admin[i][password_log.c_str()].GetString()))
+  if (old_password != (admin[password_log.c_str()].GetString()))
     throw UnauthorizedException();
   else if (new_password == "")
     throw BadRequestException();
   else {
-    admin[i][password_log.c_str()].SetObject();
-    admin[i][password_log.c_str()].SetString(new_password.c_str(), new_password.length());
+    admin[password_log.c_str()].SetObject();
+    admin[password_log.c_str()].SetString(new_password.c_str(), new_password.length());
     writeJsonFile(admin_log_path.c_str(), d);
   }
 }
@@ -185,4 +184,55 @@ void create_list_user() {
 
 std::vector<User> get_list_users() {
   return users_sign;
+}
+
+/**
+ * let the admin login
+ * @param username
+ * @param password
+ * @throw ForbiddenException (Error 403, requete non autorisé)
+ */ 
+void loginSupervisor(std::string username, std::string password) {
+  rapidjson::Document d = getJsonFile(admin_log_path.c_str());
+  rapidjson::Value& admin = d[admin_log.c_str()];
+  if (username == admin[username_log.c_str()].GetString() && password == (admin[password_log.c_str()].GetString()))
+    write_log("L'administrateur vient de se log"); 
+  else {
+    throw new ForbiddenException(); // Error 403, requete non autorisé
+  }
+}
+
+/**
+ * Save the fact than the admin is log
+ * @param username
+ */ 
+void saveLogin(std::string username) {
+  rapidjson::Document d = getJsonFile(admin_log_path.c_str());
+  rapidjson::Value& admin = d[admin_log.c_str()];
+  admin[isLog_log.c_str()].SetBool(true);
+  writeJsonFile(admin_log_path.c_str(), d);
+}
+
+/**
+ * logout the admin
+ * @param username
+ */
+void logoutSupervisor(std::string username) {
+  rapidjson::Document d = getJsonFile(admin_log_path.c_str());
+  rapidjson::Value& admin = d[admin_log.c_str()];
+  admin[isLog_log.c_str()].SetBool(false);
+  writeJsonFile(admin_log_path.c_str(), d);
+}
+
+/**
+ * check if the admin is login
+ * @param username
+ * @throw UnauthorizedException (Error 401 : Utilisateur non confirmé)
+ */ 
+
+void checkIfLogin(std::string username) {
+  rapidjson::Document d = getJsonFile(admin_log_path.c_str());
+  rapidjson::Value& admin = d[admin_log.c_str()];
+  if (!admin[isLog_log.c_str()].GetBool())
+    throw UnauthorizedException();
 }
