@@ -7,7 +7,7 @@
     },
     {
       "type" : "GET", 
-      "url" : "/usager/file",
+      "url" : "/usager/file/{id: [0-9]+}",
       "handler" : "get_usager_file_handler"
     },
     {
