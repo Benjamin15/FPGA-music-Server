@@ -221,3 +221,41 @@ void write_music(std::vector<Music> musics) {
   document.Accept(writer);
   fclose(fp);
 }
+
+
+/**
+ * get the list of the user for the metadate file
+ * @param list of users
+ * @return list_json
+ */ 
+std::string getListUsersMetadata(std::vector<User> users) {
+  std::stringstream result;
+  const char* separator = ", \n";
+  result << "{ \n  \"users\": [\n";
+  for (unsigned int i = 0 ; i < users.size() ; i++) {
+    User user = users[i];
+    result << user.to_string() << separator ;
+    if (i == users.size() - 2)
+      separator = "\n";
+  };
+  result << "]\n}";
+  return result.str(); 
+}
+
+
+/**
+ * This method write every users in the vector to the users.json
+ * @param users
+ */ 
+void write_users(std::vector<User> users) {
+  std::string json = getListUsersMetadata(users);
+  rapidjson::Document document;
+  document.Parse(json.c_str());
+  remove(user_log_path.c_str());
+  FILE* fp = fopen(user_log_path.c_str(), "wb"); // non-Windows use "w"
+  char writeBuffer[65536];
+  rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
+  rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
+  document.Accept(writer);
+  fclose(fp);
+}

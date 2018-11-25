@@ -27,6 +27,7 @@ void loginSupervisor(std::string username, std::string password);
 void saveLogin(std::string username);
 void logoutSupervisor(std::string username);
 void checkIfLogin(std::string username);
+void lock_user(std::string body_json, bool is_blocked);
 
 static std::vector<User> users_sign;
 static std::mutex mutex_user;
