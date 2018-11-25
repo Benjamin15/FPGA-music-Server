@@ -53,7 +53,7 @@ std::string Music::toStringForUser() {
     << "\"duree\": \"" << duration_ << "\", "
     << "\"proposeePar\": \"" << user_.name_ << "\", "
     << "\"proprietaire\": \"" << owner_ << "\", "
-    << "\"IdProprietaire\": \"" << user_.id_ << "\", "
+    << "\"IdProprietaire\": \"" << user_.token_ << "\", "
     << "\"no\": " << no_ << " }";
   return result.str();
 }
@@ -66,7 +66,7 @@ std::string Music::toString() {
     << "\"duration\": \"" << duration_ << "\", "
     << "\"ip\": \"" << user_.ip_ << "\", "
     << "\"mac\": \"" << user_.mac_ << "\", "
-    << "\"id\":" << user_.id_ << ", "
+    << "\"id\":" << user_.token_ << ", "
     << "\"suggested_by\": \"" << user_.name_ << "\", "
     << "\"proprietaire\": \"" << owner_ << "\", "
     << "\"no\":" << no_ << " }";
@@ -81,7 +81,7 @@ std::string Music::toRegisterString() {
     << "\"duration\": \"" << duration_ << "\", "
     << "\"ip\": \"" << user_.ip_ << "\", "
     << "\"mac\": \"" << user_.mac_ << "\", "
-    << "\"id\":" << user_.id_ << ", "
+    << "\"id\":" << user_.token_ << ", "
     << "\"suggested_by\": \"" << user_.name_ << "\", "
     << "\"no\":" << no_ << " }";
   return result.str();

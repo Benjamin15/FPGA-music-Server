@@ -110,4 +110,6 @@ void set_password(const std::shared_ptr< restbed::Session > session) {
  */  
 void get_users(const std::shared_ptr< restbed::Session > session) {
   std::cout << "get users " << std::endl;
+  std::string vector_users = getListUsers(get_list_users());
+  sendResponse(session, createOkResponse(vector_users));
 }

@@ -22,3 +22,4 @@ void removeMusicSelected(const unsigned int noMusic);
 void write_music(std::vector<Music> musics);
 bool isValidToken(int token);
 std::string getListForUsersMetadata(std::vector<Music> musics);
+std::string getListUsers(std::vector<User> users);

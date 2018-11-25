@@ -97,7 +97,7 @@
     },
     {
       "type" : "GET", 
-      "url" : "/superviseur/user",
+      "url" : "/superviseur/usager",
       "handler" : "get_superviseur_user"
     }
   ]
