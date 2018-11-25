@@ -16,4 +16,4 @@ void get_black_list(const std::shared_ptr< restbed::Session > session);
 void login(const std::shared_ptr< restbed::Session > session);
 void logout(const std::shared_ptr< restbed::Session > session);
 void set_password(const std::shared_ptr< restbed::Session > session);
-int getStatusCode(std::string codeMessage);
+void get_users(const std::shared_ptr< restbed::Session > session);

@@ -54,7 +54,7 @@ void reverse(unsigned int noFirst, unsigned int noSecond) {
  */ 
 void updateMusicsOwner(unsigned int token) {
   for (std::size_t i = 0; i < musics.size() ; i++ ) {
-    if (musics[i].user_.id_ == token ) {
+    if (musics[i].user_.token_ == token ) {
       musics[i].owner_ = true;
     }
   }
@@ -70,7 +70,7 @@ void updateMusicsOwner(unsigned int token) {
 bool checkUserMusics(unsigned int token) {
   int userMusics = 0;
   for (std::size_t i = 0 ; i < musics.size() ; i++) {
-    if (musics[i].user_.id_ == token ){
+    if (musics[i].user_.token_ == token ){
       userMusics ++;
     }
   }
@@ -114,7 +114,7 @@ void create_list_music() {
 bool canRemove(unsigned int noMusic, unsigned int token) {
   for(size_t i = 0 ; i < musics.size() ; i++) {
     if (musics[i].no_ == noMusic) {
-      if (musics[i].user_.id_ == token) {
+      if (musics[i].user_.token_ == token) {
         return true;
       }
       return false;

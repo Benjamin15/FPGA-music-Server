@@ -114,7 +114,6 @@ std::string getListForAdmin(std::vector<Music> musics) {
  * @return list_json
  */ 
 std::string getListForUsersMetadata(std::vector<Music> musics) {
-  std::cout << "hein ? ? ? ? ? ? ?" << std::endl;
   std::stringstream result;
   const char* separator = ", \n";
   result << "{ \n  \"musics\": [\n";
@@ -122,6 +121,25 @@ std::string getListForUsersMetadata(std::vector<Music> musics) {
     Music music = musics[i];
     result << music.toString() << separator ;
     if (i == musics.size() - 2)
+      separator = "\n";
+  };
+  result << "]\n}";
+  return result.str(); 
+}
+
+/**
+ * get the list of users
+ * @param list of musics
+ * @return list_json
+ */ 
+std::string getListUsers(std::vector<User> users) {
+  std::stringstream result;
+  const char* separator = ", \n";
+  result << "{ \n  \"user\": [\n";
+  for (unsigned int i = 0 ; i < users.size() ; i++) {
+    User user = users[i];
+    result << user.to_string() << separator ;
+    if (i == users.size() - 2)
       separator = "\n";
   };
   result << "]\n}";
@@ -192,19 +210,14 @@ void removeMusicSelected(const unsigned int noMusic) {
  * @param musics
  */ 
 void write_music(std::vector<Music> musics) {
-  std::cout << "bonjour" << std::endl;
   std::string json = getListForUsersMetadata(musics);
-  std::cout << "fin bonjour" << std::endl;
-  std::cout << "get list " << std::endl;
   rapidjson::Document document;
   document.Parse(json.c_str());
   remove(music_json_path.c_str());
-  std::cout << "remove done " << std::endl;
   FILE* fp = fopen(music_json_path.c_str(), "wb"); // non-Windows use "w"
   char writeBuffer[65536];
   rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
   rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
   document.Accept(writer);
   fclose(fp);
-  std::cout << "fini " << std::endl;
 }

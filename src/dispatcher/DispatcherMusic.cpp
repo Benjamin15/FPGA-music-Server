@@ -46,13 +46,9 @@ void insert_song(const std::shared_ptr< restbed::Session > session) {
         sendResponse(session, createUnsupportedMediaTypeResponse());
       Music music = get_info(path);
       User user = get_user(token); // Ca fait quoi ça ? Réponse: ça inscrit le user qui a envoyé la chanson
-      std::cout<< "id du user" << user.id_ <<std::endl;
       music.setMusicUser(user);
-      std::cout<<"5.5"<<std::endl;
       music.setMusicNumber("metadata/musics.json");
-      std::cout<<"6"<<std::endl;
       insert(music);
-      std::cout<<"7"<<std::endl;
       write_log("Soumission d'une nouvelle chanson: " + music.title_);
       sendResponse(session, createOkResponse());
     } else if (!checkListSize()) {

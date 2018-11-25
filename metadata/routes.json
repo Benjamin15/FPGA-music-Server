@@ -7,7 +7,7 @@
     },
     {
       "type" : "GET", 
-      "url" : "/usager/file/{id: [0-9]+}",
+      "url" : "/usager/file",
       "handler" : "get_usager_file_handler"
     },
     {
@@ -94,6 +94,11 @@
       "type" : "POST", 
       "url" : "/superviseur/changement_mdp",
       "handler" : "post_superviseur_changement_mdp"
+    },
+    {
+      "type" : "GET", 
+      "url" : "/superviseur/usager",
+      "handler" : "get_superviseur_user"
     }
   ]
 }

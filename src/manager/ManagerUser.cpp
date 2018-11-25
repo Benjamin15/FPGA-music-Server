@@ -30,8 +30,8 @@ bool isValidToken(unsigned int token) {
   uint64_t time = timestamp.count();
   for (rapidjson::SizeType i = 0; i < users.Size(); i++) { 
     if (users[i][token_log.c_str()].GetUint() == token) {
-      if (users[i][time_log.c_str()].IsUint64()) {
-        if (time - users[i][time_log.c_str()].GetUint64() >= day) {
+      if (users[i][create_at_log.c_str()].IsUint64()) {
+        if (time - users[i][create_at_log.c_str()].GetUint64() >= day) {
           return false;
         }
         return true;
@@ -98,24 +98,13 @@ void update_password(std::string old_password, std::string new_password) {
  */ 
 std::string sign_in(std::string body) {
   srand(time(NULL));
-  unsigned int token = rand();
-  std::chrono::milliseconds timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()) ;
-  int64_t time = timestamp.count();
   rapidjson::Document document;
   document.Parse<0>(body.c_str());
-  document.AddMember("token", token, document.GetAllocator());
-  document.AddMember("time", time, document.GetAllocator());
   rapidjson::StringBuffer buffer;
   rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
   document.Accept(writer);
   std::string response_token = registerIds(buffer.GetString());
-  if (response_token == "0") {
-    write_log("Emission d'un nouvel identificateur d'usager ordinaire: " + std::to_string(token)); 
-    return createIdentificationResponseJson(std::to_string(token), "Bienvenue sur l'application Café-Bistro Elevation !");
-  } else {
-    write_log("Emission de l'identificateur " + response_token); 
-    return createIdentificationResponseJson(response_token, "Bienvenue sur l'application Café-Bistro Elevation !");
-  }
+  return createIdentificationResponseJson(response_token, "Bienvenue sur l'application Café-Bistro Elevation !");
 }
 
 /**
@@ -124,12 +113,12 @@ std::string sign_in(std::string body) {
  * @param mac
  * @return token
  */ 
-std::string find_token(rapidjson::Value& users, rapidjson::Value& mac) {
-  std::string token = "0";
+unsigned int find_token(rapidjson::Value& users, rapidjson::Value& mac) {
+  unsigned int token = 0;
   for (rapidjson::SizeType i = 0; i < users.Size(); i++) {
     std::string temp = users[i][mac_log.c_str()].GetString();
     if(!temp.compare(mac.GetString())) {
-      token = std::to_string(users[i][token_log.c_str()].GetUint());
+      token = users[i][token_log.c_str()].GetUint();
     }
   }
   return token;
@@ -143,6 +132,8 @@ std::string find_token(rapidjson::Value& users, rapidjson::Value& mac) {
  * 
  */ 
 std::string registerIds(std::string body_json) {
+  std::cout << "register id " << std::endl;
+  mutex_user.lock();
   FILE* fp = fopen(user_log_path.c_str(), "rb");
   char buffer_reader[65536];
   rapidjson::FileReadStream is(fp, buffer_reader, sizeof(buffer_reader));
@@ -154,9 +145,12 @@ std::string registerIds(std::string body_json) {
     throw BadRequestException();
   rapidjson::Value& users = readDoc[users_log.c_str()];
   rapidjson::Value& mac = writeDoc[mac_log.c_str()];
-  std::string token = find_token(users, mac);
-  if (token == "0"){ 
-    users.PushBack(writeDoc.GetObject(), readDoc.GetAllocator());
+  unsigned int token = find_token(users, mac);
+  if (token == 0){ 
+    User user(writeDoc.GetObject());
+    token = user.token_;
+    users_sign.push_back(user);
+    users.PushBack(user.to_json().GetObject(), readDoc.GetAllocator());
     fp = fopen(user_log_path.c_str(), "w+");
     char buffer_writer[65536];
     rapidjson::FileWriteStream os(fp, buffer_writer, sizeof(buffer_writer));
@@ -164,7 +158,32 @@ std::string registerIds(std::string body_json) {
     readDoc.Accept(writer);
     fclose(fp);    
   }
-  return token;
+  mutex_user.unlock();
+  return std::to_string(token);
+}
+
+
+/**
+ * create the list of music with metadata file 
+ * 
+ */ 
+void create_list_user() {
+  FILE* fp = fopen(user_log_path.c_str(), "rb"); // non-Windows use "r"
+  char readBuffer[65536];
+  rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
+  rapidjson::Document d;
+  d.ParseStream(is);
+  fclose(fp);
+  const rapidjson::Value& users = d[users_log.c_str()];
+  for (rapidjson::SizeType i = 0; i < users.Size(); i++) {
+    User user(users[i].GetObject());
+    users_sign.push_back(user);
+  }
+  std::cout << "Liste de user bien initialisé" << std::endl;
+}
+
+std::vector<User> get_list_users() {
+  return users_sign;
 }
 
 /**
