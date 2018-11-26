@@ -135,7 +135,7 @@ std::string getListForUsersMetadata(std::vector<Music> musics) {
 std::string getListUsers(std::vector<User> users) {
   std::stringstream result;
   const char* separator = ", \n";
-  result << "{ \n  \"user\": [\n";
+  result << "{ \n  \"users\": [\n";
   for(auto it_user = users.begin();it_user != users.end();it_user++){
     if (it_user + 1 == users.end())
       separator = "\n";
