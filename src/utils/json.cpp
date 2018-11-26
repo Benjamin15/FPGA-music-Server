@@ -136,12 +136,11 @@ std::string getListUsers(std::vector<User> users) {
   std::stringstream result;
   const char* separator = ", \n";
   result << "{ \n  \"user\": [\n";
-  for (unsigned int i = 0 ; i < users.size() ; i++) {
-    User user = users[i];
-    result << user.to_string() << separator ;
-    if (i == users.size() - 2)
+  for(auto it_user = users.begin();it_user != users.end();it_user++){
+    if (it_user + 1 == users.end())
       separator = "\n";
-  };
+    result << it_user->to_string() << separator;
+  }
   result << "]\n}";
   return result.str(); 
 }

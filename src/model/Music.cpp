@@ -102,13 +102,13 @@ std::string Music::toStringForUser() {
 std::string Music::toString() {
   std::stringstream result;
   result << "{ "
-    << "\"title\": \"" << title_ << "\", "
-    << "\"artist\": \"" << artist_ << "\", "
-    << "\"duration\": \"" << duration_ << "\", "
+    << "\"titre\": \"" << title_ << "\", "
+    << "\"artiste\": \"" << artist_ << "\", "
+    << "\"duree\": \"" << duration_ << "\", "
     << "\"ip\": \"" << user_.ip_ << "\", "
     << "\"mac\": \"" << user_.mac_ << "\", "
-    << "\"id\":" << user_.token_ << ", "
-    << "\"suggested_by\": \"" << user_.name_ << "\", "
+    << "\"IdProprietaire\":" << user_.token_ << ", "
+    << "\"proposeePar\": \"" << user_.name_ << "\", "
     << "\"proprietaire\": \"" << owner_ << "\", "
     << "\"no\":" << no_ << " }";
   return result.str();

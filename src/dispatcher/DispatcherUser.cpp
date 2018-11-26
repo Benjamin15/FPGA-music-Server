@@ -122,7 +122,8 @@ void login(const std::shared_ptr< restbed::Session > session) {
     try {
       loginSupervisor(user, password);
       saveLogin(user);
-      sendResponse(session, createOkResponse());
+      std::string result = "{\"supervisor\":{\"username\":\"admin\"}}";
+      sendResponse(session, createOkResponse(result));
     }
     catch (ForbiddenException exception) {
       std::cout << "Requete non autorisé" << std::endl;
