@@ -32,7 +32,7 @@ curl -X POST 'http://132.207.89.35:80/superviseur/volume/sourdine/desactiver'
 
 curl -d "id=122.36.58.95&MAC=1:1:1:1:1:1&nom=test" -X POST 'http://132.207.89.35:80/superviseur/bloquer'
 
-curl -d "MAC=1:1:1:1:1:1" -X POST 'http://132.207.89.35:80/superviseur/debloquer'
+curl -d "{\"mac\":\"24:19:1D:8E:2F:B0\", \"ip\": \"1.2.3.4\", \"name\": \"test\"}" -X POST 'http://192.168.2.48:8080/superviseur/debloquer'
 
 curl -d "usager=admin&mot_de_passe=soleil123" -X POST 'http://132.207.89.35:80/superviseur/login'
 
@@ -43,7 +43,7 @@ curl -d "ancien=oldpassword&nouveau=newpassword" -X POST 'http://132.207.89.35:8
 
 DELETE
 
-curl -X "DELETE" http://132.207.89.35:80/usager/chanson/5/4
+curl -X "DELETE" http://132.207.89.35:80/usager/chanson/1989657301/4
 
 curl -X "DELETE" http://132.207.89.35:80/superviseur/chanson/5
 

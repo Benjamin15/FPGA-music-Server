@@ -1,9 +1,17 @@
 #include "player.h"
 int main(int argc, char **argv) {
-
-    initPlayer();
-    initMad();
     char *filename = argv[1];
+    int sample_rate = atoi(argv[2]);
+    int bitrate = atoi(argv[3]);
+    int channels = atoi(argv[4]);
+
+    std::cout << std::to_string(sample_rate) << std::endl;
+    std::cout << std::to_string(bitrate) << std::endl;
+    std::cout << std::to_string(channels) << std::endl;
+
+    initPlayer(sample_rate, bitrate, channels);
+    initMad();
+
     FILE *fp = fopen(filename, "r");
     int fd = fileno(fp);
     struct stat metadata = get_metadata(fd, filename, fp);
@@ -55,13 +63,12 @@ void output(struct mad_pcm *pcm) {
 }
 
 /**
- * Cette fonction permet d'initialiser le player. On l'initialise en 32 bit à 44.1kHz, avec un son en stéréo.
+ * Cette fonction permet d'initialiser le player.
  * On choisi d'utiliser du 32 bits car le Alsa sur la FPGA ne sait lire que les samples en 32 bits.
  * En plus, cela fonctionne correctement si un appareil ne peut lire que des samples de 16 bits. L'inverse n'est pas vrai (ralentissement et perte)
  * 
  */ 
-void initPlayer() {
-        // Set up Alsa 32-bit 44.1kHz stereo output
+void initPlayer(unsigned int sample_rate, unsigned int bitrate, unsigned int channels) {
     if ((error = snd_pcm_open (&playback_handle, "default", SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
         fprintf (stderr, "cannot open audio device %s (%s)\n", 
                 "default",
@@ -93,14 +100,14 @@ void initPlayer() {
         exit (1);
     }
 
-    unsigned int rate = 44100;
-    if ((error = snd_pcm_hw_params_set_rate_near (playback_handle, hw_params, &rate, 0)) < 0) {
+    if ((error = snd_pcm_hw_params_set_rate_near (playback_handle, hw_params, &sample_rate, 0)) < 0) {
         fprintf (stderr, "cannot set sample rate (%s)\n",
                 snd_strerror (error));
         exit (1);
     }
-
-    if ((error = snd_pcm_hw_params_set_channels (playback_handle, hw_params, 2)) < 0) {
+    
+    // set stereo / mono
+    if ((error = snd_pcm_hw_params_set_channels (playback_handle, hw_params, channels)) < 0) {
         fprintf (stderr, "cannot set channel count (%s)\n",
                 snd_strerror (error));
         exit (1);
@@ -111,6 +118,7 @@ void initPlayer() {
                 snd_strerror (error));
         exit (1);
     }
+    
 }
 
 

@@ -26,6 +26,9 @@ class Music
   Music(Object music);
   Music(ObjectMetadata music);
 
+  Music(int channels, int bitrate, int sample_rate) 
+  : no_(0), title_(""), artist_(""), duration_(""), owner_(false),
+   channels_(channels), bitrate_(bitrate), sample_rate_(sample_rate) {}
 
   std::ostream& operator<<(std::ostream &strm);
 
@@ -46,7 +49,9 @@ class Music
   std::string duration_;
   User user_;
   bool owner_;
-
+  int channels_;
+  int bitrate_;
+  int sample_rate_;
  private:
 
 };

@@ -37,6 +37,27 @@ Music get_info(std::string path) {
   return Music(tag->title().to8Bit(), tag->artist().to8Bit(), std::to_string(minutes) + ":" +std::to_string(seconds));
 }
 
+
+/**
+ * get nbsample in the music
+ * @param path : link to the file
+ * @return nsamples
+ */ 
+Music get_info_for_player(std::string path) {
+  TagLib::FileRef f(path.c_str());
+  std::string title;
+  int channels = 2;
+  int bitrate = 80000;
+  int sample_rate = 44100;
+  if (!f.isNull() && f.tag() && f.audioProperties()) {
+    TagLib::AudioProperties *properties = f.audioProperties();
+    channels = properties->channels();
+    bitrate = properties->bitrate();
+    sample_rate = properties->sampleRate();
+  }
+  return Music(channels, bitrate, sample_rate);
+}
+
 /**
  * This method check if the file is a mp3
  * @param path : path of the file

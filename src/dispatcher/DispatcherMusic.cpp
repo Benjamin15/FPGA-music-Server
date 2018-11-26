@@ -41,7 +41,7 @@ void insert_song(const std::shared_ptr< restbed::Session > session) {
       std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
       std::string fileName = std::to_string(Music::getNextMusicId("metadata/musics.json"))+".mp3";
       base64_toBinary(mp3DecodedMusic,fileName);
-      std::string path = "metadata/musique/" + fileName;
+      std::string path = "metadata/musics/" + fileName;
       if (!checkIfMp3(path))
         sendResponse(session, createUnsupportedMediaTypeResponse());
       Music music = get_info(path);
@@ -108,6 +108,8 @@ void delete_superviser_song(const std::shared_ptr< restbed::Session > session) {
   removeMP3Selected(std::to_string(noMusic));
   remove(noMusic);
   write_log("Retrait de la chanson par le superviseur: " + noMusic);
+  for (Music music : getMusics())
+    std::cout << music.no_ << std::endl;
   sendResponse(session, createOkResponse());
 }
 
