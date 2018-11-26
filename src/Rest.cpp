@@ -13,7 +13,7 @@ void ready_handler( restbed::Service&  data)
 void failed_filter_validation_handler( const std::shared_ptr< restbed::Session > session )
 {
     std::cout << "erreur " << std::endl;
-    session->close( 400 );
+    sendResponse(session, createBadRequestResponse());
 }
 
 /**

@@ -25,3 +25,4 @@ std::string getListForUsersMetadata(std::vector<Music> musics);
 std::string getListUsers(std::vector<User> users);
 std::string getListUsersMetadata(std::vector<User> users);
 void write_users(std::vector<User> users);
+std::string getVolume(int volume, bool mute);
