@@ -221,6 +221,17 @@ void write_music(std::vector<Music> musics) {
   fclose(fp);
 }
 
+const std::string get_json_string(rapidjson::Document document)
+{
+  rapidjson::StringBuffer buffer;
+
+  buffer.Clear();
+
+  rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+  document.Accept(writer);
+
+  return buffer.GetString();
+}
 
 /**
  * get the list of the user for the metadate file
@@ -231,12 +242,11 @@ std::string getListUsersMetadata(std::vector<User> users) {
   std::stringstream result;
   const char* separator = ", \n";
   result << "{ \n  \"users\": [\n";
-  for (unsigned int i = 0 ; i < users.size() ; i++) {
-    User user = users[i];
-    result << user.to_string() << separator ;
-    if (i == users.size() - 2)
-      separator = "\n";
-  };
+  for (auto it_user = users.begin() ; it_user != users.end() ; it_user++) {
+    if (it_user + 1 == users.end())
+      separator = "\n"; 
+    result << get_json_string(it_user->to_json()) << separator;
+  }
   result << "]\n}";
   return result.str(); 
 }

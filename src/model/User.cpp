@@ -23,7 +23,7 @@ User::User(Object value) {
     std::cout << "mac mal formaté " << std::endl;
   if (value.HasMember(is_block_log.c_str()) && value[is_block_log.c_str()].IsBool())
     is_blocked_ = value[is_block_log.c_str()].GetBool();
-  else 
+  else
     is_blocked_ = false;
   if (value.HasMember(create_at_log.c_str()) && value[create_at_log.c_str()].IsInt64())
     create_at_ = value[create_at_log.c_str()].GetInt64();
@@ -58,7 +58,7 @@ User::User(ObjectMetadata value) {
     std::cout << "mac mal formaté " << std::endl;
   if (value.HasMember(is_block_log.c_str()) && value[is_block_log.c_str()].IsBool())
     is_blocked_ = value[is_block_log.c_str()].GetBool();
-  else 
+  else
     is_blocked_ = false;
   if (value.HasMember(create_at_log.c_str()) && value[create_at_log.c_str()].IsInt64())
     create_at_ = value[create_at_log.c_str()].GetInt64();
@@ -75,7 +75,7 @@ User::User(ObjectMetadata value) {
 std::string User::to_string() {
   std::stringstream result;
   result << "{ "
-    << "\"token\": \"" << token_ << "\", "
+    << "\"token\": " << token_ << ", "
     << "\"name\": \"" << name_ << "\", "
     << "\"ip\": \"" << ip_ << "\", "
     << "\"mac\": \"" << mac_ << "\", "

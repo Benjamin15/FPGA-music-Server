@@ -32,7 +32,7 @@ void connect(const std::shared_ptr< restbed::Session > session){
 void lock(const std::shared_ptr< restbed::Session > session) {
   std::cout << "bloquer" << std::endl;
   const auto request = session->get_request();
-  size_t content_length = request->get_body().size();
+  size_t content_length = std::stoi(request->get_header("Content-Length"));
   session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
   const restbed::Bytes& body){
     std::cout << "fetch " << std::endl;
@@ -62,7 +62,7 @@ void lock(const std::shared_ptr< restbed::Session > session) {
 void unlock(const std::shared_ptr< restbed::Session > session) {
   std::cout << "debloquer" << std::endl;
   const auto request = session->get_request();
-  size_t content_length = request->get_body().size();
+  size_t content_length = std::stoi(request->get_header("Content-Length"));
   session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
   const restbed::Bytes& body){
     std::cout << "fetch " << std::endl;
@@ -190,5 +190,6 @@ void set_password(const std::shared_ptr< restbed::Session > session) {
 void get_users(const std::shared_ptr< restbed::Session > session) {
   std::cout << "get users " << std::endl;
   std::string vector_users = getListUsers(get_list_users());
+  std::cout << vector_users << std::endl;
   sendResponse(session, createOkResponse(vector_users));
 }
