@@ -3,7 +3,6 @@ int main(int argc, char **argv) {
   char *filename = argv[1];
   int sample_rate = atoi(argv[2]);
   int bitrate = atoi(argv[3]);
-  int channels = atoi(argv[4]);
 
   std::cout << std::to_string(sample_rate) << std::endl;
   std::cout << std::to_string(bitrate) << std::endl;
@@ -39,16 +38,9 @@ int main(int argc, char **argv) {
 void output(struct mad_pcm *pcm) {
   std::vector<char> stream;
   for (int i = 0 ; i < pcm->length ; i++) {
-    signed int sample;
-    sample = pcm->samples[0][i];
-    stream.push_back((sample >> 0) & 0xff);
-    stream.push_back((sample >> 8));
-    stream.push_back((sample >> 16));
-    stream.push_back((sample >> 24));
-
-    if (pcm->channels == 2) {
-      sample = pcm->samples[1][i];
-      stream.push_back(((sample >> 0) & 0xff));
+    for (int j = 0 ; j < channels ; j++) {
+      signed int sample = pcm->samples[j][i];
+      stream.push_back((sample >> 0) & 0xff);
       stream.push_back((sample >> 8));
       stream.push_back((sample >> 16));
       stream.push_back((sample >> 24));
@@ -107,7 +99,7 @@ void initPlayer(unsigned int sample_rate, unsigned int bitrate, unsigned int cha
   }
     
     // set stereo / mono
-  if ((error = snd_pcm_hw_params_set_channels (playback_handle, hw_params, channels)) < 0) {
+  if ((error = snd_pcm_hw_params_set_channels (playback_handle, hw_params, 2)) < 0) {
     fprintf (stderr, "cannot set channel count (%s)\n",
       snd_strerror (error));
     exit (1);

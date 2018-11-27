@@ -113,7 +113,7 @@ void Rest::createRoute(){
  */ 
 void Rest::run() {
     create_list_music();
-    create_list_user();
+    //create_list_user();
     run_player();
     service_->start( settings_ );
 }

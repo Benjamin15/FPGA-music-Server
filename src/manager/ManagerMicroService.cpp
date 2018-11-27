@@ -7,7 +7,8 @@
 void manage_player() {
   std::cout << "manage player" << std::endl;
   while(1) {
-    if (getMusics().size() > 0) {
+    std::vector<Music> musics = getMusics();
+    if (musics.size() > 0) {
       std::cout << "devrait lancer une musique" << std::endl;
       pid_t pid = fork();
       if (pid == 0) {
@@ -33,8 +34,10 @@ void manage_player() {
       }
       wait(NULL);
       std::cout << "fin musique, suppression" << std::endl;
-      getMusics().erase(getMusics().begin());
+      musics.erase(musics.begin());
+      std::cout << "erase" << std::endl;
       remove_last_music();
+      std::cout << "remove last " << std::endl;
     }
   }
 }

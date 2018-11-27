@@ -17,6 +17,7 @@ snd_pcm_hw_params_t *hw_params = NULL;
 struct mad_stream mad_stream;
 struct mad_frame mad_frame;
 struct mad_synth mad_synth;
+int channels = 2;
 
 void output(struct mad_header const *header, struct mad_pcm *pcm);
 void initPlayer(unsigned int sample, unsigned int bitrate, unsigned int channels);
