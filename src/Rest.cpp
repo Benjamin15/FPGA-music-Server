@@ -13,7 +13,7 @@ void ready_handler( restbed::Service&  data)
 void failed_filter_validation_handler( const std::shared_ptr< restbed::Session > session )
 {
     std::cout << "erreur " << std::endl;
-    sendResponse(session, createBadRequestResponse());
+    session->close( 400 );
 }
 
 /**
@@ -115,6 +115,8 @@ void Rest::run() {
     create_list_music();
     create_list_user();
     run_player();
+    // reset stats each 24 hours
+    service_->schedule(reset_stats, std::chrono::milliseconds( 1000 * 60 * 60 * 24 ));
     service_->start( settings_ );
 }
 
