@@ -113,7 +113,7 @@ void Rest::createRoute(){
  */ 
 void Rest::run() {
     create_list_music();
-    create_list_user();
+    //create_list_user();
     run_player();
     // reset stats each 24 hours
     service_->schedule(reset_stats, std::chrono::milliseconds( 1000 * 60 * 60 * 24 ));
