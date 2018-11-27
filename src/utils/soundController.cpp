@@ -8,6 +8,9 @@ SoundController::~SoundController(){
     snd_mixer_close(handle_);
 }
 
+ /* Initialize sound controller settings
+ *  
+ */  
 void SoundController::initSoundController(){
     std::cout << "Initializing sound control..." << std::endl;
 
@@ -32,6 +35,10 @@ void SoundController::initSoundController(){
     printVolumeStatus();
 }
 
+
+ /* set player volume and corresponding volume percentage
+ * @param volume percent 
+ */ 
 void SoundController::setVolume(int volumePercentage){
     long volume = ((volumePercentage * volumeRange_)/ MAX_VOLUME_PERCENTAGE) + minVolumeRange_;
     volumePercentage_ = volumePercentage;
@@ -44,19 +51,32 @@ void SoundController::setVolume(int volumePercentage){
     printVolumeStatus();
 }
 
+ /* get player volume
+ *
+ */ 
 void SoundController::getPlaybackVolume(){
     snd_mixer_selem_get_playback_volume(element_, SND_MIXER_SCHN_FRONT_LEFT, &volume_);
 }
+
+ /* print volume status
+ *
+ */ 
 void SoundController::printVolumeStatus(){
     std::cout << "Updated volume: " << volume_ << std::endl;
     std::cout << "Updated volume percentage: " << volumePercentage_ << std::endl;
 }
 
+ /* get player volume in percentage
+ *
+ */ 
 int SoundController::getVolume(){
     std::cout << "Current volume percentage: " << volumePercentage_ << std::endl;
     return volumePercentage_;
 }
 
+ /* increase volume by a certain percentage
+ * @param percentage
+ */ 
 void SoundController::increaseVolume(int percent){
     if(isMuted()){
         unmute();
@@ -78,6 +98,9 @@ void SoundController::increaseVolume(int percent){
     }
 }
 
+ /* decrease volume by a certain percentage
+ * @param percentage
+ */ 
 void SoundController::decreaseVolume(int percent){
     if(volumePercentage_ != MIN_VOLUME_PERCENTAGE){
 
@@ -99,6 +122,9 @@ void SoundController::decreaseVolume(int percent){
     
 }
 
+ /* mute player
+ * 
+ */ 
 void SoundController::mute(){
     snd_mixer_selem_set_playback_switch_all(element_, 0);
     isMuted_ = true;
@@ -106,6 +132,9 @@ void SoundController::mute(){
     
 }
 
+ /* unmute player
+ * 
+ */ 
 void SoundController::unmute(){
     snd_mixer_selem_set_playback_switch_all(element_, 1);
     setVolume(volumePercentage_);
@@ -113,6 +142,9 @@ void SoundController::unmute(){
     std::cout << "Mute status: " << isMuted_ << std::endl;
 }
 
+ /* get mute status
+ * @return mute status
+ */ 
 bool SoundController::isMuted(){
     return isMuted_;
 }

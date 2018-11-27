@@ -6,9 +6,6 @@
  * 
  */ 
 void get_statistics(const std::shared_ptr< restbed::Session > session){
-  //if ()      Si on n'est pas authentifié
-  //  sendResponse() On retourne l'erreur 401
-  
   std::cout << "statistiques" << std::endl;
   std::string avg_duration =  get_avg_time();
   int n_music = get_n_musics();

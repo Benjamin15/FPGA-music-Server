@@ -10,6 +10,10 @@
 #include "../model/User.h"
 #include "../model/Music.h"
 
+/**
+ * Class which manage all users
+ */  
+
 void reset_stats();
 void add_user(User user);
 void add_music(Music music);
