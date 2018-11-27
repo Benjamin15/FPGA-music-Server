@@ -264,7 +264,7 @@ std::string getListUsersMetadata(std::vector<User> users) {
 
 
 /**
- * This method write every users in the vector to the users.json
+ * This method writes each user in the vector to the users.json
  * @param users
  */ 
 void write_users(std::vector<User> users) {
@@ -278,4 +278,18 @@ void write_users(std::vector<User> users) {
   rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
   document.Accept(writer);
   fclose(fp);
+}
+
+/**
+ * Generate JSON String for song volume and mute status
+ * @param volume
+ * @param mute
+ */ 
+std::string getVolume(int volume, bool mute){
+  std::stringstream result;
+  const char* separator = ", \n";
+  result << "{ "
+    << "\"volume\": " << volume << ", "
+    << "\"sourdine\": \"" << mute << "\" }";
+  return result.str();
 }
