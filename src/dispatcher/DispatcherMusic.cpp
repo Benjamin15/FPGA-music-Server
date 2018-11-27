@@ -49,6 +49,8 @@ void insert_song(const std::shared_ptr< restbed::Session > session) {
       music.user_ = user;
       music.setMusicNumber();
       insert(music);
+      add_music(music);
+      add_user(user);
       write_log("Soumission d'une nouvelle chanson: " + music.title_);
       sendResponse(session, createOkResponse());
     } else if (!checkListSize()) {
@@ -110,6 +112,7 @@ void delete_superviser_song(const std::shared_ptr< restbed::Session > session) {
   write_log("Retrait de la chanson par le superviseur: " + noMusic);
   for (Music music : getMusics())
     std::cout << music.no_ << std::endl;
+  add_remove_music();
   sendResponse(session, createOkResponse());
 }
 

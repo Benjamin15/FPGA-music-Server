@@ -13,6 +13,8 @@
 #include "../model/User.h"
 #include "../metadata/admin_log.h"
 #include "../metadata/users_log.h"
+#include "ManagerStatistics.h"
+
 
 bool checkUserToken(unsigned int token);
 bool isValidToken(unsigned int token);

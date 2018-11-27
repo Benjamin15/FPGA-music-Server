@@ -32,7 +32,7 @@ void connect(const std::shared_ptr< restbed::Session > session){
 void lock(const std::shared_ptr< restbed::Session > session) {
   std::cout << "bloquer" << std::endl;
   const auto request = session->get_request();
-  size_t content_length = request->get_body().size();
+  size_t content_length = std::stoi(request->get_header("Content-Length"));
   session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
   const restbed::Bytes& body){
     std::cout << "fetch " << std::endl;
@@ -62,7 +62,7 @@ void lock(const std::shared_ptr< restbed::Session > session) {
 void unlock(const std::shared_ptr< restbed::Session > session) {
   std::cout << "debloquer" << std::endl;
   const auto request = session->get_request();
-  size_t content_length = request->get_body().size();
+  size_t content_length = std::stoi(request->get_header("Content-Length"));
   session->fetch(content_length,[](const std::shared_ptr< restbed::Session >& session,
   const restbed::Bytes& body){
     std::cout << "fetch " << std::endl;
@@ -122,7 +122,8 @@ void login(const std::shared_ptr< restbed::Session > session) {
     try {
       loginSupervisor(user, password);
       saveLogin(user);
-      sendResponse(session, createOkResponse());
+      std::string result = "{\"supervisor\":{\"username\":\"admin\"}}";
+      sendResponse(session, createOkResponse(result));
     }
     catch (ForbiddenException exception) {
       std::cout << "Requete non autorisé" << std::endl;
@@ -164,13 +165,18 @@ void set_password(const std::shared_ptr< restbed::Session > session) {
     const std::string old_password = "ancien";
     const std::string new_password = "nouveau";
     std::string contentJson = std::string(body.begin(), body.end());
+    std::cout << contentJson << std::endl;
     rapidjson::Document document;
     document.SetObject();
     document.Parse<0>(contentJson.c_str(), contentJson.length());
     try {
-      if (!document.HasParseError())
+      if (document.HasParseError())
         throw BadRequestException();
-      update_password(document[old_password.c_str()].GetString(), document[new_password.c_str()].GetString());
+      std::string old_value = document[old_password.c_str()].GetString();
+      std::string new_value = document[new_password.c_str()].GetString();
+      std::cout << "old : " << old_value << std::endl;
+      std::cout << "new : " << new_value << std::endl;
+      update_password(old_value, new_value);
       sendResponse(session, createOkResponse(responseBody::OK));
     } catch (BadRequestException& error) {
       error.print_error();
@@ -189,5 +195,6 @@ void set_password(const std::shared_ptr< restbed::Session > session) {
 void get_users(const std::shared_ptr< restbed::Session > session) {
   std::cout << "get users " << std::endl;
   std::string vector_users = getListUsers(get_list_users());
+  std::cout << vector_users.c_str() << std::endl;
   sendResponse(session, createOkResponse(vector_users));
 }

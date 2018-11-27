@@ -5,8 +5,10 @@
  * @param object_json
  */ 
 User::User(Object value) {
-  if (value.HasMember(id_log.c_str()) && value[id_log.c_str()].IsUint())
-    token_ = value[id_log.c_str()].GetUint();
+  if (value.HasMember(token_log.c_str()) && value[token_log.c_str()].IsUint()) {
+    token_ = value[token_log.c_str()].GetUint();
+    std::cout << "generate new token" << std::endl;
+  }
   else
     token_ = rand();
   if (value.HasMember(name_log.c_str()) && value[name_log.c_str()].IsString())
@@ -23,7 +25,7 @@ User::User(Object value) {
     std::cout << "mac mal formaté " << std::endl;
   if (value.HasMember(is_block_log.c_str()) && value[is_block_log.c_str()].IsBool())
     is_blocked_ = value[is_block_log.c_str()].GetBool();
-  else 
+  else
     is_blocked_ = false;
   if (value.HasMember(create_at_log.c_str()) && value[create_at_log.c_str()].IsInt64())
     create_at_ = value[create_at_log.c_str()].GetInt64();
@@ -40,10 +42,12 @@ User::User(Object value) {
  */ 
 
 User::User(ObjectMetadata value) {
-  if (value.HasMember(id_log.c_str()) && value[id_log.c_str()].IsUint())
-    token_ = value[id_log.c_str()].GetUint();
-  else
+  if (value.HasMember(token_log.c_str()) && value[token_log.c_str()].IsUint())
+    token_ = value[token_log.c_str()].GetUint();
+  else {
+    std::cout << "generate new token" << std::endl;
     token_ = rand();
+  }
   if (value.HasMember(name_log.c_str()) && value[name_log.c_str()].IsString())
     name_ = value[name_log.c_str()].GetString();
   else
@@ -58,7 +62,7 @@ User::User(ObjectMetadata value) {
     std::cout << "mac mal formaté " << std::endl;
   if (value.HasMember(is_block_log.c_str()) && value[is_block_log.c_str()].IsBool())
     is_blocked_ = value[is_block_log.c_str()].GetBool();
-  else 
+  else
     is_blocked_ = false;
   if (value.HasMember(create_at_log.c_str()) && value[create_at_log.c_str()].IsInt64())
     create_at_ = value[create_at_log.c_str()].GetInt64();
@@ -75,7 +79,7 @@ User::User(ObjectMetadata value) {
 std::string User::to_string() {
   std::stringstream result;
   result << "{ "
-    << "\"token\": \"" << token_ << "\", "
+    << "\"token\": " << token_ << ", "
     << "\"name\": \"" << name_ << "\", "
     << "\"ip\": \"" << ip_ << "\", "
     << "\"mac\": \"" << mac_ << "\", "

@@ -3,7 +3,7 @@ INCLUDE = -Iinclude/
 LIBRARIES = -Llib/ -lrestbed -lpthread -lmad -lasound -ltag -lssl -lcrypto
 CXX=g++  -Wno-unused-result -std=c++11 -fuse-ld=bfd
 RM=rm -f
-CPPFLAGS=-c -Wall
+CPPFLAGS=-c -Wall -g
 LDFLAGS=-g $(INCLUDE)
 LDLIBS=$(LIBRARIES)
 

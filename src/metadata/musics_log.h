@@ -5,6 +5,7 @@
 const std::string music_json_path = "metadata/musics.json";
 const std::string musics_log = "musics";
 const std::string id_log = "id";
+const std::string token_log = "token";
 const std::string suggest_by_log = "suggested_by";
 const std::string no_log = "no";
 const std::string duration_log = "duration";

@@ -25,6 +25,7 @@ class User
   //std::ostream& operator<<(std::ostream &strm);
 
   bool operator==(const unsigned int token) const { return this->token_ == token;}
+  bool operator==(const User user) const { return this->token_ == user.token_;}
 
 
   unsigned int token_;
