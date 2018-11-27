@@ -15,5 +15,6 @@ void get_statistics(const std::shared_ptr< restbed::Session > session){
   int n_music_remove_by_admin = get_n_music_remove_admin();
   int n_user = get_n_users();
   std::string response = getStats(n_music, n_user, n_music_remove_by_admin, avg_duration);
+  std::cout << "response : " << response << std::endl;
   sendResponse(session, createOkResponse(response));
 }

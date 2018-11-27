@@ -5,22 +5,21 @@
  * 
  */ 
 void reset_stats() {
-  mutex.lock();
-  users.clear();
-  musics.clear();
+  mutex_stat.lock();
+  musics_stat.clear();
   n_music_remove_admin = 0;
-  mutex.unlock();
+  mutex_stat.unlock();
 }
 
-/**
- * add new user when they add a music, for each day
- * 
- */ 
+int get_n_users() {
+  return users_stats.size();
+}
+
 void add_user(User user) {
-  if(std::find(users.begin(), users.end(), user) == users.end()) {
-     mutex.lock();
-    users.push_back(user);
-    mutex.unlock();
+  if (std::find(users_stats.begin(), users_stats.end(), user) == users_stats.end()) {
+    mutex_stat.lock();
+    users_stats.push_back(user);
+    mutex_stat.unlock();
   } 
 }
 
@@ -29,9 +28,9 @@ void add_user(User user) {
  * 
  */ 
 void add_music(Music music) {
-  mutex.lock();
-  musics.push_back(music);
-  mutex.unlock();
+  mutex_stat.lock();
+  musics_stat.push_back(music);
+  mutex_stat.unlock();
 }
 
 /**
@@ -42,21 +41,12 @@ void add_remove_music() {
   n_music_remove_admin++;
 }
 
-
-/**
- * get count user
- * 
- */ 
-int get_n_users() {
-  return users.size();
-}
-
 /**
  * get count music
  * 
  */ 
 int get_n_musics() {
-  return musics.size();
+  return musics_stat.size();
 }
 
 /**
@@ -67,18 +57,35 @@ int get_n_music_remove_admin() {
   return n_music_remove_admin;
 }
 
+std::string calcul_avg() {
+  int seconds = 0;
+  int minutes = 0;
+  for (Music music : musics_stat) {
+    struct tm duration;
+    std::cout << "duration : " << music.duration_.c_str() << std::endl;
+    strptime(music.duration_.c_str(), "%M:%S", &duration);
+    seconds += duration.tm_sec;
+    minutes += duration.tm_min;
+  }
+  minutes += (seconds / 60);
+  seconds %= 60;
+  seconds /= musics_stat.size();
+  minutes /= musics_stat.size();
+  std::string seconds_string = std::to_string(seconds);
+  std::string minutes_string = std::to_string(minutes);
+  if (seconds_string.size() == 1)
+    seconds_string = std::string(1, '0') + seconds_string;
+  if (minutes_string.size() == 1)
+    minutes_string = std::string(1, '0') + minutes_string;
+  return  minutes_string + ":" + seconds_string;
+}
+
 /**
  * get the average time of music. Reset at each day
  * 
  */ 
 std::string get_avg_time() {
-  time_t sum_time;
-  for (Music music : musics) {
-    struct tm duration;
-    strptime(music.duration_.c_str(), "%M:%S", &duration);
-    sum_time += mktime(&duration);  
-  }
-  time_t avg_time = (sum_time / musics.size());
-  struct tm* avg_time_tm = localtime(&avg_time);
-  return avg_time_tm->tm_min + ":"+avg_time_tm->tm_sec;
+  std::string avg_time = calcul_avg();
+  std::cout << "avg time : " << avg_time << std::endl;
+  return avg_time;
 }

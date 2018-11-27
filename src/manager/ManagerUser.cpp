@@ -149,6 +149,7 @@ std::string registerIds(std::string body_json) {
     User user(writeDoc.GetObject());
     token = user.token_;
     users_sign.push_back(user);
+    add_user(user);
     users.PushBack(user.to_json().GetObject(), readDoc.GetAllocator());
     fp = fopen(user_log_path.c_str(), "w+");
     char buffer_writer[65536];
@@ -239,6 +240,8 @@ void checkIfLogin(std::string username) {
 
 void lock_user(std::string mac, bool is_blocked) {
   std::cout << "lock " << std::endl;
+  for (User user : users_sign)
+    std::cout << user.to_string();
   mutex_user.lock();
   FILE* fp = fopen(user_log_path.c_str(), "rb");
   char buffer_reader[65536];
@@ -252,13 +255,14 @@ void lock_user(std::string mac, bool is_blocked) {
   unsigned int token = find_token(users, mac);
   std::cout << "token : " << token << std::endl;
   auto it_user = find(users_sign.begin(), users_sign.end(), token);
-  std::cout << "user : " << it_user->to_string() << std::endl;
-  it_user->is_blocked_ = is_blocked;
-  std::cout << "user block : " << it_user->is_blocked_ << std::endl;
-  std::cout << "is_block value : " << is_blocked << std::endl;
-  write_users(users_sign);
+  if (it_user != users_sign.end()) {
+    std::cout << "user : " << it_user->to_string() << std::endl;
+    it_user->is_blocked_ = is_blocked;
+    std::cout << "user block : " << it_user->is_blocked_ << std::endl;
+    std::cout << "is_block value : " << is_blocked << std::endl;
+    write_users(users_sign);
+  }
   mutex_user.unlock();
   for (User user : users_sign)
     std::cout << user.is_blocked_ << std::endl;
 }
-

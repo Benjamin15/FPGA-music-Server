@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <mutex>
+#include <algorithm>
 
 #include "../model/User.h"
 #include "../model/Music.h"
@@ -18,7 +19,7 @@ int get_n_musics();
 int get_n_music_remove_admin();
 std::string get_avg_time();
 
-static std::vector<User> users;
-static std::vector<Music> musics;
+static std::vector<User> users_stats;
+static std::vector<Music> musics_stat;
 static int n_music_remove_admin = 0;
-static std::mutex mutex;
+static std::mutex mutex_stat;

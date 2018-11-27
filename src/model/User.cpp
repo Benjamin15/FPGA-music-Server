@@ -5,8 +5,10 @@
  * @param object_json
  */ 
 User::User(Object value) {
-  if (value.HasMember(id_log.c_str()) && value[id_log.c_str()].IsUint())
-    token_ = value[id_log.c_str()].GetUint();
+  if (value.HasMember(token_log.c_str()) && value[token_log.c_str()].IsUint()) {
+    token_ = value[token_log.c_str()].GetUint();
+    std::cout << "generate new token" << std::endl;
+  }
   else
     token_ = rand();
   if (value.HasMember(name_log.c_str()) && value[name_log.c_str()].IsString())
@@ -40,10 +42,12 @@ User::User(Object value) {
  */ 
 
 User::User(ObjectMetadata value) {
-  if (value.HasMember(id_log.c_str()) && value[id_log.c_str()].IsUint())
-    token_ = value[id_log.c_str()].GetUint();
-  else
+  if (value.HasMember(token_log.c_str()) && value[token_log.c_str()].IsUint())
+    token_ = value[token_log.c_str()].GetUint();
+  else {
+    std::cout << "generate new token" << std::endl;
     token_ = rand();
+  }
   if (value.HasMember(name_log.c_str()) && value[name_log.c_str()].IsString())
     name_ = value[name_log.c_str()].GetString();
   else

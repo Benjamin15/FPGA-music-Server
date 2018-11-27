@@ -9,6 +9,7 @@ void insert(Music music) {
   mutex.lock();
   registerMusic(music);
   musics.push_back(music);
+  add_music(music);
   mutex.unlock();
 }
 
@@ -101,6 +102,7 @@ void create_list_music() {
     User user(idUser, suggestBy, ip, mac);
     Music music(idMusic, title, artist, duration, user);
     musics.push_back(music);
+    add_music(music);
     }
   std::cout << "Liste de musique bien initialisé" << std::endl;
 }

@@ -12,6 +12,7 @@
 #include "../utils/json.h"
 #include "../metadata/users_log.h"
 #include "../metadata/musics_log.h"
+#include "../manager/ManagerStatistics.h"
 
 void insert(Music music);
 void remove(unsigned int no);
