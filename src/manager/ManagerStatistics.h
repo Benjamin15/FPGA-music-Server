@@ -3,22 +3,14 @@
 #include <memory>
 #include <restbed>
 #include <iostream>
-#include <vector>
-#include <mutex>
 
-#include "../model/User.h"
-#include "../model/Music.h"
+/**
+ * Class which manage all users
+ */  
 
-void reset_stats();
-void add_user(User user);
-void add_music(Music music);
-void add_remove_music();
-int get_n_users();
-int get_n_musics();
-int get_n_music_remove_admin();
-std::string get_avg_time();
-
-static std::vector<User> users;
-static std::vector<Music> musics;
-static int n_music_remove_admin = 0;
-static std::mutex mutex;
+class ManagerStatistics
+{  
+  private: 
+  public:
+    static void get_statistics(const std::shared_ptr< restbed::Session > session);
+};

@@ -31,12 +31,12 @@ void insert_song(const std::shared_ptr< restbed::Session > session) {
     const auto request = session->get_request();
     const unsigned int token = atoi(request->get_path_parameter( "id" ).c_str());
     std::cout << token << std::endl;
-    if (!identify(token))
+    if (!identify(token)){
       sendResponse(session,createForbiddenResponse());
-    std::string bodyString(body.begin(), body.end());
-    if (!checkUserToken(token) && !isValidToken(token))
-      sendResponse(session,createForbiddenResponse());
+    }
+
     else if (checkListSize() && checkUserMusics(token) && checkUserToken(token)) {
+      std::string bodyString(body.begin(), body.end());
       std::string mp3EncodedMusic = bodyString;
       std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
       std::string fileName = std::to_string(Music::getNextMusicId("metadata/musics.json"))+".mp3";
@@ -49,8 +49,6 @@ void insert_song(const std::shared_ptr< restbed::Session > session) {
       music.user_ = user;
       music.setMusicNumber();
       insert(music);
-      add_music(music);
-      add_user(user);
       write_log("Soumission d'une nouvelle chanson: " + music.title_);
       sendResponse(session, createOkResponse());
     } else if (!checkListSize()) {
@@ -94,7 +92,7 @@ void delete_usager_song(const std::shared_ptr< restbed::Session > session) {
  */ 
 void get_superviser_files(const std::shared_ptr< restbed::Session > session) {
   std::string result = getListForAdmin(getMusics());
-  session->close( restbed::OK, result, {{ "Content-Length", std::to_string(result.size())}, {"Connection", "close"}});
+  sendResponse(session, createOkResponse(result));
 }
 
 
@@ -110,7 +108,6 @@ void delete_superviser_song(const std::shared_ptr< restbed::Session > session) {
   removeMP3Selected(std::to_string(noMusic));
   remove(noMusic);
   write_log("Retrait de la chanson par le superviseur: " + noMusic);
-  add_remove_music();
   sendResponse(session, createOkResponse());
 }
 
@@ -140,7 +137,7 @@ void reverse_song(const std::shared_ptr< restbed::Session > session) {
     std::cout << "second : " << second << std::endl;
     reverse(first, second) ; 
     write_log("Modification de l'ordre de passage des chansons");
-    session->close( restbed::OK, "", { { "Content-Length", "0" }, { "Connection", "close" } } );
+    sendResponse(session, createOkResponse(""));
   });
 }
 
@@ -150,6 +147,18 @@ void reverse_song(const std::shared_ptr< restbed::Session > session) {
  */ 
 void get_volume(const std::shared_ptr< restbed::Session > session) {
   std::cout << "obtenir le volume" << std::endl;
+  const std::string user = "admin";
+  try {
+    checkIfLogin(user);
+    int volume = SoundControllerSingleton::GetInstance().getVolume();
+    bool mute = SoundControllerSingleton::GetInstance().isMuted();
+    std::string response = getVolume(volume, mute);
+    std::cout << response << std::endl;
+    sendResponse(session, createOkResponse(response));
+  }catch (UnauthorizedException) {
+    std::cout << "L'administrateur ne s'est pas connecté au préalable" << std::endl;
+    sendResponse(session, createUnauthorizedResponse());
+  }
 }
 
 /**
@@ -158,7 +167,20 @@ void get_volume(const std::shared_ptr< restbed::Session > session) {
  * 
  */ 
 void set_up_volume(const std::shared_ptr< restbed::Session > session) {
-    std::cout << "augmenter le volume" << std::endl;
+  std::cout << "augmenter le volume" << std::endl;
+  const std::string user = "admin";
+  try {
+    checkIfLogin(user);
+    const int pc = atoi(session->get_request()->get_path_parameter( "pc" ).c_str());
+    SoundControllerSingleton::GetInstance().increaseVolume(pc);
+    write_log("Augmentation du volume");
+    std::string response = getVolume(SoundControllerSingleton::GetInstance().getVolume(), SoundControllerSingleton::GetInstance().isMuted());
+    std::cout << response << std::endl;
+    sendResponse(session, createOkResponse(response));
+  }catch (UnauthorizedException) {
+    std::cout << "L'administrateur ne s'est pas connecté au préalable" << std::endl;
+    sendResponse(session, createUnauthorizedResponse());
+  }
 }
 
 /**
@@ -168,6 +190,19 @@ void set_up_volume(const std::shared_ptr< restbed::Session > session) {
  */ 
 void set_down_volume(const std::shared_ptr< restbed::Session > session) {
   std::cout << "diminuer le volume" << std::endl;
+  const std::string user = "admin";
+  try {
+    checkIfLogin(user);
+    const int pc = atoi(session->get_request()->get_path_parameter( "pc" ).c_str());
+    SoundControllerSingleton::GetInstance().decreaseVolume(pc);
+    write_log("Diminution du volume");
+    std::string response = getVolume(SoundControllerSingleton::GetInstance().getVolume(), SoundControllerSingleton::GetInstance().isMuted());
+    std::cout << response << std::endl;
+    sendResponse(session, createOkResponse(response));
+  }catch (UnauthorizedException) {
+    std::cout << "L'administrateur ne s'est pas connecté au préalable" << std::endl;
+    sendResponse(session, createUnauthorizedResponse());
+  }
 }
 
 /**
@@ -178,6 +213,18 @@ void set_down_volume(const std::shared_ptr< restbed::Session > session) {
 
 void enabledMute(const std::shared_ptr< restbed::Session > session) {
   std::cout << "activer mute" << std::endl;
+  const std::string user = "admin";
+  try {
+    checkIfLogin(user);
+    SoundControllerSingleton::GetInstance().mute();
+    write_log("Activation de la sourdine");
+    std::string response = getVolume(SoundControllerSingleton::GetInstance().getVolume(), SoundControllerSingleton::GetInstance().isMuted());
+    std::cout << response << std::endl;
+    sendResponse(session, createOkResponse(response));
+  }catch (UnauthorizedException) {
+    std::cout << "L'administrateur ne s'est pas connecté au préalable" << std::endl;
+    sendResponse(session, createUnauthorizedResponse());
+  }
 }
 
 /**
@@ -188,4 +235,16 @@ void enabledMute(const std::shared_ptr< restbed::Session > session) {
 
 void disabledMute(const std::shared_ptr< restbed::Session > session) {
   std::cout << "désactiver mute" << std::endl;
+  const std::string user = "admin";
+  try {
+    checkIfLogin(user);
+    SoundControllerSingleton::GetInstance().unmute();
+    write_log("Désactivation de la sourdine");
+    std::string response = getVolume(SoundControllerSingleton::GetInstance().getVolume(), SoundControllerSingleton::GetInstance().isMuted());
+    std::cout << response << std::endl;
+    sendResponse(session, createOkResponse(response));
+  }catch (UnauthorizedException) {
+    std::cout << "L'administrateur ne s'est pas connecté au préalable" << std::endl;
+    sendResponse(session, createUnauthorizedResponse());
+  }
 }

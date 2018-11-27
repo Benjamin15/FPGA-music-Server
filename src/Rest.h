@@ -4,8 +4,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <cstdio>
-#include <chrono>
-
 #include "header/rapidjson.h"
 #include "dispatcher/dispatcher.h"
 

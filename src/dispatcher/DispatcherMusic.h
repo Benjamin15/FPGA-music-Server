@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 #include "../header/rapidjson.h"
+#include "../utils/soundControllerSingleton.h"
 #include "../header/taglib.h"
 #include <system_error>
 #include "../model/Music.h"
