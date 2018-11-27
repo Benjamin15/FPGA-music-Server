@@ -27,7 +27,6 @@ void SoundController::initSoundController(){
     std::cout << "min: " << minVolumeRange_ << std::endl;
     std::cout << "max: " << maxVolumeRange_ << std::endl;
     std::cout << "Volume range: " << volumeRange_ << std::endl;
-
     getPlaybackVolume();
     volumePercentage_ = MAX_VOLUME_PERCENTAGE * (volume_ - minVolumeRange_) / volumeRange_;
     printVolumeStatus();
@@ -39,6 +38,9 @@ void SoundController::setVolume(int volumePercentage){
     std::cout << "Setting volume to: " << volume << std::endl;
     snd_mixer_selem_set_playback_volume_all(element_, volume);
     getPlaybackVolume();
+    if(volumePercentage_ == 0 && !isMuted()){
+        mute();
+    }
     printVolumeStatus();
 }
 

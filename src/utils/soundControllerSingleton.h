@@ -9,16 +9,12 @@
     SoundControllerSingleton& operator=(SoundControllerSingleton const&) = delete;  
     SoundControllerSingleton& operator=(SoundControllerSingleton &&) = delete;      
  
-    static std::shared_ptr<SoundController> GetInstance()
+    static SoundController& GetInstance()
     {
-      if(!instance_){
-          instance_ = std::make_shared<SoundController>();
-      }
-      return instance_;
+      static SoundController soundControllerInstance;
+      return soundControllerInstance;
     }  
   
-  private:
-    static std::shared_ptr<SoundController> instance_;
  
   protected:
     SoundControllerSingleton() {}
