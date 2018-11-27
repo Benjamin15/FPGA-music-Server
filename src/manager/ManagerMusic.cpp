@@ -36,10 +36,16 @@ void remove(unsigned int no) {
  * 
  */ 
 void reverse(unsigned int noFirst, unsigned int noSecond) {
+  std::cout << "debut : " << std::endl;
+  for (Music music : musics) 
+    std::cout << music.no_ << std::endl;
   mutex.lock();
-  std::iter_swap(find(musics.begin(), musics.end(), noFirst), find(musics.begin(), musics.end(), noSecond));
+  std::rotate(find(musics.begin(), musics.end(), noFirst), find(musics.begin(), musics.end(), noFirst) + 1, find(musics.begin(), musics.end(), noSecond) + 1);
   write_music(musics);
   mutex.unlock();
+  std::cout << "fini ! " << std::endl;
+  for (Music music : musics) 
+    std::cout << music.no_ << std::endl;
 }
 
 /**
@@ -48,7 +54,7 @@ void reverse(unsigned int noFirst, unsigned int noSecond) {
  */ 
 void updateMusicsOwner(unsigned int token) {
   for (std::size_t i = 0; i < musics.size() ; i++ ) {
-    if (musics[i].user_.id_ == token ) {
+    if (musics[i].user_.token_ == token ) {
       musics[i].owner_ = true;
     }
   }
@@ -64,7 +70,7 @@ void updateMusicsOwner(unsigned int token) {
 bool checkUserMusics(unsigned int token) {
   int userMusics = 0;
   for (std::size_t i = 0 ; i < musics.size() ; i++) {
-    if (musics[i].user_.id_ == token ){
+    if (musics[i].user_.token_ == token ){
       userMusics ++;
     }
   }
@@ -108,7 +114,7 @@ void create_list_music() {
 bool canRemove(unsigned int noMusic, unsigned int token) {
   for(size_t i = 0 ; i < musics.size() ; i++) {
     if (musics[i].no_ == noMusic) {
-      if (musics[i].user_.id_ == token) {
+      if (musics[i].user_.token_ == token) {
         return true;
       }
       return false;

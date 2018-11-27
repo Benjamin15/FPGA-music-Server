@@ -2,9 +2,12 @@
 
 void ready_handler( restbed::Service&  data)
 {
-    auto uri = data.get_http_uri();
+    auto uri_http = data.get_http_uri();
+    //auto uri_https = data.get_https_uri();
     fprintf( stderr, "Service PID is '%i'.\n", getpid( ) );
-    std::cout << uri->to_string() <<  std::endl;
+    std::cout << uri_http->to_string() <<  std::endl;
+   // std::cout << uri_https->to_string() <<  std::endl;
+
 } 
 
 void failed_filter_validation_handler( const std::shared_ptr< restbed::Session > session )
@@ -38,7 +41,8 @@ std::map<std::string, std::function<void( const std::shared_ptr< restbed::Sessio
         { "get_superviseur_listenoire", get_black_list},
         { "post_superviseur_login", login},
         { "post_superviseur_logout", logout},
-        { "post_superviseur_changement_mdp", set_password}
+        { "post_superviseur_changement_mdp", set_password}, 
+        { "get_superviseur_user", get_users}  
     };
     return funcMap;
 }
@@ -63,18 +67,17 @@ void Rest::initService() {
  * 
  */ 
 void Rest::initSettings(std::string address, uint16_t port) {
-    settings_->set_port( port );
-    settings_->set_default_header( "Connection", "close" );
-    settings_->set_bind_address(address);
     settings_->set_worker_limit( 4 );
-    //initSSLSettings();
+    //initSSLSettings(address);
+    settings_->set_bind_address(address);
+    settings_->set_port(port);
 }
 
-void Rest::initSSLSettings() {
-    //ssl_settings_->set_http_disabled( true );
+void Rest::initSSLSettings(std::string address) {
     ssl_settings_->set_private_key( restbed::Uri( "file://certificates/server.key" ) );
     ssl_settings_->set_certificate( restbed::Uri( "file://certificates/server.crt" ) );
     ssl_settings_->set_temporary_diffie_hellman( restbed::Uri( "file://certificates/dh768.pem" ) );
+    ssl_settings_->set_bind_address(address);
     settings_->set_ssl_settings( ssl_settings_ );
 }
 
@@ -110,6 +113,7 @@ void Rest::createRoute(){
  */ 
 void Rest::run() {
     create_list_music();
+    create_list_user();
     run_player();
     // reset stats each 24 hours
     service_->schedule(reset_stats, std::chrono::milliseconds( 1000 * 60 * 60 * 24 ));

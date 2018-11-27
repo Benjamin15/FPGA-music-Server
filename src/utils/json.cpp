@@ -122,6 +122,39 @@ std::string getStats(int n_music, int n_user, int n_music_remove, std::string av
   return result.str(); 
 }
 
+ * get the list of the music for the metadate file
+ * @param list of musics
+ * @return list_json
+ */ 
+std::string getListForUsersMetadata(std::vector<Music> musics) {
+  std::stringstream result;
+  const char* separator = ", \n";
+  result << "{ \n  \"musics\": [\n";
+  for (auto it_music = musics.begin() ; it_music != musics.end() ; it_music++) {
+    if (it_music + 1 == musics.end())
+      separator = "\n";
+    result << get_json_string(it_music->to_json()) << separator;
+  }
+  result << "]\n}";
+  return result.str(); 
+}
+
+/**
+ * get the list of users
+ * @param list of musics
+ * @return list_json
+ */ 
+std::string getListUsers(std::vector<User> users) {
+  std::stringstream result;
+  const char* separator = ", \n";
+  result << "{ \n  \"users\": [\n";
+  for(auto it_user = users.begin();it_user != users.end();it_user++){
+    if (it_user + 1 == users.end())
+      separator = "\n";
+    result << it_user->to_string() << separator;
+  }
+  result << "]\n}";
+}
 /**
  * remove the last music in the metadata json file
  * 
@@ -153,7 +186,6 @@ void remove_last_music() {
 void removeMusicSelected(const unsigned int noMusic) {
   int pos=0;
   bool musiqueTrouvee=false;
-  std::string titreMusique="";
 
   FILE* fp = fopen(music_json_path.c_str(), "rb");
   char readBuffer[65536];
@@ -167,7 +199,6 @@ void removeMusicSelected(const unsigned int noMusic) {
 
   for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
     if(musiques[i][no_log.c_str()].GetUint()==noMusic) {
-      titreMusique=musiques[i][title_log.c_str()].GetString();
       pos=(int)i;
       musiqueTrouvee=true;
     }
@@ -188,11 +219,59 @@ void removeMusicSelected(const unsigned int noMusic) {
  * @param musics
  */ 
 void write_music(std::vector<Music> musics) {
-  std::string json = getListForAdmin(musics);
+  std::string json = getListForUsersMetadata(musics);
   rapidjson::Document document;
   document.Parse(json.c_str());
   remove(music_json_path.c_str());
   FILE* fp = fopen(music_json_path.c_str(), "wb"); // non-Windows use "w"
+  char writeBuffer[65536];
+  rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
+  rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
+  document.Accept(writer);
+  fclose(fp);
+}
+
+const std::string get_json_string(rapidjson::Document document)
+{
+  rapidjson::StringBuffer buffer;
+
+  buffer.Clear();
+
+  rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+  document.Accept(writer);
+
+  return buffer.GetString();
+}
+
+/**
+ * get the list of the user for the metadate file
+ * @param list of users
+ * @return list_json
+ */ 
+std::string getListUsersMetadata(std::vector<User> users) {
+  std::stringstream result;
+  const char* separator = ", \n";
+  result << "{ \n  \"users\": [\n";
+  for (auto it_user = users.begin() ; it_user != users.end() ; it_user++) {
+    if (it_user + 1 == users.end())
+      separator = "\n"; 
+    result << get_json_string(it_user->to_json()) << separator;
+  }
+  result << "]\n}";
+  return result.str(); 
+}
+
+
+/**
+ * This method write every users in the vector to the users.json
+ * @param users
+ */ 
+void write_users(std::vector<User> users) {
+  std::string json = getListUsersMetadata(users);
+  rapidjson::Document document;
+  document.Parse(json.c_str());
+  remove(user_log_path.c_str());
+  FILE* fp = fopen(user_log_path.c_str(), "wb"); // non-Windows use "w"
   char writeBuffer[65536];
   rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
   rapidjson::Writer<rapidjson::FileWriteStream> writer(os);

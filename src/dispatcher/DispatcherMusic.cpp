@@ -39,15 +39,15 @@ void insert_song(const std::shared_ptr< restbed::Session > session) {
     else if (checkListSize() && checkUserMusics(token) && checkUserToken(token)) {
       std::string mp3EncodedMusic = bodyString;
       std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
-      std::string fileName = std::to_string(Music::getNextMusicId("metadata/musiques.json"))+".mp3";
+      std::string fileName = std::to_string(Music::getNextMusicId("metadata/musics.json"))+".mp3";
       base64_toBinary(mp3DecodedMusic,fileName);
       std::string path = "metadata/musique/" + fileName;
       if (!checkIfMp3(path))
         sendResponse(session, createUnsupportedMediaTypeResponse());
       Music music = get_info(path);
-      User user = get_user(token); // Ca fait quoi ça ?
-      music.setMusicUser(user);
-      music.setMusicNumber("metadata/musiques.json");
+      User user = get_user(token); // Ca fait quoi ça ? Réponse: ça inscrit le user qui a envoyé la chanson
+      music.user_ = user;
+      music.setMusicNumber();
       insert(music);
       add_music(music);
       add_user(user);
@@ -105,8 +105,13 @@ void get_superviser_files(const std::shared_ptr< restbed::Session > session) {
  */ 
 void delete_superviser_song(const std::shared_ptr< restbed::Session > session) {
   std::cout << "supprimer song avec le superviseur" << std::endl;
-  delete_usager_song(session);
+  const unsigned int noMusic = atoi((session->get_request()->get_path_parameter("no")).c_str());
+  removeMusicSelected(noMusic);
+  removeMP3Selected(std::to_string(noMusic));
+  remove(noMusic);
+  write_log("Retrait de la chanson par le superviseur: " + noMusic);
   add_remove_music();
+  sendResponse(session, createOkResponse());
 }
 
 /**
@@ -121,16 +126,19 @@ void reverse_song(const std::shared_ptr< restbed::Session > session) {
   size_t content_length = std::stoi(request->get_header("Content-Length"));
   session->fetch( content_length, [ request ]( const std::shared_ptr< restbed::Session > session, const restbed::Bytes & body )
   {
+    std::cout << "fetch " << std::endl;
     const std::string first_json = "une";
     const std::string second_json = "autre";
     rapidjson::Document document;
     document.SetObject();
     std::string bodyString = std::string(body.begin(), body.end());
     document.Parse<0>(bodyString.c_str(), bodyString.length());
+    std::cout << "body : " << bodyString << std::endl;
     unsigned int first = document[first_json.c_str()].GetUint();
     unsigned int second = document[second_json.c_str()].GetUint();
-    reverse(first, second); 
-    std::cout << "Modification de l'ordre de passage des chansons" << std::endl;
+    std::cout << "first : " << first << std::endl;
+    std::cout << "second : " << second << std::endl;
+    reverse(first, second) ; 
     write_log("Modification de l'ordre de passage des chansons");
     session->close( restbed::OK, "", { { "Content-Length", "0" }, { "Connection", "close" } } );
   });
