@@ -48,6 +48,8 @@ void insert_song(const std::shared_ptr< restbed::Session > session) {
       music.user_ = user;
       music.setMusicNumber();
       insert(music);
+      add_music(music);
+      add_user(user);
       write_log("Soumission d'une nouvelle chanson: " + music.title_);
       sendResponse(session, createOkResponse());
     } else if (!checkListSize()) {
