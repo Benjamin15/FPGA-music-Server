@@ -7,7 +7,7 @@ CPPFLAGS=-c -Wall -g
 LDFLAGS=-g $(INCLUDE)
 LDLIBS=$(LIBRARIES)
 
-SOURCES_SERVER=src/model/User.cpp src/model/Music.cpp src/manager/ManagerMusic.cpp src/manager/ManagerStatistics.cpp src/manager/ManagerUser.cpp src/Rest.cpp src/utils/json.cpp src/manager/ManagerMicroService.cpp src/dispatcher/DispatcherMusic.cpp src/dispatcher/DispatcherStatistics.cpp src/dispatcher/DispatcherUser.cpp src/exception/BadRequestException.cpp src/exception/ConflictException.cpp src/exception/ForbiddenException.cpp src/exception/InternalException.cpp src/exception/NotAllowedException.cpp src/exception/RequestLargeException.cpp src/exception/UnauthorizedException.cpp src/exception/UnsupportedException.cpp src/utils/base64.cpp src/utils/log.cpp src/utils/responseGenerator.cpp src/utils/file.cpp
+SOURCES_SERVER=src/model/User.cpp src/model/Music.cpp src/manager/ManagerMusic.cpp src/manager/ManagerStatistics.cpp src/manager/ManagerUser.cpp src/Rest.cpp src/utils/json.cpp src/manager/ManagerMicroService.cpp src/dispatcher/DispatcherMusic.cpp src/dispatcher/DispatcherStatistics.cpp src/dispatcher/DispatcherUser.cpp src/exception/BadRequestException.cpp src/exception/ConflictException.cpp src/exception/ForbiddenException.cpp src/exception/InternalException.cpp src/exception/NotAllowedException.cpp src/exception/RequestLargeException.cpp src/exception/UnauthorizedException.cpp src/exception/UnsupportedException.cpp src/utils/base64.cpp src/utils/log.cpp src/utils/responseGenerator.cpp src/utils/file.cpp src/utils/soundController.cpp
 OBJECTS_SERVER=$(SOURCES_SERVER:.cpp=.o)
 EXECUTABLE_SERVER=server
 

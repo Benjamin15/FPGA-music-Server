@@ -114,9 +114,9 @@ std::string getListForAdmin(std::vector<Music> musics) {
  */ 
 std::string getStats(int n_music, int n_user, int n_music_remove, std::string avg_duration) {
   std::stringstream result;
-  result << "{ \"chansons\": " << n_music << "\n";
-  result << "\"utilisateurs\": " << n_user << "\n";
-  result << "\"elemines\": " << n_music_remove << "\n";
+  result << "{ \"chansons\": " << n_music << "\n,";
+  result << "\"utilisateurs\": " << n_user << "\n,";
+  result << "\"elemines\": " << n_music_remove << "\n,";
   result << "\"temps\": \"" << avg_duration << "\" \n";
   result << "}";
   return result.str(); 
@@ -130,11 +130,12 @@ std::string getListForUsersMetadata(std::vector<Music> musics) {
   std::stringstream result;
   const char* separator = ", \n";
   result << "{ \n  \"musics\": [\n";
-  for (auto it_music = musics.begin() ; it_music != musics.end() ; it_music++) {
-    if (it_music + 1 == musics.end())
+  for (unsigned int i = 0 ; i < musics.size() ; i++) {
+    Music music = musics[i];
+    result << music.toString() << separator ;
+    if (i == musics.size() - 2)
       separator = "\n";
-    result << get_json_string(it_music->to_json()) << separator;
-  }
+  };
   result << "]\n}";
   return result.str(); 
 }
@@ -156,6 +157,7 @@ std::string getListUsers(std::vector<User> users) {
   result << "]\n}";
   return result.str();
 }
+
 /**
  * remove the last music in the metadata json file
  * 
@@ -264,7 +266,7 @@ std::string getListUsersMetadata(std::vector<User> users) {
 
 
 /**
- * This method write every users in the vector to the users.json
+ * This method writes each user in the vector to the users.json
  * @param users
  */ 
 void write_users(std::vector<User> users) {
@@ -278,4 +280,18 @@ void write_users(std::vector<User> users) {
   rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
   document.Accept(writer);
   fclose(fp);
+}
+
+/**
+ * Generate JSON String for song volume and mute status
+ * @param volume
+ * @param mute
+ */ 
+std::string getVolume(int volume, bool mute){
+  std::stringstream result;
+  const char* separator = ", \n";
+  result << "{ "
+    << "\"volume\": " << volume << ", "
+    << "\"sourdine\": \"" << mute << "\" }";
+  return result.str();
 }
