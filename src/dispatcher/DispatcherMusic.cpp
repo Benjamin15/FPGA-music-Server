@@ -106,6 +106,7 @@ void delete_superviser_song(const std::shared_ptr< restbed::Session > session) {
   removeMP3Selected(std::to_string(noMusic));
   remove(noMusic);
   write_log("Retrait de la chanson par le superviseur: " + noMusic);
+  add_remove_music();
   sendResponse(session, createOkResponse());
 }
 

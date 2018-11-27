@@ -165,13 +165,18 @@ void set_password(const std::shared_ptr< restbed::Session > session) {
     const std::string old_password = "ancien";
     const std::string new_password = "nouveau";
     std::string contentJson = std::string(body.begin(), body.end());
+    std::cout << contentJson << std::endl;
     rapidjson::Document document;
     document.SetObject();
     document.Parse<0>(contentJson.c_str(), contentJson.length());
     try {
-      if (!document.HasParseError())
+      if (document.HasParseError())
         throw BadRequestException();
-      update_password(document[old_password.c_str()].GetString(), document[new_password.c_str()].GetString());
+      std::string old_value = document[old_password.c_str()].GetString();
+      std::string new_value = document[new_password.c_str()].GetString();
+      std::cout << "old : " << old_value << std::endl;
+      std::cout << "new : " << new_value << std::endl;
+      update_password(old_value, new_value);
       sendResponse(session, createOkResponse(responseBody::OK));
     } catch (BadRequestException& error) {
       error.print_error();
