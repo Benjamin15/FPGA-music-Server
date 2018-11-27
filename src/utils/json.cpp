@@ -117,12 +117,11 @@ std::string getListForUsersMetadata(std::vector<Music> musics) {
   std::stringstream result;
   const char* separator = ", \n";
   result << "{ \n  \"musics\": [\n";
-  for (unsigned int i = 0 ; i < musics.size() ; i++) {
-    Music music = musics[i];
-    result << music.toString() << separator ;
-    if (i == musics.size() - 2)
+  for (auto it_music = musics.begin() ; it_music != musics.end() ; it_music++) {
+    if (it_music + 1 == musics.end())
       separator = "\n";
-  };
+    result << get_json_string(it_music->to_json()) << separator;
+  }
   result << "]\n}";
   return result.str(); 
 }
