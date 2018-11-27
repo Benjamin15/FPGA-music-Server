@@ -109,6 +109,19 @@ std::string getListForAdmin(std::vector<Music> musics) {
 
 
 /**
+ * write the stats json 
+ * 
+ */ 
+std::string getStats(int n_music, int n_user, int n_music_remove, std::string avg_duration) {
+  std::stringstream result;
+  result << "{ \"chansons\": " << n_music << "\n";
+  result << "\"utilisateurs\": " << n_user << "\n";
+  result << "\"elemines\": " << n_music_remove << "\n";
+  result << "\"temps\": " << avg_duration << "\n";
+  result << "}";
+  return result.str(); 
+}
+
  * get the list of the music for the metadate file
  * @param list of musics
  * @return list_json
@@ -141,9 +154,7 @@ std::string getListUsers(std::vector<User> users) {
     result << it_user->to_string() << separator;
   }
   result << "]\n}";
-  return result.str(); 
 }
-
 /**
  * remove the last music in the metadata json file
  * 
