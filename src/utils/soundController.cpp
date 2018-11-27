@@ -103,7 +103,6 @@ void SoundController::increaseVolume(int percent){
  */ 
 void SoundController::decreaseVolume(int percent){
     if(volumePercentage_ != MIN_VOLUME_PERCENTAGE){
-
         std::cout << "Volume decreased by: " << percent << " percents" << std::endl;
         int newVolumePercentage = volumePercentage_ - percent;
         
@@ -112,6 +111,9 @@ void SoundController::decreaseVolume(int percent){
             mute();
         }
         else{
+            if(isMuted()){
+                unmute();
+            }
             setVolume(newVolumePercentage);
         }
     }
