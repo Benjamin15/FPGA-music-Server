@@ -122,7 +122,7 @@ std::string getStats(int n_music, int n_user, int n_music_remove, std::string av
   return result.str(); 
 }
 
- * get the list of the music for the metadate file
+ /* get the list of the music for the metadate file
  * @param list of musics
  * @return list_json
  */ 
@@ -277,4 +277,18 @@ void write_users(std::vector<User> users) {
   rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
   document.Accept(writer);
   fclose(fp);
+}
+
+/**
+ * Generate JSON String for song volume and mute status
+ * @param volume
+ * @param mute
+ */ 
+std::string getVolume(int volume, bool mute){
+  std::stringstream result;
+  const char* separator = ", \n";
+  result << "{ "
+    << "\"volume\": " << volume << ", "
+    << "\"sourdine\": \"" << mute << "\" }";
+  return result.str();
 }
