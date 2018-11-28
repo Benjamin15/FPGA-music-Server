@@ -76,7 +76,6 @@ void delete_usager_song(const std::shared_ptr< restbed::Session > session) {
       sendResponse(session, createMethodNotAllowedResponse());
     else {
       removeMusicSelected(noMusic);
-      removeMP3Selected(std::to_string(noMusic));
       remove(noMusic);
       write_log("Retrait de la chanson: " + noMusic);
       sendResponse(session, createOkResponse());

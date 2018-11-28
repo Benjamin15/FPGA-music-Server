@@ -24,6 +24,7 @@ void remove(unsigned int no) {
   while (i < musics.size()) {
     if (musics[i].no_ == no) {
       musics.erase(musics.begin() + i);
+      removeMP3Selected(std::to_string(no));
     }
     i++;
   }

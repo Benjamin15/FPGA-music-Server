@@ -5,7 +5,7 @@
  * @param no : the music's no
  */ 
 void removeMP3Selected(const std::string no) {
-  std::string path= ("metadata/musique/" + no + ".mp3");
+  std::string path= ("metadata/musics/" + no + ".mp3");
   if (remove(path.c_str()) == 0)
     std::cout<<"Le fichier "<< no << ".mp3 "<< "est supprimé."<<std::endl;
   else
