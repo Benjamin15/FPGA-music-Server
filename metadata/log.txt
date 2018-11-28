@@ -1,1 +1,1 @@
-Tue Nov 27 16:26:14 2018: Debut du decodage de la chanson: 0
+Wed Nov 28 00:22:31 2018: Désactivation de la sourdine
