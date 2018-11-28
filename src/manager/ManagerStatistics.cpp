@@ -69,8 +69,14 @@ std::string calcul_avg() {
   }
   minutes += (seconds / 60);
   seconds %= 60;
-  seconds /= musics_stat.size();
-  minutes /= musics_stat.size();
+  if (musics_stat.size() != 0) {
+    seconds /= musics_stat.size();
+    minutes /= musics_stat.size();
+  } else {
+    seconds = 0;
+    minutes = 0;
+  }
+
   std::string seconds_string = std::to_string(seconds);
   std::string minutes_string = std::to_string(minutes);
   if (seconds_string.size() == 1)

@@ -7,12 +7,13 @@
 void manage_player() {
   std::cout << "manage player" << std::endl;
   while(1) {
-    std::vector<Music> musics = getMusics();
-    if (musics.size() > 0) {
+    auto music_list = getMusics();
+    if (music_list.size() > 0) {
       std::cout << "devrait lancer une musique" << std::endl;
       pid_t pid = fork();
       if (pid == 0) {
-        const std::string no = std::to_string(getMusics()[0].no_);
+        std::cout << music_list[0].toString();
+        const std::string no = std::to_string(music_list[0].no_);
         std::string path_music = music_path + no + mp3_ext;
         Music music = get_info_for_player(path_music);
         std::string sample_rate = std::to_string(music.sample_rate_);
@@ -34,7 +35,7 @@ void manage_player() {
       }
       wait(NULL);
       std::cout << "fin musique, suppression" << std::endl;
-      musics.erase(musics.begin());
+      remove(music_list[0].no_);
       std::cout << "erase" << std::endl;
       remove_last_music();
       std::cout << "remove last " << std::endl;

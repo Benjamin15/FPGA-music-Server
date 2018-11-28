@@ -11,7 +11,7 @@ Music::Music(Object music) {
   std::string mac = "";
   std::string suggest_by = "";
   if (music.HasMember(no_log.c_str()) && music[no_log.c_str()].IsUint())
-    no_ = music[id_log.c_str()].GetUint();
+    no_ = music[no_log.c_str()].GetUint();
   else
     setMusicNumber();
   if (music.HasMember(title_log.c_str()) && music[title_log.c_str()].IsString())
@@ -29,6 +29,7 @@ Music::Music(Object music) {
   if (music.HasMember(suggest_by_log.c_str()) && music[suggest_by_log.c_str()].IsString())
     suggest_by = music[mac_log.c_str()].GetString();
   user_ = User(token, suggest_by, ip, mac);
+  std::cout << "no : " << no_ << std::endl;
 }
 
 Music::Music(ObjectMetadata music) {
@@ -36,7 +37,7 @@ Music::Music(ObjectMetadata music) {
   std::string ip = "";
   std::string mac = "";
   if (music.HasMember(no_log.c_str()) && music[no_log.c_str()].IsUint())
-    no_ = music[id_log.c_str()].GetUint();
+    no_ = music[no_log.c_str()].GetUint();
   else
     setMusicNumber();
   if (music.HasMember(title_log.c_str()) && music[title_log.c_str()].IsString())
@@ -52,9 +53,12 @@ Music::Music(ObjectMetadata music) {
   if (music.HasMember(mac_log.c_str()) && music[mac_log.c_str()].IsString())
     mac = music[mac_log.c_str()].GetString();
   user_ = User(token, "", ip, mac);
+    std::cout << "no : " << no_ << std::endl;
+
 }
 
 void Music::setMusicNumber() {
+  std::cout << "calcul numero musique" << std::endl;
   rapidjson::Document document = getJsonFile(music_json_path.c_str());
   rapidjson::Value& value = document[musics_log.c_str()];
   unsigned int higherMusicNo = 0;
@@ -135,14 +139,29 @@ std::string Music::toRegisterString() {
 rapidjson::Document Music::to_json() {
   rapidjson::Document document;
  	document.SetObject();
-  rapidjson::Document::AllocatorType& allocator = document.GetAllocator();
-  document.AddMember("no", no_, allocator);
-  document.AddMember("title", rapidjson::Value().SetString(title_.c_str(), title_.size()), allocator);
-  document.AddMember("artist", rapidjson::Value().SetString(artist_.c_str(), artist_.size()), allocator);
-  document.AddMember("duration", rapidjson::Value().SetString(duration_.c_str(), duration_.size()), allocator);
-  document.AddMember("ip", rapidjson::Value().SetString(user_.ip_.c_str(), user_.ip_.size()), allocator);
-  document.AddMember("mac", rapidjson::Value().SetString(user_.mac_.c_str(), user_.mac_.size()), allocator);
-  document.AddMember("id", user_.token_, allocator);
-  document.AddMember("suggest_by", rapidjson::Value().SetString(user_.name_.c_str(), user_.name_.size()), allocator);
+  rapidjson::Value no_key(no_log.c_str(), document.GetAllocator());
+  rapidjson::Value no_value(no_);
+  document.AddMember(no_key, no_, document.GetAllocator());
+  rapidjson::Value title_key(title_log.c_str(), document.GetAllocator());
+  rapidjson::Value title_value(title_.c_str(), document.GetAllocator());
+  document.AddMember(title_key, title_value, document.GetAllocator());
+  rapidjson::Value artist_key(artist_log.c_str(), document.GetAllocator());
+  rapidjson::Value artist_value(artist_.c_str(), document.GetAllocator());
+  document.AddMember(artist_key, artist_value, document.GetAllocator());
+  rapidjson::Value duration_key(duration_log.c_str(), document.GetAllocator());
+  rapidjson::Value duration_value(duration_.c_str(), document.GetAllocator());
+  document.AddMember(duration_key, duration_value, document.GetAllocator());
+  rapidjson::Value ip_key(ip_log.c_str(), document.GetAllocator());
+  rapidjson::Value ip_value(user_.ip_.c_str(), document.GetAllocator());
+  document.AddMember(ip_key, ip_value, document.GetAllocator());
+  rapidjson::Value mac_key(mac_log.c_str(), document.GetAllocator());
+  rapidjson::Value mac_value(user_.mac_.c_str(), document.GetAllocator());
+  document.AddMember(mac_key, mac_value, document.GetAllocator());
+  rapidjson::Value id_key(id_log.c_str(), document.GetAllocator());
+  rapidjson::Value id_value(user_.token_);
+  document.AddMember(id_key, id_value, document.GetAllocator());
+  rapidjson::Value suggest_by_key(no_log.c_str(), document.GetAllocator());
+  rapidjson::Value suggest_by_value(user_.name_.c_str(), document.GetAllocator());
+  document.AddMember(suggest_by_key, suggest_by_value, document.GetAllocator());
   return document;
 }

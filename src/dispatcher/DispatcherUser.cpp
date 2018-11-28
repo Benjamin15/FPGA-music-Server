@@ -122,8 +122,7 @@ void login(const std::shared_ptr< restbed::Session > session) {
     try {
       loginSupervisor(user, password);
       saveLogin(user);
-      std::string result = "{\"supervisor\":{\"username\":\"admin\"}}";
-      sendResponse(session, createOkResponse(result));
+      sendResponse(session, createOkResponse("{}"));
     }
     catch (ForbiddenException exception) {
       std::cout << "Requete non autorisé" << std::endl;
@@ -169,7 +168,7 @@ void set_password(const std::shared_ptr< restbed::Session > session) {
     document.SetObject();
     document.Parse<0>(contentJson.c_str(), contentJson.length());
     try {
-      if (!document.HasParseError())
+      if (document.HasParseError())
         throw BadRequestException();
       update_password(document[old_password.c_str()].GetString(), document[new_password.c_str()].GetString());
       sendResponse(session, createOkResponse(responseBody::OK));
@@ -190,6 +189,6 @@ void set_password(const std::shared_ptr< restbed::Session > session) {
 void get_users(const std::shared_ptr< restbed::Session > session) {
   std::cout << "get users " << std::endl;
   std::string vector_users = getListUsers(get_list_users());
-  std::cout << vector_users.c_str() << std::endl;
+  std::cout << vector_users << std::endl;
   sendResponse(session, createOkResponse(vector_users));
 }

@@ -168,6 +168,7 @@ std::string registerIds(std::string body_json) {
  * 
  */ 
 void create_list_user() {
+  std::cout << "Initialisation user" << std::endl;
   FILE* fp = fopen(user_log_path.c_str(), "rb"); // non-Windows use "r"
   char readBuffer[65536];
   rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));

@@ -29,12 +29,11 @@ Music get_info(std::string path) {
     seconds = properties->length() % 60;
     minutes = (properties->length() - seconds) / 60;
     tag = f.tag();
-    title = tag->title().to8Bit();
-    if (title == "")
-      title = "Unknown";
   } else 
     throw UnsupportedException();
-  return Music(tag->title().to8Bit(), tag->artist().to8Bit(), std::to_string(minutes) + ":" +std::to_string(seconds));
+  return Music( tag->title().to8Bit() == "" ? "Unknown" : tag->title().to8Bit(),
+                tag->artist().to8Bit() == "" ? "Unknown" : tag->artist().to8Bit(),
+                std::to_string(minutes) + ":" +std::to_string(seconds));
 }
 
 

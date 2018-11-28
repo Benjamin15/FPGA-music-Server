@@ -39,7 +39,7 @@ std::string base64_decode(std::string input) {
 
 
 void base64_toBinary(std::string base64music,std::string title){
-    std::string path = "metadata/musique/" + title ;
+    std::string path = "metadata/musics/" + title ;
     FILE* fp = fopen(path.c_str(),"w+");
     fclose(fp);
     int size = base64music.size();

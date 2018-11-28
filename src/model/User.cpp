@@ -7,7 +7,6 @@
 User::User(Object value) {
   if (value.HasMember(token_log.c_str()) && value[token_log.c_str()].IsUint()) {
     token_ = value[token_log.c_str()].GetUint();
-    std::cout << "generate new token" << std::endl;
   }
   else
     token_ = rand();

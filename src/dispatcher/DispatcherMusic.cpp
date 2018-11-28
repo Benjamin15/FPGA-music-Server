@@ -44,7 +44,7 @@ void insert_song(const std::shared_ptr< restbed::Session > session) {
       if (!checkIfMp3(path))
         sendResponse(session, createUnsupportedMediaTypeResponse());
       Music music = get_info(path);
-      User user = get_user(token); // Ca fait quoi ça ? Réponse: ça inscrit le user qui a envoyé la chanson
+      User user = get_user(token);
       music.user_ = user;
       music.setMusicNumber();
       insert(music);

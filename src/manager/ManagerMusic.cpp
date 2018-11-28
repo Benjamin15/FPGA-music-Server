@@ -91,19 +91,11 @@ void create_list_music() {
   fclose(fp);
   const rapidjson::Value& musiques = d[musics_log.c_str()];
   for (rapidjson::SizeType i = 0; i < musiques.Size(); i++) {
-    std::string mac = musiques[i][mac_log.c_str()].GetString();
-    unsigned int idUser = musiques[i][id_log.c_str()].GetUint();
-    std::string suggestBy = musiques[i][suggest_by_log.c_str()].GetString();
-    std::string ip = musiques[i][ip_log.c_str()].GetString();
-    unsigned int idMusic = musiques[i][no_log.c_str()].GetUint();
-    std::string duration = musiques[i][duration_log.c_str()].GetString();
-    std::string artist = musiques[i][artist_log.c_str()].GetString();
-    std::string title = musiques[i][title_log.c_str()].GetString();
-    User user(idUser, suggestBy, ip, mac);
-    Music music(idMusic, title, artist, duration, user);
+    Music music(musiques[i].GetObject());
     musics.push_back(music);
     add_music(music);
-    }
+    add_user(music.user_);
+  }
   std::cout << "Liste de musique bien initialisé" << std::endl;
 }
 

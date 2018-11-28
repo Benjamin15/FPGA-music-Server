@@ -112,8 +112,10 @@ void Rest::createRoute(){
  * 
  */ 
 void Rest::run() {
+    std::cout << "copucouc" << std::endl;
     create_list_music();
-    //create_list_user();
+    std::cout<<"keojrdporkjkp" << std::endl;
+    create_list_user();
     run_player();
     service_->start( settings_ );
 }

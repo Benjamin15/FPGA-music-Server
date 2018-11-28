@@ -17,4 +17,3 @@ void login(const std::shared_ptr< restbed::Session > session);
 void logout(const std::shared_ptr< restbed::Session > session);
 void set_password(const std::shared_ptr< restbed::Session > session);
 void get_users(const std::shared_ptr< restbed::Session > session);
-int get_n_users();
