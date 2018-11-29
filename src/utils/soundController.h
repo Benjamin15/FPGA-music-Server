@@ -35,7 +35,7 @@ private:
   int volumePercentage_;
 
   const char *card = "default";
-  const char *selement_name = "Master";
+  const char *selement_name = "Headphone";
   const int MAX_VOLUME_PERCENTAGE = 100;
   const int MIN_VOLUME_PERCENTAGE = 0;
 };

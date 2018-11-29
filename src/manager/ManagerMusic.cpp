@@ -77,6 +77,8 @@ bool checkUserMusics(unsigned int token) {
       userMusics ++;
     }
   }
+  std::cout << "user musics : " << userMusics << std::endl;
+  std::cout << "MAX ! " << MAX_USER_MUSICS << std::endl;
   return userMusics < MAX_USER_MUSICS;
 }
 

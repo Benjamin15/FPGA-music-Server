@@ -53,7 +53,10 @@ void insert_song(const std::shared_ptr< restbed::Session > session) {
     } else if (!checkListSize()) {
       std::cout << "checkListSize non respecte" << std::endl;
       sendResponse(session, createRequestEntityTooLargeResponse());
-    }else {
+    } else if (!checkUserMusics(token)) {
+      std::cout << "trop de musique pour l'utilisateur" << std::endl;
+      sendResponse(session, createRequestEntityTooLargeResponse());
+    } else {
       std::cout << "erreur interne" << std::endl;
       sendResponse(session, createInternalServerErrorResponse());
     }

@@ -44,12 +44,17 @@ void lock(const std::shared_ptr< restbed::Session > session) {
     std::cout << "body : " << bodyString << std::endl;
     std::string mac_value = document[mac_label.c_str()].GetString();
     try {
+      const std::string user = "admin";
+      checkIfLogin(user);
       lock_user(mac_value, true);
       sendResponse(session, createOkResponse(responseBody::OK));
     } catch (BadRequestException& error) {
       std::cout << "error" << std::endl;
       error.print_error();
       sendResponse(session, createBadRequestResponse());
+    } catch (ForbiddenException exception) {
+      std::cout << "Requete non autorisé" << std::endl;
+      sendResponse(session, createForbiddenResponse());
     }
   });
 }
@@ -74,12 +79,17 @@ void unlock(const std::shared_ptr< restbed::Session > session) {
     std::cout << "body : " << bodyString << std::endl;
     std::string mac_value = document[mac_label.c_str()].GetString();
     try {
+      const std::string user = "admin";
+      checkIfLogin(user);
       lock_user(mac_value, false);
       sendResponse(session, createOkResponse(responseBody::OK));
     } catch (BadRequestException& error) {
       std::cout << "error" << std::endl;
       error.print_error();
       sendResponse(session, createBadRequestResponse());
+    } catch (ForbiddenException exception) {
+      std::cout << "Requete non autorisé" << std::endl;
+      sendResponse(session, createForbiddenResponse());
     }
   });
 }
@@ -91,9 +101,16 @@ void unlock(const std::shared_ptr< restbed::Session > session) {
 
 void get_black_list(const std::shared_ptr< restbed::Session > session) {
   std::cout << "get bkack list " << std::endl;
-  std::string vector_users = getListUsers(get_list_users());
-  sendResponse(session, createOkResponse(vector_users));
+  try {
+    const std::string user = "admin";
+    checkIfLogin(user);
+    std::string vector_users = getListUsers(get_list_users());
+    sendResponse(session, createOkResponse(vector_users));
+  } catch (ForbiddenException exception) {
+    std::cout << "Requete non autorisé" << std::endl;
+    sendResponse(session, createForbiddenResponse());
   }
+}
 
 
 /**
@@ -115,16 +132,23 @@ void login(const std::shared_ptr< restbed::Session > session) {
     std::string bodyString = std::string(body.begin(), body.end());
     std::cout << "body : " << bodyString << std::endl;
     document.Parse<0>(bodyString.c_str(), bodyString.length());
-    std::string user = document[user_json.c_str()].GetString();
-    std::string password = document[password_json.c_str()].GetString();
-    std::cout << "username : " << user << std::endl;
-    std::cout << "password " << std::endl;
     try {
+      if (document.HasParseError())
+        throw BadRequestException();
+      std::cout << "je passe " << std::endl;
+      std::string user = document[user_json.c_str()].GetString();
+      std::string password = document[password_json.c_str()].GetString();
+      std::cout << "username : " << user << std::endl;
+      std::cout << "password " << std::endl;
       loginSupervisor(user, password);
+      std::cout << "quoi ? " << std::endl;
       saveLogin(user);
+      std::cout << "ok" << std::endl;
       sendResponse(session, createOkResponse("{}"));
-    }
-    catch (ForbiddenException exception) {
+    } catch (BadRequestException exception) {
+      std::cout << "bad request " << std::endl;
+      sendResponse(session, createBadRequestResponse());
+    } catch (ForbiddenException exception) {
       std::cout << "Requete non autorisé" << std::endl;
       sendResponse(session, createForbiddenResponse());
     }
@@ -143,9 +167,13 @@ void logout(const std::shared_ptr< restbed::Session > session) {
   try {
     checkIfLogin(user);
     logoutSupervisor(user);
+    sendResponse(session, createOkResponse("{}"));
   } catch (UnauthorizedException) {
     std::cout << "l'administrateur ne c'est pas connecté au préalable" << std::endl;
     sendResponse(session, createUnauthorizedResponse());
+  } catch (ForbiddenException exception) {
+    std::cout << "Requete non autorisé" << std::endl;
+    sendResponse(session, createForbiddenResponse());
   }
 }
 
@@ -168,6 +196,8 @@ void set_password(const std::shared_ptr< restbed::Session > session) {
     document.SetObject();
     document.Parse<0>(contentJson.c_str(), contentJson.length());
     try {
+      const std::string user = "admin";
+      checkIfLogin(user);
       if (document.HasParseError())
         throw BadRequestException();
       update_password(document[old_password.c_str()].GetString(), document[new_password.c_str()].GetString());
@@ -178,6 +208,9 @@ void set_password(const std::shared_ptr< restbed::Session > session) {
     } catch (UnauthorizedException& error) {
       error.print_error();
       sendResponse(session, createUnauthorizedResponse());
+    } catch (ForbiddenException exception) {
+      std::cout << "Requete non autorisé" << std::endl;
+      sendResponse(session, createForbiddenResponse());
     }
   });
 }
@@ -188,7 +221,13 @@ void set_password(const std::shared_ptr< restbed::Session > session) {
  */  
 void get_users(const std::shared_ptr< restbed::Session > session) {
   std::cout << "get users " << std::endl;
-  std::string vector_users = getListUsers(get_list_users());
-  std::cout << vector_users << std::endl;
-  sendResponse(session, createOkResponse(vector_users));
+   try {
+      const std::string user = "admin";
+      checkIfLogin(user);
+      std::string vector_users = getListUsers(get_list_users());
+      std::cout << vector_users << std::endl;
+      sendResponse(session, createOkResponse(vector_users));
+   } catch (ForbiddenException exception) {
+     sendResponse(session, createForbiddenResponse());
+   }
 }

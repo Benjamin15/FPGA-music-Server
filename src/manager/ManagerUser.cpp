@@ -80,9 +80,9 @@ User get_user(unsigned int token){
 void update_password(std::string old_password, std::string new_password) {
   rapidjson::Document d = getJsonFile(admin_log_path.c_str());
   rapidjson::Value& admin = d[admin_log.c_str()];
-  if (old_password != (admin[password_log.c_str()].GetString()))
+  if (new_password == "")
     throw UnauthorizedException();
-  else if (new_password == "")
+  else if (old_password != admin[password_log.c_str()].GetString())
     throw BadRequestException();
   else {
     admin[password_log.c_str()].SetObject();
@@ -199,7 +199,7 @@ void loginSupervisor(std::string username, std::string password) {
   if (username == admin[username_log.c_str()].GetString() && password == (admin[password_log.c_str()].GetString()))
     write_log("L'administrateur vient de se log"); 
   else {
-    throw new ForbiddenException(); // Error 403, requete non autorisé
+    throw ForbiddenException(); // Error 403, requete non autorisé
   }
 }
 

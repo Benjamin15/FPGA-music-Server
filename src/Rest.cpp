@@ -3,10 +3,10 @@
 void ready_handler( restbed::Service&  data)
 {
     auto uri_http = data.get_http_uri();
-    //auto uri_https = data.get_https_uri();
+    auto uri_https = data.get_https_uri();
     fprintf( stderr, "Service PID is '%i'.\n", getpid( ) );
     std::cout << uri_http->to_string() <<  std::endl;
-   // std::cout << uri_https->to_string() <<  std::endl;
+    std::cout << uri_https->to_string() <<  std::endl;
 
 } 
 
@@ -68,7 +68,7 @@ void Rest::initService() {
  */ 
 void Rest::initSettings(std::string address, uint16_t port) {
     settings_->set_worker_limit( 4 );
-    //initSSLSettings(address);
+    initSSLSettings(address);
     settings_->set_bind_address(address);
     settings_->set_port(port);
 }
@@ -112,9 +112,8 @@ void Rest::createRoute(){
  * 
  */ 
 void Rest::run() {
-    std::cout << "copucouc" << std::endl;
+    init_log();
     create_list_music();
-    std::cout<<"keojrdporkjkp" << std::endl;
     create_list_user();
     run_player();
     service_->start( settings_ );

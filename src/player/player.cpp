@@ -178,7 +178,7 @@ void decode()
       }
       else if (mad_stream.error == MAD_ERROR_BUFLEN)
       {
-        if (nbErrorBufLen++ > 160000000)
+        if (nbErrorBufLen++ > 1000)
           break;
         continue;
       }

@@ -8,7 +8,7 @@
 #include <time.h>
 
 void write_log(std::string content);
-void init();
+void init_log();
 
 static std::ofstream mStream;
 static std::mutex mMutex;

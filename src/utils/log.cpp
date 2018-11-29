@@ -2,7 +2,6 @@
 
 void write_log(std::string content)
 {
-  init();
   std::lock_guard<std::mutex> lock(mMutex);
     
   std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -16,7 +15,7 @@ void write_log(std::string content)
   mStream.close();
 }
 
-void init() {
+void init_log() {
   mStream.open(file_path, std::ios::trunc);
   mStream.close();
   mStream.open(file_path, std::ios::app);
