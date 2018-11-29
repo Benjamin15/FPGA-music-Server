@@ -53,4 +53,5 @@ void base64_toBinary(std::string base64music,std::string title){
     output.write(base64music.c_str(),size);
     output.flush();
     output.close();
+    std::cout << "musique bien téléchargé : " << title << std::endl;
 }

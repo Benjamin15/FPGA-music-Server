@@ -10,6 +10,7 @@ void insert(Music music) {
   registerMusic(music);
   musics.push_back(music);
   add_music(music);
+  add_user(music.user_);
   mutex.unlock();
 }
 

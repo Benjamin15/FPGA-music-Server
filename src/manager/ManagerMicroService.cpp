@@ -30,15 +30,19 @@ void manage_player() {
           bitrate.c_str(),
           channel.c_str(),
           NULL};
-        write_log("Debut du decodage de la chanson: " + no);
         execv(player_path.c_str(), (char **) parmList);
       }
       wait(NULL);
-      std::cout << "fin musique, suppression" << std::endl;
-      remove(music_list[0].no_);
-      std::cout << "erase" << std::endl;
-      remove_last_music();
-      std::cout << "remove last " << std::endl;
+      try
+      {
+        std::cout << "fin musique, suppression" << std::endl;
+        remove(music_list[0].no_);
+        std::cout << "erase" << std::endl;
+        remove_last_music();
+        std::cout << "remove last " << std::endl;
+      } catch (std::exception& e) {
+        std::cout << "probleme lors de la suppression du fichier" << std::endl;
+      }
     }
   }
 }

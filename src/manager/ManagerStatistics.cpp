@@ -17,6 +17,7 @@ int get_n_users() {
 
 void add_user(User user) {
   if (std::find(users_stats.begin(), users_stats.end(), user) == users_stats.end()) {
+    std::cout << "ajout d'un utilisateur aux stats" << std::endl;
     mutex_stat.lock();
     users_stats.push_back(user);
     mutex_stat.unlock();
@@ -68,7 +69,6 @@ std::string calcul_avg() {
     minutes += duration.tm_min;
   }
   minutes += (seconds / 60);
-  seconds %= 60;
   if (musics_stat.size() != 0) {
     seconds /= musics_stat.size();
     minutes /= musics_stat.size();
@@ -76,6 +76,8 @@ std::string calcul_avg() {
     seconds = 0;
     minutes = 0;
   }
+
+  seconds %= 60;
 
   std::string seconds_string = std::to_string(seconds);
   std::string minutes_string = std::to_string(minutes);
