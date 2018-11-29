@@ -1,5 +1,18 @@
 #include "ManagerUser.h"
 
+
+
+User find_user(rapidjson::Value& users, unsigned int token) {
+  User user;
+  for (rapidjson::SizeType i = 0; i < users.Size(); i++) {
+    unsigned int temp = users[i][token_log.c_str()].GetUint();
+    if (temp == token) {
+      user = users[i].GetObject();
+    }
+  }
+  return user;
+}
+
 /**
  * Check if the token exist
  * @param token 
@@ -47,6 +60,10 @@ bool isValidToken(unsigned int token) {
  * @return isIdentify
  */ 
 bool identify(unsigned int token) {
+  for (User user : users_sign) {
+    if (user.token_ == token && user.is_blocked_)
+      return false;
+  }
   return checkUserToken(token) && isValidToken(token);
 }
 
@@ -124,7 +141,6 @@ unsigned int find_token(rapidjson::Value& users, std::string mac) {
   return token;
 }
 
-
 /**
  * register token in the metadata file
  * @param body_json
@@ -157,6 +173,12 @@ std::string registerIds(std::string body_json) {
     rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
     readDoc.Accept(writer);
     fclose(fp);    
+  } else {
+    User user = find_user(users, token);
+    if (user.is_blocked_) {
+      mutex_user.unlock();
+      throw ForbiddenException();
+    }
   }
   mutex_user.unlock();
   return std::to_string(token);

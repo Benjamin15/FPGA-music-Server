@@ -35,6 +35,7 @@ void insert_song(const std::shared_ptr< restbed::Session > session) {
       sendResponse(session,createForbiddenResponse());
     }
     else if (checkListSize() && checkUserMusics(token) && checkUserToken(token)) {
+      try {
       std::string bodyString(body.begin(), body.end());
       std::string mp3EncodedMusic = bodyString;
       std::string mp3DecodedMusic = base64_decode(mp3EncodedMusic);
@@ -50,14 +51,18 @@ void insert_song(const std::shared_ptr< restbed::Session > session) {
       insert(music);
       write_log("Soumission d'une nouvelle chanson: " + music.title_);
       sendResponse(session, createOkResponse());
+      } catch (RequestLargeException exception) {
+        write_log("Taille non respecté de la file");
+        sendResponse(session, createRequestEntityTooLargeResponse());
+      }
     } else if (!checkListSize()) {
-      std::cout << "checkListSize non respecte" << std::endl;
+        write_log("Taille non respecté de la file");
       sendResponse(session, createRequestEntityTooLargeResponse());
     } else if (!checkUserMusics(token)) {
-      std::cout << "trop de musique pour l'utilisateur" << std::endl;
+        write_log("Taille non respecté de la file");
       sendResponse(session, createRequestEntityTooLargeResponse());
     } else {
-      std::cout << "erreur interne" << std::endl;
+      write_log("erreur interne");
       sendResponse(session, createInternalServerErrorResponse());
     }
   });

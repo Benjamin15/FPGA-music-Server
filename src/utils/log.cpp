@@ -12,7 +12,6 @@ void write_log(std::string content)
   timestampWithoutEndl = timestampWithoutEndl.substr(0, 24);
   std::cout << content << std::endl;
   mStream << timestampWithoutEndl << ": " << content << std::endl;
-  mStream.close();
 }
 
 void init_log() {
@@ -24,4 +23,8 @@ void init_log() {
     std::cout << "fail"<<std::endl;
     throw std::iostream::failure("Cannot open file: " + file_path);
   }
+}
+
+void close_log() {
+  mStream.close();
 }

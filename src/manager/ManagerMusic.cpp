@@ -7,11 +7,16 @@
  */ 
 void insert(Music music) {
   mutex.lock();
-  registerMusic(music);
-  musics.push_back(music);
-  add_music(music);
-  add_user(music.user_);
-  mutex.unlock();
+  if (checkListSize() && checkUserMusics(music.user_.token_)) {
+    registerMusic(music);
+    musics.push_back(music);
+    add_music(music);
+    add_user(music.user_);
+    mutex.unlock();
+  } else {
+    mutex.unlock();
+    throw RequestLargeException();
+  }
 }
 
 /**

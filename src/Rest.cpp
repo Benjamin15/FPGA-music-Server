@@ -16,6 +16,10 @@ void failed_filter_validation_handler( const std::shared_ptr< restbed::Session >
     sendResponse(session, createBadRequestResponse());
 }
 
+void sigint_handler(int  sig_number) {
+    close_log();
+    exit(0);
+}
 /**
  * Map each functions
  * We need that because c++ doesn't implement reflection. So, it's the good way to do a pseudo reflection
@@ -116,6 +120,7 @@ void Rest::run() {
     create_list_music();
     create_list_user();
     run_player();
+    service_->set_signal_handler(SIGINT, sigint_handler);
     service_->start( settings_ );
 }
 

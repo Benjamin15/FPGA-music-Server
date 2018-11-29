@@ -9,6 +9,7 @@
 
 void write_log(std::string content);
 void init_log();
+void close_log();
 
 static std::ofstream mStream;
 static std::mutex mMutex;

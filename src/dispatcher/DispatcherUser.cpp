@@ -20,6 +20,10 @@ void connect(const std::shared_ptr< restbed::Session > session){
       std::cout << "error" << std::endl;
       error.print_error();
       sendResponse(session, createBadRequestResponse());
+    } catch (ForbiddenException& error) {
+      std::cout << "error" << std::endl;
+      error.print_error();
+      sendResponse(session, createForbiddenResponse());
     }
   });
 }
