@@ -133,5 +133,8 @@ bool checkListSize() {
  * @return list of music
  */ 
 std::vector<Music> getMusics() {
-  return musics;
+  mutex.lock();
+  std::vector<Music> music_vector = musics;
+  mutex.unlock();
+  return music_vector;
 }

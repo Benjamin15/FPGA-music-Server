@@ -33,16 +33,12 @@ void manage_player() {
         execv(player_path.c_str(), (char **) parmList);
       }
       wait(NULL);
-      try
-      {
-        std::cout << "fin musique, suppression" << std::endl;
-        remove(music_list[0].no_);
-        std::cout << "erase" << std::endl;
-        remove_last_music();
-        std::cout << "remove last " << std::endl;
-      } catch (std::exception& e) {
-        std::cout << "probleme lors de la suppression du fichier" << std::endl;
-      }
+      std::cout << music_list[0].toString() << std::endl;
+      std::cout << "fin musique, suppression" << std::endl;
+      remove(music_list[0].no_);
+      std::cout << "erase" << std::endl;
+      remove_last_music();
+      std::cout << "remove last " << std::endl;
     }
   }
 }
